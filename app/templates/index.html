@@ -1,9 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Horse Racing Tracker</title>
-  </head>
-  <body>
-    <h1>Horse Racing Tracker</h1>
-  </body>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>🏆 Leader Podium</h1>
+
+    <div id="podium"></div>
+
+    <h2>Accumulator</h2>
+    <div id="accumulator"></div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        loadPodium();
+        loadAccumulator();
+    </script>
+</body>
 </html>
