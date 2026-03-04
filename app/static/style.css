@@ -111,5 +111,40 @@ button {
     margin-top: 20px;
     white-space: pre-wrap;
 }
+.form-card {
+    background: #123412;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 450px;
+    margin-top: 20px;
+}
+
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-section h3 {
+    color: gold;
+    margin-bottom: 10px;
+}
+
+.result-box {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 6px;
+    background: #0f2a0f;
+    color: gold;
+    display: none;
+}
+
+.submit-btn {
+    background: gold;
+    color: black;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
 
 
