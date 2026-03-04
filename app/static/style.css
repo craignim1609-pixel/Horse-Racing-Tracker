@@ -281,5 +281,51 @@ button {
 .result-nr { background: #555; color: white; padding: 4px 8px; border-radius: 4px; }
 .result-pending { background: #777; color: white; padding: 4px 8px; border-radius: 4px; }
 
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+
+    body {
+        padding: 10px;
+    }
+
+    h1, h2 {
+        font-size: 22px;
+        text-align: center;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        padding: 10px;
+    }
+
+    .navbar a {
+        font-size: 14px;
+        padding: 6px 8px;
+    }
+
+    .form-card {
+        width: 100%;
+        padding: 15px;
+    }
+
+    input, select, button {
+        font-size: 16px;
+    }
+
+    .picks-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .pick-card,
+    .race-card {
+        padding: 12px;
+    }
+
+    .profile-section {
+        padding: 12px;
+    }
+}
 
 
