@@ -63,4 +63,53 @@ button {
     color: white;
     text-decoration: underline;
 }
+.podium-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 20px;
+    margin: 40px 0;
+}
+
+.podium {
+    width: 120px;
+    text-align: center;
+    padding: 10px;
+    border-radius: 6px;
+    background: #123412;
+    color: gold;
+    position: relative;
+}
+
+.podium-1 {
+    height: 180px;
+    background: #1a4d1a;
+}
+
+.podium-2 {
+    height: 140px;
+}
+
+.podium-3 {
+    height: 120px;
+}
+
+.podium-rank {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.podium-name {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+.accumulator-box {
+    background: #123412;
+    padding: 20px;
+    border-radius: 6px;
+    margin-top: 20px;
+    white-space: pre-wrap;
+}
+
 
