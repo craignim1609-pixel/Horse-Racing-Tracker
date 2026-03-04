@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Pick</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Add Pick</h1>
+
+    <form id="pickForm">
+        <label>Player:</label>
+        <select name="player_id">
+            <option value="1">Donald</option>
+            <option value="2">Miller</option>
+            <option value="3">Nick</option>
+            <option value="4">Josh</option>
+            <option value="5">Craig</option>
+        </select>
+
+        <label>Course:</label>
+        <input name="course" required>
+
+        <label>Horse Name:</label>
+        <input name="horse_name" required>
+
+        <label>Horse Number:</label>
+        <input name="horse_number" type="number" required>
+
+        <label>Odds (e.g. 5/2):</label>
+        <input name="odds_fraction" required>
+
+        <label>Race Time:</label>
+        <input name="race_time" required>
+
+        <label>Month:</label>
+        <input name="month" type="number" required>
+
+        <label>Year:</label>
+        <input name="year" type="number" required>
+
+        <button type="submit">Submit Pick</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        setupAddPickForm();
+    </script>
+</body>
+</html>
