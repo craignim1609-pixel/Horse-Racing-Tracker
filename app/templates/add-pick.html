@@ -5,7 +5,8 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <nav class="navbar">
+
+<nav class="navbar">
     <a href="/home">Home</a>
     <a href="/add-pick">Add Pick</a>
     <a href="/current-picks">Current Picks</a>
@@ -14,47 +15,59 @@
     <a href="/raceday">Race Day</a>
 </nav>
 
-    <h1>Add Pick</h1>
+<h1>Add Pick</h1>
 
+<div class="form-card">
     <form id="pickForm">
-        <label>Player:</label>
-        <select name="player_id">
-            <option value="1">Donald</option>
-            <option value="2">Miller</option>
-            <option value="3">Nick</option>
-            <option value="4">Josh</option>
-            <option value="5">Craig</option>
-        </select>
 
-        <label>Course:</label>
-        <input name="course" required>
+        <div class="form-section">
+            <h3>Player</h3>
+            <select name="player_id" required>
+                <option value="1">Donald</option>
+                <option value="2">Miller</option>
+                <option value="3">Nick</option>
+                <option value="4">Josh</option>
+                <option value="5">Craig</option>
+            </select>
+        </div>
 
-        <label>Horse Name:</label>
-        <input name="horse_name" required>
+        <div class="form-section">
+            <h3>Race Details</h3>
+            <label>Course</label>
+            <input name="course" required>
 
-        <label>Horse Number:</label>
-        <input name="horse_number" type="number" required>
+            <label>Race Time</label>
+            <input name="race_time" placeholder="14:30" required>
 
-        <label>Odds (e.g. 5/2):</label>
-        <input name="odds_fraction" required>
+            <label>Month</label>
+            <input name="month" type="number" required>
 
-        <label>Race Time:</label>
-        <input name="race_time" required>
+            <label>Year</label>
+            <input name="year" type="number" required>
+        </div>
 
-        <label>Month:</label>
-        <input name="month" type="number" required>
+        <div class="form-section">
+            <h3>Horse</h3>
+            <label>Horse Name</label>
+            <input name="horse_name" required>
 
-        <label>Year:</label>
-        <input name="year" type="number" required>
+            <label>Horse Number</label>
+            <input name="horse_number" type="number" required>
 
-        <button type="submit">Submit Pick</button>
+            <label>Odds (e.g. 5/2)</label>
+            <input name="odds_fraction" required>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Pick</button>
     </form>
 
-    <div id="result"></div>
+    <div id="result" class="result-box"></div>
+</div>
 
-    <script src="/static/app.js"></script>
-    <script>
-        setupAddPickForm();
-    </script>
+<script src="/static/app.js"></script>
+<script>
+    setupAddPickForm();
+</script>
+
 </body>
 </html>
