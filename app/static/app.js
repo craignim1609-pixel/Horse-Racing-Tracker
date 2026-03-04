@@ -214,19 +214,82 @@ function setupPlayerDetailsForm() {
 
 // RACE DAY
 function setupRaceForm() {
-    document.getElementById("raceForm").onsubmit = async (e) => {
-        e.preventDefault();
-        const body = Object.fromEntries(new FormData(e.target).entries());
+    const form = document.getElementById("raceForm");
+    const resultBox = document.getElementById("raceResult");
 
-        await fetch(`${API}/raceday/`, {
+    const now = new Date();
+    form.month.value = now.getMonth() + 1;
+    form.year.value = now.getFullYear();
+
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+
+        const body = Object.fromEntries(new FormData(form).entries());
+
+        const res = await fetch(`${API}/raceday/`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body)
         });
 
+        const text = await res.text();
+
+        resultBox.style.display = "block";
+        resultBox.innerText = text;
+
+        form.reset();
+        form.month.value = now.getMonth() + 1;
+        form.year.value = now.getFullYear();
+
         loadRaceStats();
     };
 }
+
+async function loadRaceStats() {
+    const month = new Date().getMonth() + 1;
+    const year = new Date().getFullYear();
+
+    const listRes = await fetch(`${API}/raceday/?month=${month}&year=${year}`);
+    const bets = await listRes.json();
+
+    const list = document.getElementById("raceList");
+
+    list.innerHTML = bets.map(b => `
+        <div class="race-card">
+            <div class="race-header">${b.horse_name} (${b.odds_fraction})</div>
+            <div class="race-meta">
+                Player: ${b.player_id}<br>
+                Course: ${b.course}<br>
+                Time: ${b.race_time}<br>
+                Amount: £${b.amount_bet}
+            </div>
+            <span class="result-${b.result.toLowerCase()}">${b.result}</span>
+        </div>
+    `).join("");
+
+    const statsRes = await fetch(`${API}/raceday/stats`);
+    const stats = await statsRes.json();
+
+    const box = document.getElementById("raceStats");
+
+    box.innerHTML = `
+        <h3>Group Summary</h3>
+        Total Stake: £${stats.group.total_stake.toFixed(2)}<br>
+        Total Return: £${stats.group.total_return.toFixed(2)}<br>
+        Profit: £${stats.group.profit.toFixed(2)}<br><br>
+
+        <h3>Players</h3>
+        ${stats.players.map(p => `
+            <div class="profile-section">
+                <strong>${p.player}</strong><br>
+                Stake: £${p.total_stake.toFixed(2)}<br>
+                Return: £${p.total_return.toFixed(2)}<br>
+                Profit: £${p.profit.toFixed(2)}
+            </div>
+        `).join("")}
+    `;
+}
+
 
 async function loadRaceStats() {
     const res = await fetch(`${API}/raceday/stats`);
