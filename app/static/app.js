@@ -315,14 +315,22 @@ async function loadRaceStats() {
         Profit: £${stats.group.profit.toFixed(2)}<br><br>
 
         <h3>Players</h3>
-        ${stats.players.map(p => `
-            <div class="profile-section">
-                <strong>${p.player}</strong><br>
-                Stake: £${p.total_stake.toFixed(2)}<br>
-                Return: £${p.total_return.toFixed(2)}<br>
-                Profit: £${p.profit.toFixed(2)}
-            </div>
-        `).join("")}
+        ${stats.players.map(p => {
+    const profitColor =
+        p.profit > 0 ? "#0f7a0f" : 
+        p.profit < 0 ? "#7a0f0f" : 
+        "#555";
+
+    return `
+        <div class="profile-section" style="border-left: 6px solid ${profitColor}; padding-left: 10px;">
+            <strong>${p.player}</strong><br>
+            Stake: £${p.total_stake.toFixed(2)}<br>
+            Return: £${p.total_return.toFixed(2)}<br>
+            Profit: £${p.profit.toFixed(2)}
+        </div>
+    `;
+}).join("")}
+
     `;
 }
 
