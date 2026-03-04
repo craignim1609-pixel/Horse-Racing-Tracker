@@ -256,6 +256,30 @@ button {
 .form-lose { background: #7a0f0f; color: white; }
 .form-nr { background: #555; color: white; }
 
+.race-card {
+    background: #123412;
+    padding: 15px;
+    border-radius: 8px;
+    color: gold;
+}
+
+.race-header {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.race-meta {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #d4d4d4;
+}
+
+.result-win { background: #0f7a0f; color: white; padding: 4px 8px; border-radius: 4px; }
+.result-place { background: #1f6fb2; color: white; padding: 4px 8px; border-radius: 4px; }
+.result-lose { background: #7a0f0f; color: white; padding: 4px 8px; border-radius: 4px; }
+.result-nr { background: #555; color: white; padding: 4px 8px; border-radius: 4px; }
+.result-pending { background: #777; color: white; padding: 4px 8px; border-radius: 4px; }
 
 
 
