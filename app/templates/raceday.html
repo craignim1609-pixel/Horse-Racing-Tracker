@@ -5,7 +5,8 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <nav class="navbar">
+
+<nav class="navbar">
     <a href="/home">Home</a>
     <a href="/add-pick">Add Pick</a>
     <a href="/current-picks">Current Picks</a>
@@ -14,11 +15,13 @@
     <a href="/raceday">Race Day</a>
 </nav>
 
-    <h1>Race Day Bets</h1>
+<h1>Race Day</h1>
 
+<div class="form-card">
     <form id="raceForm">
-        <label>Player:</label>
-        <select name="player_id">
+
+        <label>Player</label>
+        <select name="player_id" required>
             <option value="1">Donald</option>
             <option value="2">Miller</option>
             <option value="3">Nick</option>
@@ -26,47 +29,57 @@
             <option value="5">Craig</option>
         </select>
 
-        <label>Amount Bet:</label>
-        <input name="amount_bet" type="number" required>
+        <label>Course</label>
+        <input name="course" required>
 
-        <label>Odds:</label>
-        <input name="odds_fraction" required>
+        <label>Race Time</label>
+        <input name="race_time" placeholder="14:30" required>
 
-        <label>Track:</label>
-        <input name="track" required>
-
-        <label>Time:</label>
-        <input name="time" required>
-
-        <label>Horse Name:</label>
+        <label>Horse Name</label>
         <input name="horse_name" required>
 
-        <label>Horse Number:</label>
+        <label>Horse Number</label>
         <input name="horse_number" type="number" required>
 
-        <label>Result:</label>
-        <select name="result">
-            <option>Win</option>
-            <option>Place</option>
-            <option>Lose</option>
+        <label>Odds (e.g. 5/2)</label>
+        <input name="odds_fraction" required>
+
+        <label>Amount Bet (£)</label>
+        <input name="amount_bet" type="number" step="0.01" required>
+
+        <label>Result</label>
+        <select name="result" required>
+            <option value="Pending">Pending</option>
+            <option value="Win">Win</option>
+            <option value="Place">Place</option>
+            <option value="Lose">Lose</option>
+            <option value="NR">NR</option>
         </select>
 
-        <label>Month:</label>
+        <label>Month</label>
         <input name="month" type="number" required>
 
-        <label>Year:</label>
+        <label>Year</label>
         <input name="year" type="number" required>
 
-        <button type="submit">Submit Bet</button>
+        <button type="submit" class="submit-btn">Add Bet</button>
     </form>
 
-    <h2>Group Stats</h2>
-    <div id="raceStats"></div>
+    <div id="raceResult" class="result-box"></div>
+</div>
 
-    <script src="/static/app.js"></script>
-    <script>
-        setupRaceForm();
-        loadRaceStats();
-    </script>
+<h2>Today's Bets</h2>
+<div id="raceList" class="picks-grid"></div>
+
+<h2>Group Stats</h2>
+<div id="raceStats" class="player-profile"></div>
+
+<script src="/static/app.js"></script>
+<script>
+    setupRaceForm();
+    loadRaceStats();
+</script>
+
 </body>
 </html>
+
