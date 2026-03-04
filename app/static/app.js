@@ -70,17 +70,33 @@ async function loadCurrentPicks() {
     const res = await fetch(`${API}/picks/current`);
     const picks = await res.json();
 
-    document.getElementById("currentPicks").innerHTML =
-        picks.map(p => `
-            <div class="card">
-                <b>${p.horse_name}</b> (${p.odds_fraction})<br>
-                <button onclick="updateResult(${p.id}, 'Win')">Win</button>
-                <button onclick="updateResult(${p.id}, 'Place')">Place</button>
-                <button onclick="updateResult(${p.id}, 'Lose')">Lose</button>
-                <button onclick="updateResult(${p.id}, 'NR')">NR</button>
+    const container = document.getElementById("currentPicks");
+
+    if (!picks.length) {
+        container.innerHTML = "<p>No active picks right now.</p>";
+        return;
+    }
+
+    container.innerHTML = picks.map(p => `
+        <div class="pick-card">
+            <div class="pick-header">${p.horse_name} <span style="color:white;">(${p.odds_fraction})</span></div>
+            <div class="pick-meta">
+                Player: ${p.player_id}<br>
+                Course: ${p.course}<br>
+                Time: ${p.race_time}<br>
+                Horse No: ${p.horse_number}
             </div>
-        `).join("");
+
+            <div class="result-buttons">
+                <button class="btn-win" onclick="updateResult(${p.id}, 'Win')">Win</button>
+                <button class="btn-place" onclick="updateResult(${p.id}, 'Place')">Place</button>
+                <button class="btn-lose" onclick="updateResult(${p.id}, 'Lose')">Lose</button>
+                <button class="btn-nr" onclick="updateResult(${p.id}, 'NR')">NR</button>
+            </div>
+        </div>
+    `).join("");
 }
+
 
 async function updateResult(id, status) {
     await fetch(`${API}/picks/${id}/result`, {
