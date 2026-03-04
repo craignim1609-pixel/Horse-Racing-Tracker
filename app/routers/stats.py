@@ -1,43 +1,43 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from app.database import get_db
-from app import models
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Player Details</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
 
-router = APIRouter(prefix="/stats", tags=["Stats"])
+<nav class="navbar">
+    <a href="/home">Home</a>
+    <a href="/add-pick">Add Pick</a>
+    <a href="/current-picks">Current Picks</a>
+    <a href="/stats">Stats</a>
+    <a href="/player-details">Player Details</a>
+    <a href="/raceday">Race Day</a>
+</nav>
 
+<h1>Player Details</h1>
 
-@router.get("/month/{month}")
-def month_stats(month: int, year: int, db: Session = Depends(get_db)):
-    players = db.query(models.Player).all()
-    out = []
+<div class="form-card">
+    <form id="playerForm">
+        <label>Player Name</label>
+        <select name="name">
+            <option>Donald</option>
+            <option>Miller</option>
+            <option>Nick</option>
+            <option>Josh</option>
+            <option>Craig</option>
+        </select>
 
-    for p in players:
-        picks = (
-            db.query(models.Pick)
-            .filter(
-                models.Pick.player_id == p.id,
-                models.Pick.month == month,
-                models.Pick.year == year,
-            )
-            .all()
-        )
-        wins = sum(1 for x in picks if x.status == "Win")
-        places = sum(1 for x in picks if x.status == "Place")
-        losses = sum(1 for x in picks if x.status == "Lose")
-        nr = sum(1 for x in picks if x.status == "NR")
-        total = len(picks)
-        win_rate = (wins / total * 100) if total > 0 else 0
+        <button type="submit" class="submit-btn">Load Details</button>
+    </form>
+</div>
 
-        out.append(
-            {
-                "player": p.name,
-                "wins": wins,
-                "places": places,
-                "losses": losses,
-                "nr": nr,
-                "total": total,
-                "win_rate": win_rate,
-            }
-        )
+<div id="playerProfile" class="player-profile"></div>
 
-    return out
+<script src="/static/app.js"></script>
+<script>
+    setupPlayerDetailsForm();
+</script>
+
+</body>
+</html>
