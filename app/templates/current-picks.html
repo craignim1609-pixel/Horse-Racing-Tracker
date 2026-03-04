@@ -5,7 +5,8 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <nav class="navbar">
+
+<nav class="navbar">
     <a href="/home">Home</a>
     <a href="/add-pick">Add Pick</a>
     <a href="/current-picks">Current Picks</a>
@@ -14,13 +15,14 @@
     <a href="/raceday">Race Day</a>
 </nav>
 
-    <h1>Current Picks</h1>
+<h1>Current Picks</h1>
 
-    <div id="currentPicks"></div>
+<div id="currentPicks" class="picks-grid"></div>
 
-    <script src="/static/app.js"></script>
-    <script>
-        loadCurrentPicks();
-    </script>
+<script src="/static/app.js"></script>
+<script>
+    loadCurrentPicks();
+</script>
+
 </body>
 </html>
