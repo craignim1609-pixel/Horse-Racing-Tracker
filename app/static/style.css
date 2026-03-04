@@ -57,7 +57,10 @@ button {
     color: white;
     text-decoration: underline;
 }
-
+.navbar {
+    overflow-x: auto;
+    white-space: nowrap;
+}
 
 .navbar a:hover {
     color: white;
@@ -164,6 +167,11 @@ button {
     font-weight: bold;
     margin-bottom: 5px;
 }
+.pick-card,
+.race-card {
+    line-height: 1.4;
+}
+
 
 .pick-meta {
     font-size: 14px;
