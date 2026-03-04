@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stats</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Monthly Stats</h1>
+
+    <form id="statsForm">
+        <label>Month:</label>
+        <input name="month" type="number" required>
+
+        <label>Year:</label>
+        <input name="year" type="number" required>
+
+        <button type="submit">Load Stats</button>
+    </form>
+
+    <div id="statsOutput"></div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        setupStatsForm();
+    </script>
+</body>
+</html>
