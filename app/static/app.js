@@ -164,17 +164,53 @@ function setupStatsForm() {
 
 // PLAYER DETAILS
 function setupPlayerDetailsForm() {
-    document.getElementById("playerForm").onsubmit = async (e) => {
+    const form = document.getElementById("playerForm");
+    const profile = document.getElementById("playerProfile");
+
+    form.onsubmit = async (e) => {
         e.preventDefault();
-        const name = new FormData(e.target).get("name");
+        const name = new FormData(form).get("name");
 
         const res = await fetch(`${API}/stats/player/${name}`);
         const data = await res.json();
 
-        document.getElementById("playerDetails").innerHTML =
-            `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        // Build recent form badges
+        const formBadges = data.recent_form.map(r => {
+            const cls =
+                r === "W" ? "form-win" :
+                r === "P" ? "form-place" :
+                r === "L" ? "form-lose" :
+                "form-nr";
+            return `<span class="${cls}">${r}</span>`;
+        }).join("");
+
+        profile.innerHTML = `
+            <div class="profile-header">${data.player}</div>
+
+            <div class="profile-section">
+                <h3>Overall Performance</h3>
+                Wins: ${data.wins}<br>
+                Places: ${data.places}<br>
+                Loses: ${data.loses}<br>
+                NR: ${data.nr}<br>
+                Win Rate: ${(data.win_rate * 100).toFixed(1)}%
+            </div>
+
+            <div class="profile-section">
+                <h3>Biggest Priced Winner</h3>
+                ${data.biggest_winner ? `
+                    ${data.biggest_winner.horse_name} (${data.biggest_winner.odds_fraction})
+                ` : "No wins yet."}
+            </div>
+
+            <div class="profile-section">
+                <h3>Recent Form</h3>
+                <div class="recent-form">${formBadges}</div>
+            </div>
+        `;
     };
 }
+
 
 // RACE DAY
 function setupRaceForm() {
