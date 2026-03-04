@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Player Details</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Player Details</h1>
+
+    <form id="playerForm">
+        <label>Player Name:</label>
+        <select name="name">
+            <option>Donald</option>
+            <option>Miller</option>
+            <option>Nick</option>
+            <option>Josh</option>
+            <option>Craig</option>
+        </select>
+
+        <button type="submit">Load Details</button>
+    </form>
+
+    <div id="playerDetails"></div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        setupPlayerDetailsForm();
+    </script>
+</body>
+</html>
