@@ -218,6 +218,43 @@ button {
 .stats-table tr:hover td {
     background: #1a4d1a;
 }
+.player-profile {
+    background: #123412;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    color: gold;
+}
+
+.profile-header {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.profile-section {
+    margin-top: 15px;
+    padding: 10px;
+    background: #0f2a0f;
+    border-radius: 6px;
+}
+
+.profile-section h3 {
+    margin-bottom: 8px;
+    color: gold;
+}
+
+.recent-form span {
+    padding: 4px 8px;
+    margin-right: 4px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.form-win { background: #0f7a0f; color: white; }
+.form-place { background: #1f6fb2; color: white; }
+.form-lose { background: #7a0f0f; color: white; }
+.form-nr { background: #555; color: white; }
 
 
 
