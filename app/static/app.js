@@ -251,6 +251,8 @@ async function loadRaceStats() {
 
     const listRes = await fetch(`${API}/raceday/?month=${month}&year=${year}`);
     const bets = await listRes.json();
+    bets.sort((a, b) => a.race_time.localeCompare(b.race_time));
+
 
     const list = document.getElementById("raceList");
 
@@ -290,12 +292,6 @@ async function loadRaceStats() {
     `;
 }
 
-
-async function loadRaceStats() {
-    const res = await fetch(`${API}/raceday/stats`);
-    const data = await res.json();
-    document.getElementById("raceStats").innerHTML =
-        `<pre>${JSON.stringify(data, null, 2)}</pre>`;
 }
 // Highlight active nav link
 document.addEventListener("DOMContentLoaded", () => {
