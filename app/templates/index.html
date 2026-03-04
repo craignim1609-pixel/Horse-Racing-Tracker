@@ -5,7 +5,8 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <nav class="navbar">
+
+<nav class="navbar">
     <a href="/home">Home</a>
     <a href="/add-pick">Add Pick</a>
     <a href="/current-picks">Current Picks</a>
@@ -14,17 +15,33 @@
     <a href="/raceday">Race Day</a>
 </nav>
 
-    <h1>🏆 Leader Podium</h1>
+<h1>🏆 Leader Podium</h1>
 
-    <div id="podium"></div>
+<div class="podium-container">
+    <div class="podium podium-2">
+        <div class="podium-rank">2</div>
+        <div id="secondPlayer" class="podium-name"></div>
+    </div>
 
-    <h2>Accumulator</h2>
-    <div id="accumulator"></div>
+    <div class="podium podium-1">
+        <div class="podium-rank">1</div>
+        <div id="firstPlayer" class="podium-name"></div>
+    </div>
 
-    <script src="/static/app.js"></script>
-    <script>
-        loadPodium();
-        loadAccumulator();
-    </script>
+    <div class="podium podium-3">
+        <div class="podium-rank">3</div>
+        <div id="thirdPlayer" class="podium-name"></div>
+    </div>
+</div>
+
+<h2>Accumulator</h2>
+<div id="accumulator" class="accumulator-box"></div>
+
+<script src="/static/app.js"></script>
+<script>
+    loadPodium();
+    loadAccumulator();
+</script>
+
 </body>
 </html>
