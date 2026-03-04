@@ -2,11 +2,19 @@ const API = "https://horse-racing-tracker-production.up.railway.app";
 
 // HOME PAGE
 async function loadPodium() {
-    const res = await fetch(`${API}/stats/month/3?year=2026`);
-    const data = await res.json();
-    document.getElementById("podium").innerHTML =
-        data.map(p => `<div class="card">${p.player}: ${p.wins} wins</div>`).join("");
+    const month = new Date().getMonth() + 1;
+    const year = new Date().getFullYear();
+
+    const res = await fetch(`${API}/stats/month/${month}?year=${year}`);
+    const stats = await res.json();
+
+    const sorted = stats.sort((a, b) => b.wins - a.wins);
+
+    document.getElementById("firstPlayer").innerText = sorted[0]?.player || "-";
+    document.getElementById("secondPlayer").innerText = sorted[1]?.player || "-";
+    document.getElementById("thirdPlayer").innerText = sorted[2]?.player || "-";
 }
+
 
 async function loadAccumulator() {
     const res = await fetch(`${API}/accumulator`);
