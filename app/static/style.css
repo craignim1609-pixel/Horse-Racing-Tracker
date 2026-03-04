@@ -53,6 +53,11 @@ button {
     font-weight: bold;
     font-size: 16px;
 }
+.navbar a.active {
+    color: white;
+    text-decoration: underline;
+}
+
 
 .navbar a:hover {
     color: white;
