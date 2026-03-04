@@ -261,11 +261,23 @@ async function loadRaceStats() {
     const month = new Date().getMonth() + 1;
     const year = new Date().getFullYear();
 
+    // Fetch bets for this month
     const listRes = await fetch(`${API}/raceday/?month=${month}&year=${year}`);
-    const bets = await listRes.json();
+    let bets = await listRes.json();
+
+    // STEP 1 — Sort bets by race time
     bets.sort((a, b) => a.race_time.localeCompare(b.race_time));
 
     const list = document.getElementById("raceList");
+
+    // STEP 3 — Icons for results
+    const icons = {
+        "Win": "🟢",
+        "Place": "🔵",
+        "Lose": "🔴",
+        "NR": "⚪",
+        "Pending": "⏳"
+    };
 
     list.innerHTML = bets.map(b => `
         <div class="race-card">
@@ -276,37 +288,31 @@ async function loadRaceStats() {
                 Time: ${b.race_time}<br>
                 Amount: £${b.amount_bet}
             </div>
-           ${(() => {
-    const icons = {
-        "Win": "🟢",
-        "Place": "🔵",
-        "Lose": "🔴",
-        "NR": "⚪",
-        "Pending": "⏳"
-    };
-    return `<span class="result-${b.result.toLowerCase()}">${icons[b.result]} ${b.result}</span>`;
-})()}
-
+            <span class="result-${b.result.toLowerCase()}">
+                ${icons[b.result]} ${b.result}
+            </span>
         </div>
     `).join("");
 
+    // Fetch group stats
     const statsRes = await fetch(`${API}/raceday/stats`);
     const stats = await statsRes.json();
 
     const box = document.getElementById("raceStats");
 
-    // Step 5 — Total bets and strike rate
-const totalBets = bets.length;
-const wins = bets.filter(b => b.result === "Win").length;
-const strikeRate = totalBets ? (wins / totalBets * 100).toFixed(1) : 0;
+    // STEP 5 — Total bets + strike rate
+    const totalBets = bets.length;
+    const wins = bets.filter(b => b.result === "Win").length;
+    const strikeRate = totalBets ? (wins / totalBets * 100).toFixed(1) : 0;
 
-box.innerHTML = `
-    <h3>Group Summary</h3>
-    Total Bets: ${totalBets}<br>
-    Strike Rate: ${strikeRate}%<br>
-    Total Stake: £${stats.group.total_stake.toFixed(2)}<br>
-    Total Return: £${stats.group.total_return.toFixed(2)}<br>
-    Profit: £${stats.group.profit.toFixed(2)}<br><br>
+    // Render summary + players
+    box.innerHTML = `
+        <h3>Group Summary</h3>
+        Total Bets: ${totalBets}<br>
+        Strike Rate: ${strikeRate}%<br>
+        Total Stake: £${stats.group.total_stake.toFixed(2)}<br>
+        Total Return: £${stats.group.total_return.toFixed(2)}<br>
+        Profit: £${stats.group.profit.toFixed(2)}<br><br>
 
         <h3>Players</h3>
         ${stats.players.map(p => `
@@ -318,6 +324,8 @@ box.innerHTML = `
             </div>
         `).join("")}
     `;
+}
+
 }
 
 }
