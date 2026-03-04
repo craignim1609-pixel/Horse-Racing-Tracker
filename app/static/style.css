@@ -185,6 +185,39 @@ button {
 .btn-place { background: #1f6fb2; color: white; }
 .btn-lose { background: #7a0f0f; color: white; }
 .btn-nr { background: #555; color: white; }
+.stats-summary {
+    background: #123412;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    color: gold;
+    font-size: 18px;
+    display: none;
+}
+
+.stats-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+.stats-table th {
+    background: #0f2a0f;
+    color: gold;
+    padding: 10px;
+    border-bottom: 2px solid gold;
+}
+
+.stats-table td {
+    padding: 10px;
+    background: #123412;
+    color: white;
+    border-bottom: 1px solid #0f2a0f;
+}
+
+.stats-table tr:hover td {
+    background: #1a4d1a;
+}
 
 
 
