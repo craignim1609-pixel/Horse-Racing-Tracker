@@ -109,3 +109,13 @@ async function loadRaceStats() {
     document.getElementById("raceStats").innerHTML =
         `<pre>${JSON.stringify(data, null, 2)}</pre>`;
 }
+// Highlight active nav link
+document.addEventListener("DOMContentLoaded", () => {
+    const current = window.location.pathname;
+    document.querySelectorAll(".navbar a").forEach(link => {
+        if (link.getAttribute("href") === current) {
+            link.classList.add("active");
+        }
+    });
+});
+
