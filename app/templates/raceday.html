@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Race Day</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Race Day Bets</h1>
+
+    <form id="raceForm">
+        <label>Player:</label>
+        <select name="player_id">
+            <option value="1">Donald</option>
+            <option value="2">Miller</option>
+            <option value="3">Nick</option>
+            <option value="4">Josh</option>
+            <option value="5">Craig</option>
+        </select>
+
+        <label>Amount Bet:</label>
+        <input name="amount_bet" type="number" required>
+
+        <label>Odds:</label>
+        <input name="odds_fraction" required>
+
+        <label>Track:</label>
+        <input name="track" required>
+
+        <label>Time:</label>
+        <input name="time" required>
+
+        <label>Horse Name:</label>
+        <input name="horse_name" required>
+
+        <label>Horse Number:</label>
+        <input name="horse_number" type="number" required>
+
+        <label>Result:</label>
+        <select name="result">
+            <option>Win</option>
+            <option>Place</option>
+            <option>Lose</option>
+        </select>
+
+        <label>Month:</label>
+        <input name="month" type="number" required>
+
+        <label>Year:</label>
+        <input name="year" type="number" required>
+
+        <button type="submit">Submit Bet</button>
+    </form>
+
+    <h2>Group Stats</h2>
+    <div id="raceStats"></div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        setupRaceForm();
+        loadRaceStats();
+    </script>
+</body>
+</html>
