@@ -109,19 +109,58 @@ async function updateResult(id, status) {
 
 // STATS
 function setupStatsForm() {
-    document.getElementById("statsForm").onsubmit = async (e) => {
+    const form = document.getElementById("statsForm");
+    const summaryBox = document.getElementById("statsSummary");
+    const table = document.getElementById("statsTable");
+    const tbody = table.querySelector("tbody");
+
+    // Auto-fill month/year
+    const now = new Date();
+    form.month.value = now.getMonth() + 1;
+    form.year.value = now.getFullYear();
+
+    form.onsubmit = async (e) => {
         e.preventDefault();
-        const form = new FormData(e.target);
-        const month = form.get("month");
-        const year = form.get("year");
+
+        const month = form.month.value;
+        const year = form.year.value;
 
         const res = await fetch(`${API}/stats/month/${month}?year=${year}`);
-        const data = await res.json();
+        const stats = await res.json();
 
-        document.getElementById("statsOutput").innerHTML =
-            data.map(p => `<div class="card">${p.player}: ${p.wins} wins</div>`).join("");
+        if (!stats.length) {
+            summaryBox.style.display = "block";
+            summaryBox.innerHTML = "No stats available for this month.";
+            table.style.display = "none";
+            return;
+        }
+
+        // Sort by wins
+        stats.sort((a, b) => b.wins - a.wins);
+
+        // Summary
+        const top = stats[0];
+        summaryBox.style.display = "block";
+        summaryBox.innerHTML = `
+            <strong>Player of the Month:</strong> ${top.player}<br>
+            <strong>Total Wins:</strong> ${top.wins}
+        `;
+
+        // Table
+        tbody.innerHTML = stats.map(s => `
+            <tr>
+                <td>${s.player}</td>
+                <td>${s.wins}</td>
+                <td>${s.places}</td>
+                <td>${s.loses}</td>
+                <td>${s.nr}</td>
+            </tr>
+        `).join("");
+
+        table.style.display = "table";
     };
 }
+
 
 // PLAYER DETAILS
 function setupPlayerDetailsForm() {
