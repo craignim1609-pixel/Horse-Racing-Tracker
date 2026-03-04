@@ -265,7 +265,6 @@ async function loadRaceStats() {
     const bets = await listRes.json();
     bets.sort((a, b) => a.race_time.localeCompare(b.race_time));
 
-
     const list = document.getElementById("raceList");
 
     list.innerHTML = bets.map(b => `
@@ -277,7 +276,17 @@ async function loadRaceStats() {
                 Time: ${b.race_time}<br>
                 Amount: £${b.amount_bet}
             </div>
-            <span class="result-${b.result.toLowerCase()}">${b.result}</span>
+           ${(() => {
+    const icons = {
+        "Win": "🟢",
+        "Place": "🔵",
+        "Lose": "🔴",
+        "NR": "⚪",
+        "Pending": "⏳"
+    };
+    return `<span class="result-${b.result.toLowerCase()}">${icons[b.result]} ${b.result}</span>`;
+})()}
+
         </div>
     `).join("");
 
