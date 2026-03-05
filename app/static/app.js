@@ -277,6 +277,13 @@ async function loadRaceStats() {
     bets.sort((a, b) => a.race_time.localeCompare(b.race_time));
 
     const list = document.getElementById("raceList");
+    
+    // Group bets by race time
+const grouped = {};
+bets.forEach(b => {
+    if (!grouped[b.race_time]) grouped[b.race_time] = [];
+    grouped[b.race_time].push(b);
+});
 
     // STEP 3 — Icons for results
     const icons = {
@@ -287,26 +294,28 @@ async function loadRaceStats() {
         "Pending": "⏳"
     };
 
-    list.innerHTML = bets.map(b => `
-    <div class="race-card">
-        <div class="race-header">${b.horse_name} (${b.odds_fraction})</div>
-        <div class="race-meta">
-            Player: ${PLAYER_NAMES[b.player_id]}<br>
-            Course: ${b.course}<br>
-            Time: ${b.race_time}<br>
-            Amount: £${b.amount_bet}
+    list.innerHTML = Object.keys(grouped).map(time => `
+    <div class="race-time-header">${time}</div>
+    ${grouped[time].map(b => `
+        <div class="race-card">
+            <div class="race-header">${b.horse_name} (${b.odds_fraction})</div>
+            <div class="race-meta">
+                Player: ${PLAYER_NAMES[b.player_id]}<br>
+                Course: ${b.course}<br>
+                Amount: £${b.amount_bet}
+            </div>
+            <span class="result-${b.result.toLowerCase()}">
+                ${icons[b.result]} ${b.result}
+            </span>
         </div>
-        <span class="result-${b.result.toLowerCase()}">
-            ${icons[b.result]} ${b.result}
-        </span>
-    </div>
+    `).join("")}
 `).join("");
+
 
 
     // Fetch group stats
     const statsRes = await fetch(`${API}/raceday/stats`);
     const stats = await statsRes.json();
-
     const box = document.getElementById("raceStats");
 
     // STEP 5 — Total bets + strike rate
