@@ -291,7 +291,6 @@ bets.forEach(b => {
     groupedByCourse[b.course].push(b);
 });
 
-    
     // Group by course → time
 const grouped = {};
 
@@ -335,7 +334,7 @@ bets.forEach(b => {
 `).join("");
 
     // Fetch group stats
-    const statsRes = await fetch(`${API}/raceday/stats`);
+    const statsRes = await fetch(`${API}/raceday/stats?month=${month}&year=${year}`);
     const stats = await statsRes.json();
     const box = document.getElementById("raceStats");
 
