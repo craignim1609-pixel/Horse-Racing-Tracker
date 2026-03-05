@@ -439,6 +439,77 @@ h1, h2 {
     padding-bottom: 6px;
     border-bottom: 3px solid #ccc;
 }
+.race-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.left-panel, .right-panel {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.balance-card {
+    background: #f7f7f7;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.balance-profit {
+    font-weight: bold;
+    font-size: 22px;
+}
+
+.balance-profit.positive {
+    color: #0f7a0f;
+}
+
+.balance-profit.negative {
+    color: #b30000;
+}
+
+.race-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.race-form input, .race-form select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.submit-btn {
+    background: #f7c600;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.activity-list {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    min-height: 80px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .race-container {
+        grid-template-columns: 1fr;
+    }
+}
 
 
 
