@@ -272,6 +272,13 @@ async function loadRaceStats() {
     // Fetch bets for this month
     const listRes = await fetch(`${API}/raceday/?month=${month}&year=${year}`);
     let bets = await listRes.json();
+    
+    // Today-only filter
+const todayOnly = document.getElementById("todayOnly")?.checked;
+if (todayOnly) {
+    const today = new Date().toISOString().slice(0, 10);
+    bets = bets.filter(b => b.date === today);
+}
 
     // STEP 1 — Sort bets by race time
     bets.sort((a, b) => a.race_time.localeCompare(b.race_time));
