@@ -523,28 +523,27 @@ h1, h2 {
 }
 
 .race-form input,
-.race-form select {
-    background: #0f2a0f;
-    border: 1px solid #1a4d1a;
-    color: white;
-    padding: 10px;
-    border-radius: 6px;
-}
-.race-form .full {
-    grid-column: 1 / 3; /* spans both columns */
-}
-.race-form .horse-row {
+.race-form {
     display: grid;
-    grid-template-columns: 80px 1fr;
-    gap: 10px;
-    grid-column: 1 / 3;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px 20px;
+    align-items: center;
 }
-.race-form .time-odds-row {
+
+.race-form .span-2 {
+    grid-column: span 2;
+}
+
+.race-form .span-3 {
+    grid-column: span 3;
+}
+
+.race-form .horse-group {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 70px 1fr;
     gap: 10px;
-    grid-column: 1 / 3;
 }
+
 
 .submit-btn {
     background: gold;
