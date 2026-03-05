@@ -474,7 +474,7 @@ h1, h2 {
 
 .race-container {
     display: grid;
-    grid-template-columns: 0.9fr 1.1fr;
+    grid-template-columns: 0.7fr 1.3fr;
     gap: 35px;
     margin-top: 20px;
     margin-bottom: 35px;
