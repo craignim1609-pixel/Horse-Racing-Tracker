@@ -1,5 +1,13 @@
 const API = "https://horse-racing-tracker-production.up.railway.app";
 
+const PLAYER_NAMES = {
+    1: "Donald",
+    2: "Miller",
+    3: "Nick",
+    4: "Josh",
+    5: "Craig"
+};
+
 // HOME PAGE
 async function loadPodium() {
     const month = new Date().getMonth() + 1;
@@ -81,7 +89,7 @@ async function loadCurrentPicks() {
         <div class="pick-card">
             <div class="pick-header">${p.horse_name} <span style="color:white;">(${p.odds_fraction})</span></div>
             <div class="pick-meta">
-                Player: ${p.player_id}<br>
+               Player: ${b.player_id}<br>
                 Course: ${p.course}<br>
                 Time: ${p.race_time}<br>
                 Horse No: ${p.horse_number}
@@ -280,19 +288,20 @@ async function loadRaceStats() {
     };
 
     list.innerHTML = bets.map(b => `
-        <div class="race-card">
-            <div class="race-header">${b.horse_name} (${b.odds_fraction})</div>
-            <div class="race-meta">
-                Player: ${b.player_id}<br>
-                Course: ${b.course}<br>
-                Time: ${b.race_time}<br>
-                Amount: £${b.amount_bet}
-            </div>
-            <span class="result-${b.result.toLowerCase()}">
-                ${icons[b.result]} ${b.result}
-            </span>
+    <div class="race-card">
+        <div class="race-header">${b.horse_name} (${b.odds_fraction})</div>
+        <div class="race-meta">
+            Player: ${PLAYER_NAMES[b.player_id]}<br>
+            Course: ${b.course}<br>
+            Time: ${b.race_time}<br>
+            Amount: £${b.amount_bet}
         </div>
-    `).join("");
+        <span class="result-${b.result.toLowerCase()}">
+            ${icons[b.result]} ${b.result}
+        </span>
+    </div>
+`).join("");
+
 
     // Fetch group stats
     const statsRes = await fetch(`${API}/raceday/stats`);
