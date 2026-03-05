@@ -476,14 +476,12 @@ h1, h2 {
     padding-bottom: 4px;
 }
 
-}
 .race-container {
     display: grid;
     grid-template-columns: 0.9fr 1.1fr; /* 45% / 55% split */
-    gap: 30px;
+    gap: 35px; /* wider gap like your screenshot */
     margin-top: 20px;
-    margin-bottom: 30px;
-}
+    margin
 
 /* Mobile */
 @media (max-width: 768px) {
