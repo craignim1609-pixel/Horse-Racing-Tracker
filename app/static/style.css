@@ -450,7 +450,7 @@ h1, h2 {
 .navbar {
     overflow-x: auto;
     white-space: nowrap;
-    
+}
 .race-time-header {
     font-size: 18px;
     font-weight: 600;
@@ -473,11 +473,12 @@ h1, h2 {
 
 .race-container {
     display: grid;
-    grid-template-columns: 0.9fr 1.1fr; /* 45% / 55% split */
-    gap: 35px; /* wider gap like your screenshot */
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 35px;
     margin-top: 20px;
-    margin
+    margin-bottom: 35px;
 }
+
 /* Mobile */
 @media (max-width: 768px) {
     .race-container {
