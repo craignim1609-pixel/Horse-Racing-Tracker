@@ -1,22 +1,17 @@
 #recentActivity {
     margin-top: 20px;
-}
 .left-panel,
 .right-panel {
-    background: #123412;              /* slightly lighter green panel */
-    border: 3px solid #1a4d1a;        /* thin lighter green border */
+    background: #123412;
+    border: 3px solid #1a4d1a;
     border-radius: 10px;
     padding: 22px;
     color: gold;
+    box-shadow:
+        inset 0 0 6px rgba(0,0,0,0.25),
+        0 0 6px rgba(255, 215, 0, 0.12);
 }
-.left-panel,
-.right-panel {
-    box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
-}
-.left-panel,
-.right-panel {
-    box-shadow: 0 0 6px rgba(255, 215, 0, 0.12);
-}
+
 .left-panel h2,
 .right-panel h2 {
     margin-top: 0;
