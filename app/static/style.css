@@ -1,3 +1,20 @@
+.left-panel,
+.right-panel {
+    background: #123412;              /* slightly lighter green panel */
+    border: 3px solid #1a4d1a;        /* thin lighter green border */
+    border-radius: 10px;
+    padding: 20px;
+    color: gold;
+}
+.left-panel,
+.right-panel {
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
+}
+.left-panel,
+.right-panel {
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.12);
+}
+
 body {
     background: #0b1d0b;
     color: #f5f5f5;
