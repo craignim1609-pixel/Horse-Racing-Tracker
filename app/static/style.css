@@ -482,7 +482,7 @@ h1, h2 {
     gap: 35px; /* wider gap like your screenshot */
     margin-top: 20px;
     margin
-
+}
 /* Mobile */
 @media (max-width: 768px) {
     .race-container {
