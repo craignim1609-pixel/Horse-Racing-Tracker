@@ -3,7 +3,7 @@
     background: #123412;              /* slightly lighter green panel */
     border: 3px solid #1a4d1a;        /* thin lighter green border */
     border-radius: 10px;
-    padding: 20px;
+    padding: 22px;
     color: gold;
 }
 .left-panel,
@@ -471,9 +471,11 @@ h1, h2 {
 .race-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 25px;
+    gap: 30px;
+    margin-top: 20px;
     margin-bottom: 30px;
 }
+
 
 /* Mobile */
 @media (max-width: 768px) {
@@ -504,6 +506,35 @@ h1, h2 {
 .result-pending {
     color: #f7c600;
     font-weight: 700;
+}
+.race-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.race-form label {
+    font-weight: bold;
+    color: gold;
+}
+
+.race-form input,
+.race-form select {
+    background: #0f2a0f;
+    border: 1px solid #1a4d1a;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.submit-btn {
+    background: gold;
+    color: black;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
 }
 
 
