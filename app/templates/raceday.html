@@ -17,55 +17,48 @@
 
 <h1>Race Day</h1>
 
-<div class="form-card">
-    <form id="raceForm">
+<div class="race-container">
 
-        <label>Player</label>
-        <select name="player_id" required>
-            <option value="1">Donald</option>
-            <option value="2">Miller</option>
-            <option value="3">Nick</option>
-            <option value="4">Josh</option>
-            <option value="5">Craig</option>
-        </select>
+    <div class="left-panel">
+        <h2>Group Balance</h2>
+        <div id="groupBalance" class="balance-card">
+            <!-- JS fills this -->
+        </div>
+    </div>
 
-        <label>Course</label>
-        <input name="course" required>
+    <div class="right-panel">
+        <h2>Race Day Tracker</h2>
 
-        <label>Race Time</label>
-        <input name="race_time" placeholder="14:30" required>
+        <form id="raceForm" class="race-form">
+            <label>Player</label>
+            <select id="playerSelect"></select>
 
-        <label>Horse Name</label>
-        <input name="horse_name" required>
+            <label>Course</label>
+            <select id="courseSelect"></select>
 
-        <label>Horse Number</label>
-        <input name="horse_number" type="number" required>
+            <label>Horse Name & No.</label>
+            <input id="horseName" placeholder="# Frankel">
 
-        <label>Odds (e.g. 5/2)</label>
-        <input name="odds_fraction" required>
+            <label>Race Time</label>
+            <input id="raceTime" type="time">
 
-        <label>Amount Bet (£)</label>
-        <input name="amount_bet" type="number" step="0.01" required>
+            <label>Odds</label>
+            <input id="odds" placeholder="4/1">
 
-        <label>Result</label>
-        <select name="result" required>
-            <option value="Pending">Pending</option>
-            <option value="Win">Win</option>
-            <option value="Place">Place</option>
-            <option value="Lose">Lose</option>
-            <option value="NR">NR</option>
-        </select>
+            <label>Stake (£)</label>
+            <input id="stake" type="number" step="0.01">
 
-        <label>Month</label>
-        <input name="month" type="number" required>
+            <button type="button" id="submitRace" class="submit-btn">
+                Submit Bet Details
+            </button>
+        </form>
+    </div>
 
-        <label>Year</label>
-        <input name="year" type="number" required>
+</div>
 
-        <button type="submit" class="submit-btn">Add Bet</button>
-    </form>
-
-    <div id="raceResult" class="result-box"></div>
+<h2>Recent Activity</h2>
+<div id="recentActivity" class="activity-list">
+    No race day bets recorded yet.
 </div>
     
 <label style="display:flex;align-items:center;gap:6px;margin:10px 0;">
