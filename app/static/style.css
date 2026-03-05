@@ -431,6 +431,15 @@ h1, h2 {
     padding-bottom: 4px;
     border-bottom: 2px solid #ccc;
 }
+.race-course-header {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 3px solid #ccc;
+}
+
 
 
 
