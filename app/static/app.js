@@ -285,12 +285,15 @@ bets.forEach(b => {
 });
 
     
-    // Group bets by race time
+    // Group by course → time
 const grouped = {};
+
 bets.forEach(b => {
-    if (!grouped[b.race_time]) grouped[b.race_time] = [];
-    grouped[b.race_time].push(b);
+    if (!grouped[b.course]) grouped[b.course] = {};
+    if (!grouped[b.course][b.race_time]) grouped[b.course][b.race_time] = [];
+    grouped[b.course][b.race_time].push(b);
 });
+
 
     // STEP 3 — Icons for results
     const icons = {
@@ -301,25 +304,28 @@ bets.forEach(b => {
         "Pending": "⏳"
     };
 
-    list.innerHTML = Object.keys(groupedByCourse).map(course => `
+    list.innerHTML = Object.keys(grouped).map(course => `
     <div class="race-course-header">${course}</div>
-    ${groupedByCourse[course].map(b => `
-        <div class="race-card">
-            <div class="race-header">${b.horse_name} (${b.odds_fraction})</div>
-            <div class="race-meta">
-                Player: ${PLAYER_NAMES[b.player_id]}<br>
-                Time: ${b.race_time}<br>
-                Amount: £${b.amount_bet}
+
+    ${Object.keys(grouped[course]).sort().map(time => `
+        <div class="race-time-header">${time}</div>
+
+        ${grouped[course][time].map(b => `
+            <div class="race-card">
+                <div class="race-header">${b.horse_name} (${b.odds_fraction})</div>
+                <div class="race-meta">
+                    Player: ${PLAYER_NAMES[b.player_id]}<br>
+                    Amount: £${b.amount_bet}
+                </div>
+                <span class="result-${b.result.toLowerCase()}">
+                    ${icons[b.result]} ${b.result}
+                </span>
             </div>
-            <span class="result-${b.result.toLowerCase()}">
-                ${icons[b.result]} ${b.result}
-            </span>
-        </div>
+        `).join("")}
+
     `).join("")}
+
 `).join("");
-
-
-
 
     // Fetch group stats
     const statsRes = await fetch(`${API}/raceday/stats`);
