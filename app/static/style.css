@@ -512,14 +512,9 @@ h1, h2 {
 }
 .race-form {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px 20px; /* row gap, column gap */
+    grid-template-columns: 1fr 1fr 1fr; /* 3 columns */
+    gap: 14px 20px;
     align-items: center;
-}
-
-.race-form label {
-    font-weight: bold;
-    color: gold;
 }
 
 .race-form input,
@@ -528,20 +523,15 @@ h1, h2 {
     box-sizing: border-box;
 }
 
-.race-form .span-2 {
-    grid-column: span 2;
-}
-
-.race-form .span-3 {
-    grid-column: span 3;
-}
-
 .race-form .horse-group {
     display: grid;
-    grid-template-columns: 70px 1fr;
+    grid-template-columns: 60px 1fr; /* number box + name */
     gap: 10px;
 }
 
+.race-form .span-3 {
+    grid-column: span 3; /* submit button full width */
+}
 
 .submit-btn {
     background: gold;
