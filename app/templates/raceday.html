@@ -28,29 +28,45 @@
     <div class="right-panel">
         <h2>Race Day Tracker</h2>
 
-        <form id="raceForm" class="race-form">
-            <label>Player</label>
-            <select id="playerSelect"></select>
+       <form id="raceForm" class="race-form">
 
-            <label>Course</label>
-            <select id="courseSelect"></select>
+    <label class="full">Player</label>
+    <select id="playerSelect" class="full"></select>
 
-            <label>Horse Name & No.</label>
-            <input id="horseName" placeholder="# Frankel">
+    <label class="full">Course</label>
+    <select id="courseSelect" class="full"></select>
 
+    <div class="horse-row">
+        <div>
+            <label>#</label>
+            <input id="horseNumber" type="text">
+        </div>
+        <div>
+            <label>Horse Name</label>
+            <input id="horseName" type="text" placeholder="Frankel">
+        </div>
+    </div>
+
+    <div class="time-odds-row">
+        <div>
             <label>Race Time</label>
             <input id="raceTime" type="time">
-
+        </div>
+        <div>
             <label>Odds</label>
-            <input id="odds" placeholder="4/1">
+            <input id="odds" type="text" placeholder="4/1">
+        </div>
+    </div>
 
-            <label>Stake (£)</label>
-            <input id="stake" type="number" step="0.01">
+    <label class="full">Stake (£)</label>
+    <input id="stake" class="full" type="number" step="0.01">
 
-            <button type="button" id="submitRace" class="submit-btn">
-                Submit Bet Details
-            </button>
-        </form>
+    <button type="button" id="submitRace" class="submit-btn full">
+        Submit Bet Details
+    </button>
+
+</form>
+
     </div>
 
 </div>
