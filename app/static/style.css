@@ -1,3 +1,6 @@
+#recentActivity {
+    margin-top: 20px;
+}
 .left-panel,
 .right-panel {
     background: #123412;              /* slightly lighter green panel */
@@ -14,6 +17,12 @@
 .right-panel {
     box-shadow: 0 0 6px rgba(255, 215, 0, 0.12);
 }
+.left-panel h2,
+.right-panel h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
 
 body {
     background: #0b1d0b;
@@ -470,12 +479,11 @@ h1, h2 {
 }
 .race-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 0.9fr 1.1fr; /* 45% / 55% split */
     gap: 30px;
     margin-top: 20px;
     margin-bottom: 30px;
 }
-
 
 /* Mobile */
 @media (max-width: 768px) {
@@ -510,7 +518,7 @@ h1, h2 {
 .race-form {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 10px;
 }
 
 .race-form label {
