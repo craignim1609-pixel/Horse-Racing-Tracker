@@ -31,17 +31,11 @@ h1, h2 {
     color: gold;
 }
 
-form:not(.race-form) {
-    display: flex;
-    flex-direction: column;
-    max-width: 350px;
+form {
     gap: 10px;
     margin-bottom: 20px;
 }
-
-
 /* Remove flex + max-width from all forms */
-
 
 input, select, button {
     padding: 8px;
