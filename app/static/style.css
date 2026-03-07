@@ -31,11 +31,13 @@ h1, h2 {
     color: gold;
 }
 
-form {
+form:not(.race-form) {
+    display: flex;
+    flex-direction: column;
+    max-width: 350px;
     gap: 10px;
     margin-bottom: 20px;
 }
-/* Remove flex + max-width from all forms */
 
 input, select, button {
     padding: 8px;
@@ -523,12 +525,12 @@ h1, h2 {
 
 .race-form .horse-group {
     display: grid;
-    grid-template-columns: 60px 1fr; /* number box + name */
+    grid-template-columns: 60px 1fr;
     gap: 10px;
 }
 
 .race-form .span-3 {
-    grid-column: span 3; /* submit button full width */
+    grid-column: span 3;
 }
 
 .submit-btn {
