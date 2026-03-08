@@ -241,14 +241,15 @@ function setupRaceForm() {
     // Clear existing options
     playerSelect.innerHTML = '<option value="">Select Player</option>';
 
-    // Loop through PLAYER_NAMES and add each one
+    // Populate player dropdown
     for (const id in PLAYER_NAMES) {
         const option = document.createElement("option");
         option.value = id;
         option.textContent = PLAYER_NAMES[id];
         playerSelect.appendChild(option);
-    } // ← THIS WAS MISSING
+    }
 
+    // Submit handler
     form.onsubmit = async (e) => {
         e.preventDefault();
 
