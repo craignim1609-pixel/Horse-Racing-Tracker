@@ -118,10 +118,7 @@ async function updateResult(id, status) {
 function setupStatsForm() {
     const form = document.getElementById("statsForm");
     const summaryBox = document.getElementById("statsSummary");
-    const table = document.getElementById("statsTable");
-    const tbody = table.querySelector("tbody");
 
-    // Auto-fill month/year
     const now = new Date();
     form.month.value = now.getMonth() + 1;
     form.year.value = now.getFullYear();
@@ -138,38 +135,34 @@ function setupStatsForm() {
         if (!stats.length) {
             summaryBox.style.display = "block";
             summaryBox.innerHTML = "No stats available for this month.";
-            table.style.display = "none";
             return;
         }
 
-        // Sort by wins
         stats.sort((a, b) => b.wins - a.wins);
 
-        // Summary
         const top = stats[0];
         summaryBox.style.display = "block";
         summaryBox.innerHTML = `
             <strong>Player of the Month:</strong> ${top.player}<br>
             <strong>Total Wins:</strong> ${top.wins}
         `;
-// New Performance Center grid
-const grid = document.getElementById("statsGrid");
 
-grid.innerHTML = stats.map(s => `
-    <div class="stats-card">
-        <div class="player-name">${s.player}</div>
+        // NEW GRID OUTPUT
+        const grid = document.getElementById("statsGrid");
 
-        <div class="stat-row"><span>Month Wins:</span> <span>${s.wins}</span></div>
-        <div class="stat-row"><span>Wins:</span> <span>${s.wins}</span></div>
-        <div class="stat-row"><span>Places:</span> <span>${s.places}</span></div>
-        <div class="stat-row"><span>Loses:</span> <span>${s.loses}</span></div>
-        <div class="stat-row"><span>NR:</span> <span>${s.nr}</span></div>
-    </div>
-`).join("");
-       
+        grid.innerHTML = stats.map(s => `
+            <div class="stats-card">
+                <div class="player-name">${s.player}</div>
+
+                <div class="stat-row"><span>Month Wins:</span> <span>${s.wins}</span></div>
+                <div class="stat-row"><span>Wins:</span> <span>${s.wins}</span></div>
+                <div class="stat-row"><span>Places:</span> <span>${s.places}</span></div>
+                <div class="stat-row"><span>Loses:</span> <span>${s.loses}</span></div>
+                <div class="stat-row"><span>NR:</span> <span>${s.nr}</span></div>
+            </div>
+        `).join("");
     };
 }
-
 
 // PLAYER DETAILS
 function setupPlayerDetailsForm() {
