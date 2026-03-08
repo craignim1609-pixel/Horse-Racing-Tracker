@@ -89,7 +89,7 @@ async function loadCurrentPicks() {
         <div class="pick-card">
             <div class="pick-header">${p.horse_name} <span style="color:white;">(${p.odds_fraction})</span></div>
             <div class="pick-meta">
-               Player: ${b.player_id}<br>
+               Player: ${p.player_id}<br>
                 Course: ${p.course}<br>
                 Time: ${p.race_time}<br>
                 Horse No: ${p.horse_number}
