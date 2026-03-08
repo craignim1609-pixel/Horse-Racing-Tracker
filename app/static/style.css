@@ -29,24 +29,52 @@
 
 .left-panel h2 {
     margin-top: 0;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     font-size: 22px;
     font-weight: 700;
     letter-spacing: 0.6px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(247, 198, 0, 0.35);
     text-shadow: 0 0 4px rgba(0,0,0,0.4);
 }
 
+
 /* Balance card styled like the screenshot */
+.balance-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: #00c46a;
+    box-shadow: 0 0 12px #00c46a;
+    border-radius: 6px 0 0 6px;
+}
+.balance-card .label {
+    opacity: 0.75;
+    font-size: 0.95rem;
+}
+
+.balance-card .value {
+    font-size: 1.28rem;
+    font-weight: 700;
+    color: #f7c600;
+}
+
 .balance-card {
-    background: rgba(0, 0, 0, 0.28);
-    padding: 20px 18px;
-    border-radius: 10px;
-    margin-top: 10px;
+    background: rgba(0, 0, 0, 0.22);
+    padding: 22px 20px;
+    border-radius: 12px;
+    margin-top: 12px;
     color: #ffffff;
     font-size: 1.15rem;
-    line-height: 1.7rem;
-    border-left: 6px solid #00c46a; /* brighter green like screenshot */
-    box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
+    line-height: 1.75rem;
+    border-left: 6px solid #00c46a;
+    box-shadow:
+        inset 0 0 8px rgba(0,0,0,0.35),
+        0 0 10px rgba(0,0,0,0.25);
+    position: relative;
 }
 
 .balance-card strong {
