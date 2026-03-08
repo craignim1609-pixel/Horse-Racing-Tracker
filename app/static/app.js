@@ -244,13 +244,16 @@ function setupRaceForm() {
     // Loop through PLAYER_NAMES and add each one
     for (const id in PLAYER_NAMES) {
         const option = document.createElement("option");
-        option.value = id;                 // store the ID
-        option.textContent = PLAYER_NAMES[id]; // show the name
+        option.value = id;
+        option.textContent = PLAYER_NAMES[id];
         playerSelect.appendChild(option);
-    
-    const now = new Date();
-    form.month.value = now.getMonth() + 1;
-    form.year.value = now.getFullYear();
+    } // ← THIS WAS MISSING
+
+    // (Optional) If you actually have month/year fields, keep this.
+    // If not, remove these two lines.
+    // const now = new Date();
+    // form.month.value = now.getMonth() + 1;
+    // form.year.value = now.getFullYear();
 
     form.onsubmit = async (e) => {
         e.preventDefault();
@@ -269,8 +272,6 @@ function setupRaceForm() {
         resultBox.innerText = text;
 
         form.reset();
-        form.month.value = now.getMonth() + 1;
-        form.year.value = now.getFullYear();
 
         loadRaceStats();
     };
