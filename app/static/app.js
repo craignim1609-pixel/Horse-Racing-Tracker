@@ -380,6 +380,5 @@ document.addEventListener("DOMContentLoaded", () => {
         if (link.getAttribute("href") === current) {
             link.classList.add("active");
         }
-    });
-});
+    }
 
