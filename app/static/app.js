@@ -249,12 +249,6 @@ function setupRaceForm() {
         playerSelect.appendChild(option);
     } // ← THIS WAS MISSING
 
-    // (Optional) If you actually have month/year fields, keep this.
-    // If not, remove these two lines.
-    // const now = new Date();
-    // form.month.value = now.getMonth() + 1;
-    // form.year.value = now.getFullYear();
-
     form.onsubmit = async (e) => {
         e.preventDefault();
 
