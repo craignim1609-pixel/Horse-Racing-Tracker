@@ -182,7 +182,9 @@ function setupPlayerDetailsForm() {
         const res = await fetch(`${API}/stats/player/${name}`);
         const data = await res.json();
 
-        const profitColor = p.profit > 0 ? "#0f7a0f" : p.profit < 0 ? "#7a0f0f" : "#555";
+        const profitColor = data.profit > 0 ? "#0f7a0f" :
+                    data.profit < 0 ? "#7a0f0f" :
+                    "#555";
 
 return `
     <div class="profile-section" style="border-left: 6px solid ${profitColor}">
