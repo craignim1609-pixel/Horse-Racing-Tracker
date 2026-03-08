@@ -199,7 +199,7 @@ function setupPlayerDetailsForm() {
         profile.innerHTML = `
             <div class="profile-header">${data.player}</div>
 
-            <div class="profile-section">
+            <div class="profile-section" style="border-left: 6px solid ${profitColor}">
                 <h3>Overall Performance</h3>
                 Wins: ${data.wins}<br>
                 Places: ${data.places}<br>
@@ -222,7 +222,6 @@ function setupPlayerDetailsForm() {
         `;
     };
 }
-
 
 // RACE DAY
 function setupRaceForm() {
