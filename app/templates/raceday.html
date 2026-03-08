@@ -33,39 +33,40 @@
     <!-- Row 1 -->
     <div>
         <label>Player</label>
-        <select id="playerSelect"></select>
+        <select id="playerSelect" name="player_id"></select>
     </div>
 
     <div>
         <label>Course</label>
-        <input id="courseSelect" type="text" placeholder="Course name">
+        <input id="courseSelect" name="course" type="text" placeholder="Course name">
+
     </div>
 
     <div class="horse-group">
         <div>
             <label>#</label>
-            <input id="horseNumber" type="text">
+            <input id="horseNumber" name="horse_number">
         </div>
         <div>
             <label>Horse Name</label>
-            <input id="horseName" type="text" placeholder="Frankel">
+            <input id="horseName" name="horse_name">
         </div>
     </div>
 
     <!-- Row 2 -->
     <div>
         <label>Race Time</label>
-        <input id="raceTime" type="time">
+        <input id="raceTime" name="race_time">
     </div>
 
     <div>
         <label>Odds</label>
-        <input id="odds" type="text" placeholder="4/1">
+        <input id="odds" name="odds_fraction">
     </div>
 
     <div>
         <label>Stake (£)</label>
-        <input id="stake" type="number" step="0.01">
+        <input id="stake" name="amount_bet">
     </div>
 
     <!-- Button full width -->
