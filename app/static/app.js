@@ -370,9 +370,6 @@ bets.forEach(b => {
     `;
 }
 
-}
-
-}
 // Highlight active nav link
 document.addEventListener("DOMContentLoaded", () => {
     const current = window.location.pathname;
@@ -380,5 +377,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (link.getAttribute("href") === current) {
             link.classList.add("active");
         }
-    }
+    });
+});
 
