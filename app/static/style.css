@@ -1,7 +1,6 @@
 #recentActivity {
     margin-top: 20px;
 }
-.left-panel,
 .right-panel {
     background: #123412;
     border: 3px solid #1a4d1a;
@@ -12,8 +11,6 @@
         inset 0 0 6px rgba(0,0,0,0.25),
         0 0 6px rgba(255, 215, 0, 0.12);
 }
-
-.left-panel h2,
 .right-panel h2 {
     margin-top: 0;
     margin-bottom: 15px;
@@ -22,24 +19,41 @@
 .left-panel {
     background: #123412;
     border: 3px solid #1a4d1a;
-    border-radius: 10px;
-    padding: 22px;
+    border-radius: 12px;
+    padding: 22px 24px;
     color: gold;
     box-shadow:
-        inset 0 0 6px rgba(0, 0, 0, 0.25),
-        0 0 6px rgba(255, 215, 0, 0.12);
+        inset 0 0 8px rgba(0,0,0,0.35),
+        0 0 10px rgba(255, 215, 0, 0.18);
 }
 
-.balance-card {
-    background: rgba(0, 0, 0, 0.25);
-    padding: 18px;
-    border-radius: 8px;
-    margin-top: 12px;
-    color: #fff;
-    font-size: 1.1rem;
-    line-height: 1.6rem;
-    border-left: 5px solid #0f7a0f; /* green stripe like screenshot */
+.left-panel h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-shadow: 0 0 4px rgba(0,0,0,0.4);
 }
+
+/* Balance card styled like the screenshot */
+.balance-card {
+    background: rgba(0, 0, 0, 0.28);
+    padding: 20px 18px;
+    border-radius: 10px;
+    margin-top: 10px;
+    color: #ffffff;
+    font-size: 1.15rem;
+    line-height: 1.7rem;
+    border-left: 6px solid #00c46a; /* brighter green like screenshot */
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
+}
+
+.balance-card strong {
+    color: #f7c600; /* gold highlight */
+    font-weight: 700;
+}
+
 
 body {
     background: #0b1d0b;
