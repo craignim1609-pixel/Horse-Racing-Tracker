@@ -152,19 +152,21 @@ function setupStatsForm() {
             <strong>Player of the Month:</strong> ${top.player}<br>
             <strong>Total Wins:</strong> ${top.wins}
         `;
+// New Performance Center grid
+const grid = document.getElementById("statsGrid");
 
-        // Table
-        tbody.innerHTML = stats.map(s => `
-            <tr>
-                <td>${s.player}</td>
-                <td>${s.wins}</td>
-                <td>${s.places}</td>
-                <td>${s.loses}</td>
-                <td>${s.nr}</td>
-            </tr>
-        `).join("");
+grid.innerHTML = stats.map(s => `
+    <div class="stats-card">
+        <div class="player-name">${s.player}</div>
 
-        table.style.display = "table";
+        <div class="stat-row"><span>Month Wins:</span> <span>${s.wins}</span></div>
+        <div class="stat-row"><span>Wins:</span> <span>${s.wins}</span></div>
+        <div class="stat-row"><span>Places:</span> <span>${s.places}</span></div>
+        <div class="stat-row"><span>Loses:</span> <span>${s.loses}</span></div>
+        <div class="stat-row"><span>NR:</span> <span>${s.nr}</span></div>
+    </div>
+`).join("");
+       
     };
 }
 
