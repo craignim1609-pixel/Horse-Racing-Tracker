@@ -19,6 +19,27 @@
     margin-bottom: 15px;
 }
 
+.left-panel {
+    background: #123412;
+    border: 3px solid #1a4d1a;
+    border-radius: 10px;
+    padding: 22px;
+    color: gold;
+    box-shadow:
+        inset 0 0 6px rgba(0, 0, 0, 0.25),
+        0 0 6px rgba(255, 215, 0, 0.12);
+}
+
+.balance-card {
+    background: rgba(0, 0, 0, 0.25);
+    padding: 18px;
+    border-radius: 8px;
+    margin-top: 12px;
+    color: #fff;
+    font-size: 1.1rem;
+    line-height: 1.6rem;
+    border-left: 5px solid #0f7a0f; /* green stripe like screenshot */
+}
 
 body {
     background: #0b1d0b;
