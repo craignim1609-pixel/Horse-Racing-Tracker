@@ -611,6 +611,61 @@ h1, h2 {
     cursor: pointer;
     width: 100%;
 }
+/* Stats Page Layout */
+.stats-container {
+    margin-top: 25px;
+}
+
+.stats-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: gold;
+    margin-bottom: 20px;
+    letter-spacing: 0.8px;
+    text-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+
+/* Grid of player cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 22px;
+    margin-top: 20px;
+}
+
+/* Individual player card */
+.stats-card {
+    background: #123412;
+    border: 2px solid #1a4d1a;
+    border-radius: 10px;
+    padding: 18px 20px;
+    color: gold;
+    box-shadow:
+        inset 0 0 6px rgba(0,0,0,0.25),
+        0 0 8px rgba(255, 215, 0, 0.12);
+    animation: fadeIn 0.25s ease;
+}
+
+/* Player name */
+.stats-card .player-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #f7c600;
+}
+
+/* Stat rows */
+.stats-card .stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 15px;
+    color: #ffffff;
+}
+
+.stats-card .stat-row:last-child {
+    margin-bottom: 0;
+}
 
 
 
