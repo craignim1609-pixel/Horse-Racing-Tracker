@@ -529,6 +529,11 @@ h1, h2 {
     grid-template-columns: 60px 1fr;
     gap: 10px;
 }
+.horse-group div {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
 
 .race-form .span-3 {
     grid-column: span 3;
