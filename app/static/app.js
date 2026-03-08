@@ -22,7 +22,6 @@ async function loadPodium() {
     document.getElementById("thirdPlayer").innerText = sorted[2]?.player || "-";
 }
 
-
 async function loadAccumulator() {
     const res = await fetch(`${API}/accumulator`);
     const data = await res.json();
