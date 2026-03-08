@@ -12,7 +12,6 @@ const PLAYER_NAMES = {
 async function loadPodium() {
     const month = new Date().getMonth() + 1;
     const year = new Date().getFullYear();
-
     const res = await fetch(`${API}/stats/month/${month}?year=${year}`);
     const stats = await res.json();
 
@@ -182,19 +181,10 @@ function setupPlayerDetailsForm() {
         const res = await fetch(`${API}/stats/player/${name}`);
         const data = await res.json();
 
-        const profitColor = data.profit > 0 ? "#0f7a0f" :
-                    data.profit < 0 ? "#7a0f0f" :
-                    "#555";
-
-return `
-    <div class="profile-section" style="border-left: 6px solid ${profitColor}">
-        <strong>${p.player}</strong><br>
-        Stake: £${p.total_stake.toFixed(2)}<br>
-        Return: £${p.total_return.toFixed(2)}<br>
-        Profit: £${p.profit.toFixed(2)}
-    </div>
-`;
-
+        const profitColor =
+            data.profit > 0 ? "#0f7a0f" :
+            data.profit < 0 ? "#7a0f0f" :
+            "#555";
 
         // Build recent form badges
         const formBadges = data.recent_form.map(r => {
