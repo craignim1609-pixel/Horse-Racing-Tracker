@@ -236,7 +236,18 @@ return `
 function setupRaceForm() {
     const form = document.getElementById("raceForm");
     const resultBox = document.getElementById("raceResult");
+    const playerSelect = document.getElementById("playerSelect");
 
+    // Clear existing options
+    playerSelect.innerHTML = '<option value="">Select Player</option>';
+
+    // Loop through PLAYER_NAMES and add each one
+    for (const id in PLAYER_NAMES) {
+        const option = document.createElement("option");
+        option.value = id;                 // store the ID
+        option.textContent = PLAYER_NAMES[id]; // show the name
+        playerSelect.appendChild(option);
+    
     const now = new Date();
     form.month.value = now.getMonth() + 1;
     form.year.value = now.getFullYear();
