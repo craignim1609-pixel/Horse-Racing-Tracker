@@ -72,3 +72,16 @@ def race_day_stats(db: Session = Depends(get_db)):
         "total_return": group_return,
         "profit": group_profit,
     }}
+@router.get("/seed-players")
+def seed_players(db: Session = Depends(get_db)):
+    players = ["Donald", "Miller", "Nick", "Josh", "Craig"]
+    inserted = []
+
+    for name in players:
+        exists = db.query(models.Player).filter(models.Player.name == name).first()
+        if not exists:
+            db.add(models.Player(name=name))
+            inserted.append(name)
+
+    db.commit()
+    return {"inserted": inserted}
