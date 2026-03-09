@@ -1,11 +1,11 @@
 const API = "https://horse-racing-tracker-production.up.railway.app";
 
 const PLAYER_NAMES = {
-    1: "Donald",
-    2: "Miller",
-    3: "Nick",
-    4: "Josh",
-    5: "Craig"
+    1: "Nick",
+    2: "Craig",
+    3: "Josh",
+    4: "Miller",
+    5: "Donald"
 };
 
 // HOME PAGE
