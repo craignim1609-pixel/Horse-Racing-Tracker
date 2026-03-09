@@ -218,7 +218,7 @@ function setupPlayerDetailsForm() {
 }
 
 // RACE DAY
-function setupRaceForm() {
+async function setupRaceForm() {
     const form = document.getElementById("raceForm");
     const resultBox = document.getElementById("raceResult");
     const playerSelect = document.getElementById("playerSelect");
@@ -226,19 +226,16 @@ function setupRaceForm() {
     // Clear existing options
     playerSelect.innerHTML = '<option value="">Select Player</option>';
 
-    // Populate player dropdown
-   // Populate player dropdown dynamically
-playerSelect.innerHTML = '<option value="">Select Player</option>';
+    // Populate player dropdown dynamically
+    const res = await fetch(`${API}/players`);
+    const players = await res.json();
 
-const res = await fetch(`${API}/players`);
-const players = await res.json();
-
-players.forEach(p => {
-    const option = document.createElement("option");
-    option.value = p.id;
-    option.textContent = p.name;
-    playerSelect.appendChild(option);
-});
+    players.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p.id;
+        option.textContent = p.name;
+        playerSelect.appendChild(option);
+    });
 
     // Submit handler
     form.onsubmit = async (e) => {
@@ -262,6 +259,7 @@ players.forEach(p => {
         loadRaceStats();
     };
 }
+
 
 async function loadRaceStats() {
     const month = new Date().getMonth() + 1;
