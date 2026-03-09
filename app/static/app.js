@@ -227,12 +227,18 @@ function setupRaceForm() {
     playerSelect.innerHTML = '<option value="">Select Player</option>';
 
     // Populate player dropdown
-    for (const id in PLAYER_NAMES) {
-        const option = document.createElement("option");
-        option.value = id;
-        option.textContent = PLAYER_NAMES[id];
-        playerSelect.appendChild(option);
-    }
+   // Populate player dropdown dynamically
+playerSelect.innerHTML = '<option value="">Select Player</option>';
+
+const res = await fetch(`${API}/players`);
+const players = await res.json();
+
+players.forEach(p => {
+    const option = document.createElement("option");
+    option.value = p.id;
+    option.textContent = p.name;
+    playerSelect.appendChild(option);
+});
 
     // Submit handler
     form.onsubmit = async (e) => {
