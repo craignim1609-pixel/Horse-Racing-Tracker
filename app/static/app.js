@@ -1,12 +1,5 @@
 const API = "https://horse-racing-tracker-production.up.railway.app";
-
-const PLAYER_NAMES = {
-    1: "Donald",
-    2: "Miller",
-    3: "Nick",
-    4: "Josh",
-    5: "Craig"
-};
+let PLAYER_MAP = {};
 
 // HOME PAGE
 async function loadPodium() {
@@ -229,6 +222,9 @@ async function setupRaceForm() {
     // Populate player dropdown dynamically
     const res = await fetch(`${API}/players`);
     const players = await res.json();
+    players.forEach(p => {
+    PLAYER_MAP[p.id] = p.name;
+});
 
     players.forEach(p => {
         const option = document.createElement("option");
@@ -316,7 +312,7 @@ bets.forEach(b => {
             <div class="race-card">
                 <div class="race-header">${b.horse_name} (${b.odds_fraction})</div>
                 <div class="race-meta">
-                    Player: ${PLAYER_NAMES[b.player_id]}<br>
+                    Player: ${PLAYER_MAP[b.player_id]}<br>
                     Amount: £${b.amount_bet}
                 </div>
                 <span class="result-${b.result.toLowerCase()}">
