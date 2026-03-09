@@ -224,14 +224,13 @@ async function setupRaceForm() {
     const players = await res.json();
     players.forEach(p => {
     PLAYER_MAP[p.id] = p.name;
+
+    const option = document.createElement("option");
+    option.value = p.id;
+    option.textContent = p.name;
+    playerSelect.appendChild(option);
 });
 
-    players.forEach(p => {
-        const option = document.createElement("option");
-        option.value = p.id;
-        option.textContent = p.name;
-        playerSelect.appendChild(option);
-    });
 
     // Submit handler
     form.onsubmit = async (e) => {
