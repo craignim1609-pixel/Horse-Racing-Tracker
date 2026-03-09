@@ -14,13 +14,16 @@ def add_race_day_bet(data: schemas.RaceDayCreate, db: Session = Depends(get_db))
     if not player:
         raise HTTPException(status_code=400, detail="Player not found")
 
+    now = datetime.now()
+    data.month = data.month or now.month
+    data.year = data.year or now.year
+
     bet = models.RaceDay(**data.dict())
     db.add(bet)
     db.commit()
     db.refresh(bet)
     return bet
-
-
+  
 @router.get("/", response_model=List[schemas.RaceDayOut])
 def list_race_day_bets(month: int, year: int, db: Session = Depends(get_db)):
     bets = (
