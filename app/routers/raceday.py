@@ -4,6 +4,8 @@ from typing import List
 from app.database import get_db
 from app import models, schemas
 from app.utils import odds as odds_utils
+from datetime import datetime
+
 
 router = APIRouter(prefix="/raceday", tags=["Race Day"])
 
