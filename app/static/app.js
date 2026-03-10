@@ -236,7 +236,7 @@ async function setupRaceForm() {
         playerSelect.appendChild(option);
     });
 
-    // Submit handler (INSIDE the function!)
+    // Submit handler
     form.onsubmit = async (e) => {
         e.preventDefault();
 
@@ -248,13 +248,27 @@ async function setupRaceForm() {
             body: JSON.stringify(body)
         });
 
-        const text = await res.text();
+        // Default message
+        let message = "Bet saved successfully!";
 
+        try {
+            const data = await res.json();
+            const playerName = PLAYER_MAP[data.player_id] || "Player";
+            message = `${playerName}'s bet has been added!`;
+        } catch {
+            // If backend returns plain text instead of JSON
+            message = "Bet saved successfully!";
+        }
+
+        // Show success box
         resultBox.style.display = "block";
-        resultBox.innerText = text;
+        resultBox.style.background = "#0f2a0f";
+        resultBox.style.color = "white";
+        resultBox.style.padding = "10px";
+        resultBox.style.borderRadius = "6px";
+        resultBox.innerText = message;
 
         form.reset();
-
         loadRaceStats();
     };
 }
