@@ -218,7 +218,7 @@ async function setupRaceForm() {
     console.log("Players fetch starting...");
 
     // Fetch players FIRST
-    const res = await fetch(`${API}/players`);
+    const res = await fetch(`${API}/players/`);
     const players = await res.json();
 
     console.log("Players received:", players);
