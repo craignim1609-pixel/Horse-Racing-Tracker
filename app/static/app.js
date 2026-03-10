@@ -325,21 +325,34 @@ bets.forEach(b => {
         <div class="race-time-header">${time}</div>
 
         ${grouped[course][time].map(b => `
-            <div class="race-card">
-                <div class="race-header">${b.horse_name} (${b.odds_fraction})</div>
-                <div class="race-meta">
-                    Player: ${PLAYER_MAP[b.player_id]}<br>
-                    Amount: £${b.amount_bet}
-                </div>
-                <span class="result-${b.result.toLowerCase()}">
-                    ${icons[b.result]} ${b.result}
-                </span>
-            </div>
-        `).join("")}
+           <div class="race-card">
+    <div class="race-stake">Stake: £${b.amount_bet}</div>
 
-    `).join("")}
+    <div class="race-horse">
+        (${b.horse_number}) ${b.horse_name} @ ${b.odds_fraction}
+    </div>
 
-`).join("");
+    <div class="race-meta">
+        Player: ${PLAYER_MAP[b.player_id]}<br>
+        Course: ${b.track}<br>
+        Race Time: ${b.time}<br>
+        Winnings: £${b.winnings || "0.00"}
+    </div>
+
+    <div class="race-status">
+        <span class="result-${b.result.toLowerCase()}">
+            ${icons[b.result]} ${b.result}
+        </span>
+    </div>
+
+    <div class="race-buttons">
+        <button onclick="updateRaceResult(${b.id}, 'Win')" class="btn-win">WIN</button>
+        <button onclick="updateRaceResult(${b.id}, 'Place')" class="btn-place">PLACE</button>
+        <button onclick="updateRaceResult(${b.id}, 'Lose')" class="btn-lose">LOSE</button>
+        <button onclick="updateRaceResult(${b.id}, 'NR')" class="btn-nr">NR</button>
+    </div>
+</div>
+
 
     // Fetch group stats
     const statsRes = await fetch(`${API}/raceday/stats?month=${month}&year=${year}`);
