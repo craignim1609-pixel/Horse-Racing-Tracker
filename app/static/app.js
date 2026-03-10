@@ -216,20 +216,27 @@ async function setupRaceForm() {
     const resultBox = document.getElementById("raceResult");
     const playerSelect = document.getElementById("playerSelect");
 
+    console.log("Players fetch starting...");
+
+    // Fetch players FIRST
+    const res = await fetch(`${API}/players`);
+    const players = await res.json();
+
+    console.log("Players received:", players);
+
     // Clear existing options
     playerSelect.innerHTML = '<option value="">Select Player</option>';
 
-    // Populate player dropdown dynamically
-    const res = await fetch(`${API}/players`);
-    const players = await res.json();
+    // Populate dropdown
     players.forEach(p => {
-    PLAYER_MAP[p.id] = p.name;
+        PLAYER_MAP[p.id] = p.name;
 
-    const option = document.createElement("option");
-    option.value = p.id;
-    option.textContent = p.name;
-    playerSelect.appendChild(option);
-});
+        const option = document.createElement("option");
+        option.value = p.id;
+        option.textContent = p.name;
+        playerSelect.appendChild(option);
+    });
+}
 
 
     // Submit handler
