@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from fastapi.responses import HTMLResponse
-
+from app.routers import players
 
 app = FastAPI()
 
@@ -18,6 +18,7 @@ app.include_router(accumulator.router)
 app.include_router(stats.router)
 app.include_router(raceday.router)
 app.include_router(export.router)
+app.include_router(players.router)
 
 @app.get("/")
 def home():
@@ -44,7 +45,7 @@ def add_pick_page(request: Request):
 
 @app.get("/player-details", response_class=HTMLResponse)
 def player_details_page(request: Request):
-    return templates.TemplateResponse("player-detailes.html", {"request": request})
+    return templates.TemplateResponse("player-details.html", {"request": request})
 
 @app.get("/stats", response_class=HTMLResponse)
 def stats_page(request: Request):
