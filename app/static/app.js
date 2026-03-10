@@ -1,4 +1,4 @@
-const API = "https://horse-racing-tracker-production.up.railway.app";
+const API = "https://horse-racing-tracker-production.up.railway.app/";
 let PLAYER_MAP = {};
 
 // HOME PAGE
