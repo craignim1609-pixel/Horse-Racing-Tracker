@@ -1,33 +1,99 @@
-#recentActivity {
-    margin-top: 20px;
+/* ============================================================
+   GLOBAL THEME — GREEN/GOLD SITE-WIDE
+   ============================================================ */
+
+body {
+    background: #0b1d0b;
+    color: #f5f5f5;
+    font-family: Arial, sans-serif;
+    padding: 20px;
 }
+
+h1, h2 {
+    color: gold;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Buttons */
+button,
+.submit-btn {
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    background: gold;
+    color: black;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+button:hover,
+.submit-btn:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+button:active,
+.submit-btn:active {
+    transform: scale(0.95);
+}
+
+/* ============================================================
+   NAVBAR — GREEN/GOLD
+   ============================================================ */
+
+.navbar {
+    background: #0f2a0f;
+    padding: 12px 20px;
+    display: flex;
+    gap: 20px;
+    border-bottom: 2px solid gold;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.navbar a {
+    color: gold;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.navbar a:hover,
+.navbar a.active {
+    color: white;
+    text-decoration: underline;
+}
+
+/* ============================================================
+   PANELS — GREEN/GOLD (LEFT + RIGHT)
+   ============================================================ */
+
+.left-panel,
 .right-panel {
     background: #123412;
     border: 3px solid #1a4d1a;
-    border-radius: 10px;
-    padding: 22px;
-    color: gold;
-    box-shadow:
-        inset 0 0 6px rgba(0,0,0,0.25),
-        0 0 6px rgba(255, 215, 0, 0.12);
-}
-.right-panel h2 {
-    margin-top: 0;
-    margin-bottom: 15px;
-}
-
-.left-panel {
-    background: #123412;
-    border: 3px solid #1a4d1a;
     border-radius: 12px;
-    padding: 22px 24px;
+    padding: 22px;
     color: gold;
     box-shadow:
         inset 0 0 8px rgba(0,0,0,0.35),
         0 0 10px rgba(255, 215, 0, 0.18);
 }
 
-.left-panel h2 {
+.left-panel h2,
+.right-panel h2 {
     margin-top: 0;
     margin-bottom: 16px;
     font-size: 22px;
@@ -38,8 +104,22 @@
     text-shadow: 0 0 4px rgba(0,0,0,0.4);
 }
 
+/* Balance card */
+.balance-card {
+    background: rgba(0, 0, 0, 0.22);
+    padding: 22px 20px;
+    border-radius: 12px;
+    margin-top: 12px;
+    color: #ffffff;
+    font-size: 1.15rem;
+    line-height: 1.75rem;
+    border-left: 6px solid #00c46a;
+    position: relative;
+    box-shadow:
+        inset 0 0 8px rgba(0,0,0,0.35),
+        0 0 10px rgba(0,0,0,0.25);
+}
 
-/* Balance card styled like the screenshot */
 .balance-card::before {
     content: "";
     position: absolute;
@@ -51,48 +131,14 @@
     box-shadow: 0 0 12px #00c46a;
     border-radius: 6px 0 0 6px;
 }
-.balance-card .label {
-    opacity: 0.75;
-    font-size: 0.95rem;
-}
 
-.balance-card .value {
-    font-size: 1.28rem;
-    font-weight: 700;
+.balance-card strong {
     color: #f7c600;
 }
 
-.balance-card {
-    background: rgba(0, 0, 0, 0.22);
-    padding: 22px 20px;
-    border-radius: 12px;
-    margin-top: 12px;
-    color: #ffffff;
-    font-size: 1.15rem;
-    line-height: 1.75rem;
-    border-left: 6px solid #00c46a;
-    box-shadow:
-        inset 0 0 8px rgba(0,0,0,0.35),
-        0 0 10px rgba(0,0,0,0.25);
-    position: relative;
-}
-
-.balance-card strong {
-    color: #f7c600; /* gold highlight */
-    font-weight: 700;
-}
-
-
-body {
-    background: #0b1d0b;
-    color: #f5f5f5;
-    font-family: Arial, sans-serif;
-    padding: 20px;
-}
-
-h1, h2 {
-    color: gold;
-}
+/* ============================================================
+   FORMS — GREEN/GOLD
+   ============================================================ */
 
 form:not(.race-form) {
     display: flex;
@@ -102,137 +148,16 @@ form:not(.race-form) {
     margin-bottom: 20px;
 }
 
-input, select, button {
+input, select {
     padding: 8px;
     border-radius: 4px;
     border: none;
 }
 
-button {
-    background: gold;
-    color: black;
-    cursor: pointer;
-    font-weight: bold;
-}
+/* ============================================================
+   PICKS — GREEN/GOLD
+   ============================================================ */
 
-.card {
-    background: #123412;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 6px;
-}
-.navbar {
-    background: #0f2a0f;
-    padding: 12px 20px;
-    display: flex;
-    gap: 20px;
-    border-bottom: 2px solid gold;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.navbar a {
-    color: gold;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 16px;
-}
-.navbar a.active {
-    color: white;
-    text-decoration: underline;
-}
-.navbar {
-    overflow-x: auto;
-    white-space: nowrap;
-}
-
-.navbar a:hover {
-    color: white;
-    text-decoration: underline;
-}
-.podium-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 20px;
-    margin: 40px 0;
-}
-
-.podium {
-    width: 120px;
-    text-align: center;
-    padding: 10px;
-    border-radius: 6px;
-    background: #123412;
-    color: gold;
-    position: relative;
-}
-
-.podium-1 {
-    height: 180px;
-    background: #1a4d1a;
-}
-
-.podium-2 {
-    height: 140px;
-}
-
-.podium-3 {
-    height: 120px;
-}
-
-.podium-rank {
-    font-size: 32px;
-    font-weight: bold;
-}
-
-.podium-name {
-    margin-top: 20px;
-    font-size: 18px;
-}
-
-.accumulator-box {
-    background: #123412;
-    padding: 20px;
-    border-radius: 6px;
-    margin-top: 20px;
-    white-space: pre-wrap;
-}
-.form-card {
-    background: #123412;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 450px;
-    margin-top: 20px;
-}
-
-.form-section {
-    margin-bottom: 20px;
-}
-
-.form-section h3 {
-    color: gold;
-    margin-bottom: 10px;
-}
-
-.result-box {
-    margin-top: 15px;
-    padding: 10px;
-    border-radius: 6px;
-    background: #0f2a0f;
-    color: gold;
-    display: none;
-}
-
-.submit-btn {
-    background: gold;
-    color: black;
-    padding: 10px;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-}
 .picks-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -245,6 +170,8 @@ button {
     padding: 15px;
     border-radius: 8px;
     color: gold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    animation: fadeIn 0.25s ease;
 }
 
 .pick-header {
@@ -252,11 +179,6 @@ button {
     font-weight: bold;
     margin-bottom: 5px;
 }
-.pick-card,
-.race-card {
-    line-height: 1.4;
-}
-
 
 .pick-meta {
     font-size: 14px;
@@ -264,257 +186,22 @@ button {
     color: #d4d4d4;
 }
 
-.result-buttons button {
-    margin-right: 6px;
-    margin-top: 6px;
-    padding: 6px 10px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-}
+/* ============================================================
+   ⭐ RACE DAY — EXACT SCREENSHOT THEME ⭐
+   ============================================================ */
 
-.btn-win { background: #0f7a0f; color: white; }
-.btn-place { background: #1f6fb2; color: white; }
-.btn-lose { background: #7a0f0f; color: white; }
-.btn-nr { background: #555; color: white; }
-.stats-summary {
-    background: #123412;
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 20px;
-    color: gold;
-    font-size: 18px;
-    display: none;
-}
-
-.stats-table {
-    width: 100%;
-    margin-top: 20px;
-    border-collapse: collapse;
-}
-
-.stats-table th {
-    background: #0f2a0f;
-    color: gold;
-    padding: 10px;
-    border-bottom: 2px solid gold;
-}
-
-.stats-table td {
-    padding: 10px;
-    background: #123412;
-    color: white;
-    border-bottom: 1px solid #0f2a0f;
-}
-
-.stats-table tr:hover td {
-    background: #1a4d1a;
-}
-.player-profile {
-    background: #123412;
-    padding: 20px;
-    border-radius: 8px;
-    margin-top: 20px;
-    color: gold;
-}
-
-.profile-header {
-    font-size: 26px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.profile-section {
-    margin-top: 15px;
-    padding: 10px;
-    background: #0f2a0f;
-    border-radius: 6px;
-}
-
-.profile-section h3 {
+/* Course header */
+.race-course-header {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 25px;
     margin-bottom: 8px;
-    color: gold;
+    color: #f7c600;
+    border-bottom: 2px solid #f7c600;
+    padding-bottom: 4px;
 }
 
-.recent-form span {
-    padding: 4px 8px;
-    margin-right: 4px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-.form-win { background: #0f7a0f; color: white; }
-.form-place { background: #1f6fb2; color: white; }
-.form-lose { background: #7a0f0f; color: white; }
-.form-nr { background: #555; color: white; }
-
-.race-card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: white;
-}
-
-.race-header {
-    font-size: 17px;
-    font-weight: 600;
-    color: #ffffff;
-}
-
-.race-meta {
-    font-size: 14px;
-    color: #dddddd;
-    line-height: 1.4;
-    margin-right: 15px;
-}
-
-
-.result-win { background: #0f7a0f; color: white; padding: 4px 8px; border-radius: 4px; }
-.result-place { background: #1f6fb2; color: white; padding: 4px 8px; border-radius: 4px; }
-.result-lose { background: #7a0f0f; color: white; padding: 4px 8px; border-radius: 4px; }
-.result-nr { background: #555; color: white; padding: 4px 8px; border-radius: 4px; }
-.result-pending { background: #777; color: white; padding: 4px 8px; border-radius: 4px; }
-
-/* Mobile responsiveness */
-@media (max-width: 600px) {
-
-    body {
-        padding: 10px;
-    }
-
-    h1, h2 {
-        font-size: 22px;
-        text-align: center;
-    }
-
-    .navbar {
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
-        padding: 10px;
-    }
-
-    .navbar a {
-        font-size: 14px;
-        padding: 6px 8px;
-    }
-
-    .form-card {
-        width: 100%;
-        padding: 15px;
-    }
-
-    input, select, button {
-        font-size: 16px;
-    }
-
-    .picks-grid {
-        grid-template-columns: 1fr !important;
-    }
-
-    .pick-card,
-    .race-card {
-        padding: 12px;
-    }
-
-    .profile-section {
-        padding: 12px;
-    }
-}
-.pick-card,
-.race-card,
-.form-card,
-.player-profile,
-.profile-section {
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-}
-button,
-.submit-btn {
-    transition: transform 0.15s ease, opacity 0.15s ease;
-}
-
-button:hover,
-.submit-btn:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
-}
-
-button:active,
-.submit-btn:active {
-    transform: scale(0.95);
-}
-.pick-card,
-.race-card {
-    animation: fadeIn 0.25s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.pick-card,
-.race-card,
-.profile-section {
-    margin-bottom: 12px;
-    line-height: 1.45;
-}
-h1, h2 {
-    margin-top: 25px;
-    margin-bottom: 10px;
-    letter-spacing: 0.5px;
-}
-.pick-card,
-.race-card,
-.form-card,
-.player-profile,
-.profile-section {
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-}
-button,
-.submit-btn {
-    transition: transform 0.15s ease, opacity 0.15s ease;
-}
-
-button:hover,
-.submit-btn:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
-}
-
-button:active,
-.submit-btn:active {
-    transform: scale(0.95);
-}
-.pick-card,
-.race-card {
-    animation: fadeIn 0.25s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.pick-card,
-.race-card,
-.profile-section {
-    margin-bottom: 12px;
-    line-height: 1.45;
-}
-h1, h2 {
-    margin-top: 25px;
-    margin-bottom: 10px;
-    letter-spacing: 0.5px;
-}
-.navbar {
-    overflow-x: auto;
-    white-space: nowrap;
-}
+/* Time header */
 .race-time-header {
     font-size: 18px;
     font-weight: 600;
@@ -524,267 +211,11 @@ h1, h2 {
     opacity: 0.8;
 }
 
-
-.race-course-header {
-    font-size: 22px;
-    font-weight: 700;
-    margin-top: 25px;
-    margin-bottom: 8px;
-    color: #f7c600; /* yellow */
-    border-bottom: 2px solid #f7c600;
-    padding-bottom: 4px;
-}
-
-.race-container {
-    display: grid;
-    grid-template-columns: 0.55fr 1.45fr;
-    gap: 35px;
-    margin-top: 20px;
-    margin-bottom: 35px;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-    .race-container {
-        grid-template-columns: 1fr;
-    }
-}
-.result-win {
-    color: #00ff88;
-    font-weight: 700;
-}
-
-.result-place {
-    color: #4da6ff;
-    font-weight: 700;
-}
-
-.result-lose {
-    color: #ff4d4d;
-    font-weight: 700;
-}
-
-.result-nr {
-    color: #cccccc;
-    font-weight: 700;
-}
-
-.result-pending {
-    color: #f7c600;
-    font-weight: 700;
-}
-.race-form {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* 3 columns */
-    gap: 14px 20px;
-    align-items: center;
-    width: 100%;
-}
-
-.race-form input,
-.race-form select {
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.race-form .horse-group {
-    display: grid;
-    grid-template-columns: 60px 1fr;
-    gap: 10px;
-}
-.horse-group div {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-}
-
-.race-form .span-3 {
-    grid-column: span 3;
-}
-
-.submit-btn {
-    background: gold;
-    color: black;
-    padding: 12px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-}
-/* Stats Page Layout */
-.stats-container {
-    margin-top: 25px;
-}
-
-.stats-title {
-    font-size: 28px;
-    font-weight: 700;
-    color: gold;
-    margin-bottom: 20px;
-    letter-spacing: 0.8px;
-    text-shadow: 0 0 6px rgba(0,0,0,0.4);
-}
-
-/* Grid of player cards */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 22px;
-    margin-top: 20px;
-}
-
-/* Individual player card */
-.stats-card {
-    background: #123412;
-    border: 2px solid #1a4d1a;
-    border-radius: 10px;
-    padding: 18px 20px;
-    color: gold;
-    box-shadow:
-        inset 0 0 6px rgba(0,0,0,0.25),
-        0 0 8px rgba(255, 215, 0, 0.12);
-    animation: fadeIn 0.25s ease;
-}
-
-/* Player name */
-.stats-card .player-name {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    color: #f7c600;
-}
-
-/* Stat rows */
-.stats-card .stat-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: 15px;
-    color: #ffffff;
-}
-
-.stats-card .stat-row:last-child {
-    margin-bottom: 0;
-}
-
-/* --- RACE DAY CARD --- */
+/* Race Day card — EXACT screenshot style */
 .race-card {
-    background: #1a1a1a;
-    border: 1px solid #333;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 8px;
-    color: #ddd;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-/* Stake at the top */
-.race-stake {
-    font-weight: bold;
-    color: #f1c40f;
-    font-size: 1rem;
-}
-
-/* Horse info */
-.race-horse {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #fff;
-}
-
-/* Meta info */
-.race-meta {
-    font-size: 0.9rem;
-    line-height: 1.3;
-    color: #ccc;
-}
-
-/* Status badge */
-.race-status {
-    margin-top: 4px;
-}
-
-.result-win {
-    color: #00c853;
-    font-weight: bold;
-}
-
-.result-place {
-    color: #2979ff;
-    font-weight: bold;
-}
-
-.result-lose {
-    color: #ff1744;
-    font-weight: bold;
-}
-
-.result-nr {
-    color: #bdbdbd;
-    font-weight: bold;
-}
-
-.result-pending {
-    color: #f1c40f;
-    font-weight: bold;
-}
-
-/* Buttons row */
-.race-buttons {
-    display: flex;
-    gap: 6px;
-    margin-top: 8px;
-}
-
-/* Result buttons */
-.race-buttons button {
-    flex: 1;
-    padding: 6px 0;
-    border: none;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #000;
-}
-
-/* Button colours */
-.btn-win {
-    background: #00e676;
-}
-
-.btn-place {
-    background: #2979ff;
-    color: white;
-}
-
-.btn-lose {
-    background: #ff1744;
-    color: white;
-}
-
-.btn-nr {
-    background: #bdbdbd;
-}
-
-/* Hover effects */
-.race-buttons button:hover {
-    opacity: 0.85;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    background: #111;
+    border-left: 6px solid #f7c600;
+    padding: 12px 14px;
+    margin: 12px 0;
+    border-radius: 6px;
+    color
