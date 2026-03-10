@@ -211,6 +211,7 @@ function setupPlayerDetailsForm() {
 }
 
 // RACE DAY
+// RACE DAY
 async function setupRaceForm() {
     const form = document.getElementById("raceForm");
     const resultBox = document.getElementById("raceResult");
@@ -236,12 +237,8 @@ async function setupRaceForm() {
         option.textContent = p.name;
         playerSelect.appendChild(option);
     });
-}
 
-
-
-
-    // Submit handler
+    // Submit handler (INSIDE the function!)
     form.onsubmit = async (e) => {
         e.preventDefault();
 
