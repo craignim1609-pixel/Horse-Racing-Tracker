@@ -215,25 +215,15 @@ async function setupRaceForm() {
     const resultBox = document.getElementById("raceResult");
     const playerSelect = document.getElementById("playerSelect");
 
-    console.log("Players fetch starting...");
-
-    // Fetch players FIRST
+    // Fetch players
     const res = await fetch(`${API}/players/`);
     const players = await res.json();
 
-    console.log("Players received:", players);
-
-    // Clear existing options
-    playerSelect.innerHTML = '<option value="">Select Player</option>';
-
     // Populate dropdown
+    playerSelect.innerHTML = '<option value="">Select Player</option>';
     players.forEach(p => {
         PLAYER_MAP[p.id] = p.name;
-
-        const option = document.createElement("option");
-        option.value = p.id;
-        option.textContent = p.name;
-        playerSelect.appendChild(option);
+        playerSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
     });
 
     // Submit handler
@@ -242,33 +232,35 @@ async function setupRaceForm() {
 
         const body = Object.fromEntries(new FormData(form).entries());
 
-        const res = await fetch(`${API}/raceday/`, {
+        const submitRes = await fetch(`${API}/raceday/`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body)
         });
 
-        // Default message
         let message = "Bet saved successfully!";
 
         try {
-            const data = await res.json();
+            const data = await submitRes.json();
             const playerName = PLAYER_MAP[data.player_id] || "Player";
             message = `${playerName}'s bet has been added!`;
-        } catch {
-            // If backend returns plain text instead of JSON
-            message = "Bet saved successfully!";
-        }
+        } catch {}
 
         // Show success box
         resultBox.style.display = "block";
-        resultBox.style.background = "#0f2a0f";
-        resultBox.style.color = "white";
-        resultBox.style.padding = "10px";
-        resultBox.style.borderRadius = "6px";
         resultBox.innerText = message;
 
         form.reset();
+    async function updateRaceResult(id, result) {
+    await fetch(`${API}/raceday/${id}/result`, {
+        method: "PATCH",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ result })
+    });
+
+    loadRaceStats();
+}
+
         loadRaceStats();
     };
 }
@@ -277,39 +269,32 @@ async function loadRaceStats() {
     const month = new Date().getMonth() + 1;
     const year = new Date().getFullYear();
 
-    // Fetch bets for this month
     const listRes = await fetch(`${API}/raceday/?month=${month}&year=${year}`);
     let bets = await listRes.json();
-    
-    // Today-only filter
-const todayOnly = document.getElementById("todayOnly")?.checked;
-if (todayOnly) {
-    const today = new Date().toISOString().slice(0, 10);
-    bets = bets.filter(b => b.date === today);
-}
 
-    // STEP 1 — Sort bets by race time
-    bets.sort((a, b) => a.race_time.localeCompare(b.race_time));
+    // Today-only filter
+    const todayOnly = document.getElementById("todayOnly")?.checked;
+    if (todayOnly) {
+        const today = new Date().toISOString().slice(0, 10);
+        bets = bets.filter(b => b.date === today);
+    }
+
+    // Sort by course → time
+    bets.sort((a, b) => {
+        if (a.course !== b.course) return a.course.localeCompare(b.course);
+        return a.race_time.localeCompare(b.race_time);
+    });
+
     const list = document.getElementById("raceList");
-    
-    // Group bets by course
-const groupedByCourse = {};
-bets.forEach(b => {
-    if (!groupedByCourse[b.course]) groupedByCourse[b.course] = [];
-    groupedByCourse[b.course].push(b);
-});
 
     // Group by course → time
-const grouped = {};
+    const grouped = {};
+    bets.forEach(b => {
+        if (!grouped[b.course]) grouped[b.course] = {};
+        if (!grouped[b.course][b.race_time]) grouped[b.course][b.race_time] = [];
+        grouped[b.course][b.race_time].push(b);
+    });
 
-bets.forEach(b => {
-    if (!grouped[b.course]) grouped[b.course] = {};
-    if (!grouped[b.course][b.race_time]) grouped[b.course][b.race_time] = [];
-    grouped[b.course][b.race_time].push(b);
-});
-
-
-    // STEP 3 — Icons for results
     const icons = {
         "Win": "🟢",
         "Place": "🔵",
@@ -318,53 +303,59 @@ bets.forEach(b => {
         "Pending": "⏳"
     };
 
+    // Build HTML
     list.innerHTML = Object.keys(grouped).map(course => `
-    <div class="race-course-header">${course}</div>
+        <div class="race-course-header">${course}</div>
 
-    ${Object.keys(grouped[course]).sort().map(time => `
-        <div class="race-time-header">${time}</div>
+        ${Object.keys(grouped[course]).sort().map(time => `
+            <div class="race-time-header">${time}</div>
 
-        ${grouped[course][time].map(b => `
-           <div class="race-card">
-    <div class="race-stake">Stake: £${b.amount_bet}</div>
+            ${grouped[course][time].map(b => `
+                <div class="race-card">
 
-    <div class="race-horse">
-        (${b.horse_number}) ${b.horse_name} @ ${b.odds_fraction}
-    </div>
+                    <div class="race-stake">Stake: £${b.amount_bet}</div>
 
-    <div class="race-meta">
-        Player: ${PLAYER_MAP[b.player_id]}<br>
-        Course: ${b.track}<br>
-        Race Time: ${b.time}<br>
-        Winnings: £${b.winnings || "0.00"}
-    </div>
+                    <div class="race-horse">
+                        (${b.horse_number}) ${b.horse_name} @ ${b.odds_fraction}
+                    </div>
 
-    <div class="race-status">
-        <span class="result-${b.result.toLowerCase()}">
-            ${icons[b.result]} ${b.result}
-        </span>
-    </div>
+                    <div class="race-meta">
+                        Player: ${PLAYER_MAP[b.player_id]}<br>
+                        Course: ${b.course}<br>
+                        Race Time: ${b.race_time}<br>
+                        Winnings: £${b.winnings || "0.00"}
+                    </div>
 
-    <div class="race-buttons">
-        <button onclick="updateRaceResult(${b.id}, 'Win')" class="btn-win">WIN</button>
-        <button onclick="updateRaceResult(${b.id}, 'Place')" class="btn-place">PLACE</button>
-        <button onclick="updateRaceResult(${b.id}, 'Lose')" class="btn-lose">LOSE</button>
-        <button onclick="updateRaceResult(${b.id}, 'NR')" class="btn-nr">NR</button>
-    </div>
-</div>
+                    <div class="race-status">
+                        <span class="result-${b.result.toLowerCase()}">
+                            ${icons[b.result]} ${b.result}
+                        </span>
+                    </div>
 
+                    <div class="race-buttons">
+                        <button class="btn-win" onclick="updateRaceResult(${b.id}, 'Win')">WIN</button>
+                        <button onclick="updateRaceResult(${b.id}, 'Place')">PLACE</button>
+                        <button onclick="updateRaceResult(${b.id}, 'Lose')">LOSE</button>
+                        <button onclick="updateRaceResult(${b.id}, 'NR')">NR</button>
+                    </div>
 
-    // Fetch group stats
+                </div>
+            `).join("")}
+
+        `).join("")}
+
+    `).join("");
+
+    // Load group stats
     const statsRes = await fetch(`${API}/raceday/stats?month=${month}&year=${year}`);
     const stats = await statsRes.json();
+
     const box = document.getElementById("raceStats");
 
-    // STEP 5 — Total bets + strike rate
     const totalBets = bets.length;
     const wins = bets.filter(b => b.result === "Win").length;
     const strikeRate = totalBets ? (wins / totalBets * 100).toFixed(1) : 0;
 
-    // Render summary + players
     box.innerHTML = `
         <h3>Group Summary</h3>
         Total Bets: ${totalBets}<br>
@@ -375,21 +366,20 @@ bets.forEach(b => {
 
         <h3>Players</h3>
         ${stats.players.map(p => {
-    const profitColor =
-        p.profit > 0 ? "#0f7a0f" : 
-        p.profit < 0 ? "#7a0f0f" : 
-        "#555";
+            const profitColor =
+                p.profit > 0 ? "#0f7a0f" :
+                p.profit < 0 ? "#7a0f0f" :
+                "#555";
 
-    return `
-        <div class="profile-section" style="border-left: 6px solid ${profitColor}; padding-left: 10px;">
-            <strong>${p.player}</strong><br>
-            Stake: £${p.total_stake.toFixed(2)}<br>
-            Return: £${p.total_return.toFixed(2)}<br>
-            Profit: £${p.profit.toFixed(2)}
-        </div>
-    `;
-}).join("")}
-
+            return `
+                <div class="profile-section" style="border-left: 6px solid ${profitColor}; padding-left: 10px;">
+                    <strong>${p.player}</strong><br>
+                    Stake: £${p.total_stake.toFixed(2)}<br>
+                    Return: £${p.total_return.toFixed(2)}<br>
+                    Profit: £${p.profit.toFixed(2)}
+                </div>
+            `;
+        }).join("")}
     `;
 }
 
