@@ -9,10 +9,6 @@ from datetime import datetime
 
 router = APIRouter(prefix="/raceday", tags=["Race Day"])
 
-@router.get("/players")
-def get_players(db: Session = Depends(get_db)):
-    return db.query(models.Player).all()
-
 @router.post("/", response_model=schemas.RaceDayOut)
 def add_race_day_bet(data: schemas.RaceDayCreate, db: Session = Depends(get_db)):
     player = db.query(models.Player).filter(models.Player.id == data.player_id).first()
