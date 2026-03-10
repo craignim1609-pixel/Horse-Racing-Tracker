@@ -20,7 +20,7 @@ class Pick(Base):
     horse_number = Column(Integer)
     odds_fraction = Column(String)
     race_time = Column(String)
-    status = Column(String, default="Pending")  # Pending/Win/Place/Lose/NR
+    status = Column(String, default="Pending")
     month = Column(Integer)
     year = Column(Integer)
 
@@ -37,9 +37,8 @@ class RaceDay(Base):
     time = Column(String)
     horse_name = Column(String)
     horse_number = Column(Integer)
-    result = Column(String)  # Win/Place/Lose
+    result = Column(String)
     month = Column(Integer)
     year = Column(Integer)
 
     player = relationship("Player", back_populates="race_bets")
-
