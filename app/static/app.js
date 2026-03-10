@@ -239,6 +239,7 @@ async function setupRaceForm() {
 }
 
 
+
     // Submit handler
     form.onsubmit = async (e) => {
         e.preventDefault();
