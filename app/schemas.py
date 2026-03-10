@@ -1,15 +1,18 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 
-class PickBase(BaseModel):
+class RaceDayCreate(BaseModel):
     player_id: int
     course: str
-    horse_name: str
     horse_number: int
-    odds_fraction: str
+    horse_name: str
     race_time: str
-    month: int
-    year: int
+    odds_fraction: str
+    amount_bet: float
+
+    result: str = "Pending"
+    month: Optional[int] = None
+    year: Optional[int] = None
 
 class PickCreate(PickBase):
     pass
