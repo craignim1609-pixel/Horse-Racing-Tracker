@@ -209,8 +209,6 @@ function setupPlayerDetailsForm() {
         `;
     };
 }
-
-// RACE DAY
 // RACE DAY
 async function setupRaceForm() {
     const form = document.getElementById("raceForm");
@@ -260,6 +258,7 @@ async function setupRaceForm() {
         loadRaceStats();
     };
 }
+
 
 
 async function loadRaceStats() {
