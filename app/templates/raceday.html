@@ -1,4 +1,3 @@
-
 <html>
 <head>
     <title>Race Day</title>
@@ -12,13 +11,14 @@
     <a href="/current-picks">Current Picks</a>
     <a href="/stats">Stats</a>
     <a href="/player-details">Player Details</a>
-    <a href="/raceday">Race Day</a>
+    <a href="/raceday" class="active">Race Day</a>
 </nav>
 
 <h1>Race Day</h1>
 
 <div class="race-container">
 
+    <!-- LEFT PANEL (Green/Gold Theme) -->
     <div class="left-panel">
         <h2>Group Balance</h2>
         <div id="groupBalance" class="balance-card">
@@ -26,84 +26,92 @@
         </div>
     </div>
 
+    <!-- RIGHT PANEL (Green/Gold Theme) -->
     <div class="right-panel">
         <h2>Race Day Tracker</h2>
 
-<form id="raceForm" class="race-form">
+        <form id="raceForm" class="race-form">
 
-    <!-- Row 1 -->
-    <div>
-        <label>Player</label>
-        <select id="playerSelect" name="player_id"></select>
-    </div>
+            <!-- Player -->
+            <div>
+                <label>Player</label>
+                <select id="playerSelect" name="player_id" required></select>
+            </div>
 
-   <div>
-    <label>Course</label>
-    <input id="courseSelect" name="track" type="text" placeholder="Course name">
-</div>
+            <!-- Course -->
+            <div>
+                <label>Course</label>
+                <input id="courseSelect" name="track" type="text" placeholder="Course name" required>
+            </div>
 
-    <div class="horse-group">
-        <div>
-            <label>#</label>
-            <input id="horseNumber" name="horse_number">
+            <!-- Horse Number + Name -->
+            <div class="horse-group">
+                <div>
+                    <label>#</label>
+                    <input id="horseNumber" name="horse_number" required>
+                </div>
+                <div>
+                    <label>Horse Name</label>
+                    <input id="horseName" name="horse_name" required>
+                </div>
+            </div>
+
+            <!-- Race Time -->
+            <div>
+                <label>Race Time</label>
+                <input id="raceTime" name="time" type="time" required>
+            </div>
+
+            <!-- Odds -->
+            <div>
+                <label>Odds</label>
+                <input id="odds" name="odds_fraction" placeholder="4/1" required>
+            </div>
+
+            <!-- Stake -->
+            <div>
+                <label>Stake (£)</label>
+                <input id="stake" name="amount_bet" type="number" step="0.01" required>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="submit-btn span-3">
+                Submit Bet Details
+            </button>
+
+        </form>
+
+        <div id="raceResult" class="result-box"></div>
+
+        <h2>Recent Activity</h2>
+        <div id="recentActivity" class="activity-list">
+            No race day bets recorded yet.
         </div>
-        <div>
-            <label>Horse Name</label>
-            <input id="horseName" name="horse_name">
-        </div>
-    </div>
 
-    <!-- Row 2 -->
-    <div>
-    <label>Race Time</label>
-    <input id="raceTime" name="time">
+        <label style="display:flex;align-items:center;gap:6px;margin:10px 0;">
+            <input type="checkbox" id="todayOnly">
+            Show Today Only
+        </label>
+
+    </div>
 </div>
 
-    <div>
-        <label>Odds</label>
-        <input id="odds" name="odds_fraction">
-    </div>
-
-    <div>
-        <label>Stake (£)</label>
-        <input id="stake" name="amount_bet">
-    </div>
-
-    <!-- Button full width -->
-    <button type="submit" class="submit-btn span-3">
-        Submit Bet Details
-    </button>
-
-</form>
-
-<div id="raceResult" class="result-box"></div>
-
-
-<h2>Recent Activity</h2>
-<div id="recentActivity" class="activity-list">
-    No race day bets recorded yet.
-</div>
-    
-<label style="display:flex;align-items:center;gap:6px;margin:10px 0;">
-    <input type="checkbox" id="todayOnly">
-    Show Today Only
-</label>
-
+<!-- RACE DAY LIST (Screenshot‑Style Cards) -->
 <h2>Today's Bets</h2>
-<div id="raceList" class="picks-grid"></div>
+<div id="raceList"></div>
 
+<!-- GROUP STATS -->
 <h2>Group Stats</h2>
 <div id="raceStats" class="player-profile"></div>
 
 <script src="/static/app.js?v=9999"></script>
+
 <script>
     setupRaceForm();
     loadRaceStats();
-</script>
-    <script>
-document.getElementById("todayOnly").addEventListener("change", loadRaceStats);
-</script>
 
+    document.getElementById("todayOnly").addEventListener("change", loadRaceStats);
+</script>
 
 </body>
 </html>
