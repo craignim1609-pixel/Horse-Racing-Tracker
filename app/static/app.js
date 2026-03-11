@@ -266,6 +266,48 @@ async function setupRaceForm() {
         loadRaceStats();
     };
 }
+async function loadRecentActivity() {
+    const res = await fetch(`${API}/raceday/recent`);
+    const items = await res.json();
+
+    const box = document.getElementById("recentActivity");
+
+    if (!items.length) {
+        box.innerHTML = "No race day bets recorded yet.";
+        return;
+    }
+
+    const icons = {
+        "Win": "🟢",
+        "Place": "🔵",
+        "Lose": "🔴",
+        "NR": "⚪",
+        "Pending": "⏳"
+    };
+
+    box.innerHTML = items.map(a => `
+        <div class="activity-card">
+
+            <div class="activity-top">
+                (${a.horse_number}) ${a.horse_name} @ ${a.odds_fraction}
+            </div>
+
+            <div class="activity-meta">
+                Player: ${PLAYER_MAP[a.player_id]}<br>
+                Course: ${a.course}<br>
+                Time: ${a.race_time}<br>
+                Stake: £${a.amount_bet}
+            </div>
+
+            <div class="activity-status">
+                <span class="result-${a.result.toLowerCase()}">
+                    ${icons[a.result]} ${a.result}
+                </span>
+            </div>
+
+        </div>
+    `).join("");
+}
 
 /* ============================================================
    RACE DAY — UPDATE RESULT
@@ -289,15 +331,18 @@ async function loadRaceStats() {
     const month = new Date().getMonth() + 1;
     const year = new Date().getFullYear();
 
+    // Fetch all bets for this month
     const listRes = await fetch(`${API}/raceday/?month=${month}&year=${year}`);
     let bets = await listRes.json();
 
+    // Today-only filter
     const todayOnly = document.getElementById("todayOnly")?.checked;
     if (todayOnly) {
         const today = new Date().toISOString().slice(0, 10);
         bets = bets.filter(b => b.date === today);
     }
 
+    // Sort by course → race_time
     bets.sort((a, b) => {
         if (a.course !== b.course) return a.course.localeCompare(b.course);
         return a.race_time.localeCompare(b.race_time);
@@ -305,6 +350,7 @@ async function loadRaceStats() {
 
     const list = document.getElementById("raceList");
 
+    // Group by course → race_time
     const grouped = {};
     bets.forEach(b => {
         if (!grouped[b.course]) grouped[b.course] = {};
@@ -320,6 +366,7 @@ async function loadRaceStats() {
         "Pending": "⏳"
     };
 
+    // Build Race Day cards
     list.innerHTML = Object.keys(grouped).map(course => `
         <div class="race-course-header">${course}</div>
 
@@ -330,4 +377,79 @@ async function loadRaceStats() {
                 <div class="race-card">
 
                     <div class="race-stake">Stake: £${b.amount_bet}</div>
+
+                    <div class="race-horse">
+                        (${b.horse_number}) ${b.horse_name} @ ${b.odds_fraction}
+                    </div>
+
+                    <div class="race-meta">
+                        Player: ${PLAYER_MAP[b.player_id]}<br>
+                        Course: ${b.course}<br>
+                        Race Time: ${b.race_time}<br>
+                        Winnings: £${b.winnings || "0.00"}
+                    </div>
+
+                    <div class="race-status">
+                        <span class="result-${b.result.toLowerCase()}">
+                            ${icons[b.result]} ${b.result}
+                        </span>
+                    </div>
+
+                    <div class="race-buttons">
+                        <button class="btn-win" onclick="updateRaceResult(${b.id}, 'Win')">WIN</button>
+                        <button onclick="updateRaceResult(${b.id}, 'Place')">PLACE</button>
+                        <button onclick="updateRaceResult(${b.id}, 'Lose')">LOSE</button>
+                        <button onclick="updateRaceResult(${b.id}, 'NR')">NR</button>
+                    </div>
+
+                </div>
+            `).join("")}
+
+        `).join("")}
+
+    `).join("");
+
+    /* ============================================================
+       GROUP STATS
+       ============================================================ */
+
+    const statsRes = await fetch(`${API}/raceday/stats?month=${month}&year=${year}`);
+    const stats = await statsRes.json();
+
+    const box = document.getElementById("raceStats");
+
+    const totalBets = bets.length;
+    const wins = bets.filter(b => b.result === "Win").length;
+    const strikeRate = totalBets ? (wins / totalBets * 100).toFixed(1) : 0;
+
+    box.innerHTML = `
+        <h3>Group Summary</h3>
+        Total Bets: ${totalBets}<br>
+        Strike Rate: ${strikeRate}%<br>
+        Total Stake: £${stats.group.total_stake.toFixed(2)}<br>
+        Total Return: £${stats.group.total_return.toFixed(2)}<br>
+        Profit: £${stats.group.profit.toFixed(2)}<br><br>
+
+        <h3>Players</h3>
+        ${stats.players.map(p => {
+            const profitColor =
+                p.profit > 0 ? "#0f7a0f" :
+                p.profit < 0 ? "#7a0f0f" :
+                "#555";
+
+            return `
+                <div class="profile-section" style="border-left: 6px solid ${profitColor}; padding-left: 10px;">
+                    <strong>${p.player}</strong><br>
+                    Stake: £${p.total_stake.toFixed(2)}<br>
+                    Return: £${p.total_return.toFixed(2)}<br>
+                    Profit: £${p.profit.toFixed(2)}
+                </div>
+            `;
+        }).join("")}
+    `;
+
+    // Update Recent Activity
+    loadRecentActivity();
+}
+
 
