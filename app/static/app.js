@@ -40,8 +40,9 @@ function setupAddPickForm() {
     form.onsubmit = async (e) => {
         e.preventDefault();
 
-        const body = Object.fromEntries(new FormData(form).entries());
-
+         const body = Object.fromEntries(new FormData(form).entries());
+       console.log("FORM BODY:", body);
+   
         if (!/^\d+\/\d+$/.test(body.odds_fraction)) {
             resultBox.style.display = "block";
             resultBox.style.background = "#5a0000";
