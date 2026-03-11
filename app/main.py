@@ -7,8 +7,13 @@ from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from app.routers import players
+from app.routers.players import seed_players
 
 app = FastAPI()
+
+@app.on_event("startup")
+def startup_event():
+    seed_players()
 
 # Create tables
 Base.metadata.create_all(bind=engine)
