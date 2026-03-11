@@ -1,10 +1,14 @@
 const API = "https://horse-racing-tracker-production.up.railway.app";
 let PLAYER_MAP = {};
 
-// HOME PAGE
+/* ============================================================
+   HOME PAGE
+   ============================================================ */
+
 async function loadPodium() {
     const month = new Date().getMonth() + 1;
     const year = new Date().getFullYear();
+
     const res = await fetch(`${API}/stats/month/${month}?year=${year}`);
     const stats = await res.json();
 
@@ -21,12 +25,14 @@ async function loadAccumulator() {
     document.getElementById("accumulator").innerHTML = JSON.stringify(data, null, 2);
 }
 
-// ADD PICK
+/* ============================================================
+   ADD PICK
+   ============================================================ */
+
 function setupAddPickForm() {
     const form = document.getElementById("pickForm");
     const resultBox = document.getElementById("result");
 
-    // Auto-fill month/year
     const now = new Date();
     form.month.value = now.getMonth() + 1;
     form.year.value = now.getFullYear();
@@ -34,10 +40,8 @@ function setupAddPickForm() {
     form.onsubmit = async (e) => {
         e.preventDefault();
 
-        const formData = new FormData(form);
-        const body = Object.fromEntries(formData.entries());
+        const body = Object.fromEntries(new FormData(form).entries());
 
-        // Validate odds format (e.g. 5/2)
         if (!/^\d+\/\d+$/.test(body.odds_fraction)) {
             resultBox.style.display = "block";
             resultBox.style.background = "#5a0000";
@@ -63,8 +67,10 @@ function setupAddPickForm() {
     };
 }
 
+/* ============================================================
+   CURRENT PICKS
+   ============================================================ */
 
-// CURRENT PICKS
 async function loadCurrentPicks() {
     const res = await fetch(`${API}/picks/current`);
     const picks = await res.json();
@@ -79,8 +85,9 @@ async function loadCurrentPicks() {
     container.innerHTML = picks.map(p => `
         <div class="pick-card">
             <div class="pick-header">${p.horse_name} <span style="color:white;">(${p.odds_fraction})</span></div>
+
             <div class="pick-meta">
-               Player: ${p.player_id}<br>
+                Player: ${p.player_id}<br>
                 Course: ${p.course}<br>
                 Time: ${p.race_time}<br>
                 Horse No: ${p.horse_number}
@@ -96,17 +103,20 @@ async function loadCurrentPicks() {
     `).join("");
 }
 
-
 async function updateResult(id, status) {
     await fetch(`${API}/picks/${id}/result`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({status})
+        body: JSON.stringify({ status })
     });
+
     loadCurrentPicks();
 }
 
-// STATS
+/* ============================================================
+   STATS PAGE
+   ============================================================ */
+
 function setupStatsForm() {
     const form = document.getElementById("statsForm");
     const summaryBox = document.getElementById("statsSummary");
@@ -139,7 +149,6 @@ function setupStatsForm() {
             <strong>Total Wins:</strong> ${top.wins}
         `;
 
-        // NEW GRID OUTPUT
         const grid = document.getElementById("statsGrid");
 
         grid.innerHTML = stats.map(s => `
@@ -156,13 +165,17 @@ function setupStatsForm() {
     };
 }
 
-// PLAYER DETAILS
+/* ============================================================
+   PLAYER DETAILS
+   ============================================================ */
+
 function setupPlayerDetailsForm() {
     const form = document.getElementById("playerForm");
     const profile = document.getElementById("playerProfile");
 
     form.onsubmit = async (e) => {
         e.preventDefault();
+
         const name = new FormData(form).get("name");
 
         const res = await fetch(`${API}/stats/player/${name}`);
@@ -173,7 +186,6 @@ function setupPlayerDetailsForm() {
             data.profit < 0 ? "#7a0f0f" :
             "#555";
 
-        // Build recent form badges
         const formBadges = data.recent_form.map(r => {
             const cls =
                 r === "W" ? "form-win" :
@@ -209,24 +221,25 @@ function setupPlayerDetailsForm() {
         `;
     };
 }
-// RACE DAY
+
+/* ============================================================
+   RACE DAY — FORM SETUP
+   ============================================================ */
+
 async function setupRaceForm() {
     const form = document.getElementById("raceForm");
     const resultBox = document.getElementById("raceResult");
     const playerSelect = document.getElementById("playerSelect");
 
-    // Fetch players
     const res = await fetch(`${API}/players/`);
     const players = await res.json();
 
-    // Populate dropdown
     playerSelect.innerHTML = '<option value="">Select Player</option>';
     players.forEach(p => {
         PLAYER_MAP[p.id] = p.name;
         playerSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
     });
 
-    // Submit handler
     form.onsubmit = async (e) => {
         e.preventDefault();
 
@@ -246,12 +259,19 @@ async function setupRaceForm() {
             message = `${playerName}'s bet has been added!`;
         } catch {}
 
-        // Show success box
         resultBox.style.display = "block";
         resultBox.innerText = message;
 
         form.reset();
-    async function updateRaceResult(id, result) {
+        loadRaceStats();
+    };
+}
+
+/* ============================================================
+   RACE DAY — UPDATE RESULT
+   ============================================================ */
+
+async function updateRaceResult(id, result) {
     await fetch(`${API}/raceday/${id}/result`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
@@ -261,9 +281,9 @@ async function setupRaceForm() {
     loadRaceStats();
 }
 
-        loadRaceStats();
-    };
-}
+/* ============================================================
+   RACE DAY — LOAD STATS + CARDS
+   ============================================================ */
 
 async function loadRaceStats() {
     const month = new Date().getMonth() + 1;
@@ -272,14 +292,12 @@ async function loadRaceStats() {
     const listRes = await fetch(`${API}/raceday/?month=${month}&year=${year}`);
     let bets = await listRes.json();
 
-    // Today-only filter
     const todayOnly = document.getElementById("todayOnly")?.checked;
     if (todayOnly) {
         const today = new Date().toISOString().slice(0, 10);
         bets = bets.filter(b => b.date === today);
     }
 
-    // Sort by course → time
     bets.sort((a, b) => {
         if (a.course !== b.course) return a.course.localeCompare(b.course);
         return a.race_time.localeCompare(b.race_time);
@@ -287,7 +305,6 @@ async function loadRaceStats() {
 
     const list = document.getElementById("raceList");
 
-    // Group by course → time
     const grouped = {};
     bets.forEach(b => {
         if (!grouped[b.course]) grouped[b.course] = {};
@@ -303,7 +320,6 @@ async function loadRaceStats() {
         "Pending": "⏳"
     };
 
-    // Build HTML
     list.innerHTML = Object.keys(grouped).map(course => `
         <div class="race-course-header">${course}</div>
 
@@ -314,82 +330,4 @@ async function loadRaceStats() {
                 <div class="race-card">
 
                     <div class="race-stake">Stake: £${b.amount_bet}</div>
-
-                    <div class="race-horse">
-                        (${b.horse_number}) ${b.horse_name} @ ${b.odds_fraction}
-                    </div>
-
-                    <div class="race-meta">
-                        Player: ${PLAYER_MAP[b.player_id]}<br>
-                        Course: ${b.course}<br>
-                        Race Time: ${b.race_time}<br>
-                        Winnings: £${b.winnings || "0.00"}
-                    </div>
-
-                    <div class="race-status">
-                        <span class="result-${b.result.toLowerCase()}">
-                            ${icons[b.result]} ${b.result}
-                        </span>
-                    </div>
-
-                    <div class="race-buttons">
-                        <button class="btn-win" onclick="updateRaceResult(${b.id}, 'Win')">WIN</button>
-                        <button onclick="updateRaceResult(${b.id}, 'Place')">PLACE</button>
-                        <button onclick="updateRaceResult(${b.id}, 'Lose')">LOSE</button>
-                        <button onclick="updateRaceResult(${b.id}, 'NR')">NR</button>
-                    </div>
-
-                </div>
-            `).join("")}
-
-        `).join("")}
-
-    `).join("");
-
-    // Load group stats
-    const statsRes = await fetch(`${API}/raceday/stats?month=${month}&year=${year}`);
-    const stats = await statsRes.json();
-
-    const box = document.getElementById("raceStats");
-
-    const totalBets = bets.length;
-    const wins = bets.filter(b => b.result === "Win").length;
-    const strikeRate = totalBets ? (wins / totalBets * 100).toFixed(1) : 0;
-
-    box.innerHTML = `
-        <h3>Group Summary</h3>
-        Total Bets: ${totalBets}<br>
-        Strike Rate: ${strikeRate}%<br>
-        Total Stake: £${stats.group.total_stake.toFixed(2)}<br>
-        Total Return: £${stats.group.total_return.toFixed(2)}<br>
-        Profit: £${stats.group.profit.toFixed(2)}<br><br>
-
-        <h3>Players</h3>
-        ${stats.players.map(p => {
-            const profitColor =
-                p.profit > 0 ? "#0f7a0f" :
-                p.profit < 0 ? "#7a0f0f" :
-                "#555";
-
-            return `
-                <div class="profile-section" style="border-left: 6px solid ${profitColor}; padding-left: 10px;">
-                    <strong>${p.player}</strong><br>
-                    Stake: £${p.total_stake.toFixed(2)}<br>
-                    Return: £${p.total_return.toFixed(2)}<br>
-                    Profit: £${p.profit.toFixed(2)}
-                </div>
-            `;
-        }).join("")}
-    `;
-}
-
-// Highlight active nav link
-document.addEventListener("DOMContentLoaded", () => {
-    const current = window.location.pathname;
-    document.querySelectorAll(".navbar a").forEach(link => {
-        if (link.getAttribute("href") === current) {
-            link.classList.add("active");
-        }
-    });
-});
 
