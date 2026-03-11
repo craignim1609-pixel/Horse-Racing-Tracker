@@ -9,10 +9,10 @@ def seed_players():
 
     default_players = [
         "Craig",
-        "John",
-        "Paul",
-        "Mark",
-        "Chris"
+        "Donald",
+        "Miller",
+        "Nick",
+        "Josh"
     ]
 
     for name in default_players:
