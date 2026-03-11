@@ -335,6 +335,8 @@ async function loadRaceStats() {
     const listRes = await fetch(`${API}/raceday/?month=${month}&year=${year}`);
     let bets = await listRes.json();
 
+   console.log("BETS:", bets);
+
     // Today-only filter
     const todayOnly = document.getElementById("todayOnly")?.checked;
     if (todayOnly) {
