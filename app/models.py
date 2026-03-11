@@ -31,12 +31,17 @@ class RaceDay(Base):
     __tablename__ = "race_day"
     id = Column(Integer, primary_key=True, index=True)
     player_id = Column(Integer, ForeignKey("players.id"))
+
     amount_bet = Column(Numeric)
     odds_fraction = Column(String)
-    track = Column(String)
-    time = Column(String)
+
+    # UPDATED FIELD NAMES
+    course = Column(String)
+    race_time = Column(String)
+
     horse_name = Column(String)
     horse_number = Column(Integer)
+
     result = Column(String)
     month = Column(Integer)
     year = Column(Integer)
