@@ -30,31 +30,28 @@ class PickUpdateStatus(BaseModel):
 
 
 # -------------------------
-# RACEDAY MODELS
+# RACEDAY MODELS (UPDATED)
 # -------------------------
-
-# This matches your SQLAlchemy RaceDay model EXACTLY:
-# track  <-> Column(String)
-# time   <-> Column(String)
 
 class RaceDayBase(BaseModel):
     player_id: int
-    track: str
+    course: str
     horse_number: int
     horse_name: str
-    time: str
+    race_time: str
     odds_fraction: str
     amount_bet: float
     result: str
     month: int
     year: int
 
+
 class RaceDayCreate(BaseModel):
     player_id: int
-    track: str
+    course: str
     horse_number: int
     horse_name: str
-    time: str
+    race_time: str
     odds_fraction: str
     amount_bet: float
 
@@ -64,17 +61,16 @@ class RaceDayCreate(BaseModel):
 
     @validator("month", "year", pre=True)
     def empty_to_none(cls, v):
-        # HTML forms send empty strings for empty fields
         if v in ("", None):
             return None
         return int(v)
+
 
 class RaceDayOut(RaceDayBase):
     id: int
 
     class Config:
         orm_mode = True
-
 
 # -------------------------
 # ACCUMULATOR
