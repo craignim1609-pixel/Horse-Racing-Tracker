@@ -370,50 +370,52 @@ async function loadRaceStats() {
         "Pending": "⏳"
     };
 
-    // Build Race Day cards
-    list.innerHTML = Object.keys(grouped).map(course => `
-        <div class="race-course-header">${course}</div>
+  // Build Race Day cards
+list.innerHTML = `
+    <div class="race-list-wrapper">
+        ${Object.keys(grouped).map(course => `
+            <div class="race-course-header">${course}</div>
 
-        ${Object.keys(grouped[course]).sort().map(time => `
-            <div class="race-time-header">${time}</div>
+            ${Object.keys(grouped[course]).sort().map(time => `
+                <div class="race-time-header">${time}</div>
 
-            ${grouped[course][time].map(b => `
-                <div class="race-card">
+                ${grouped[course][time].map(b => `
+                    <div class="race-card">
 
-                    <div class="race-stake">Stake: £${b.amount_bet}</div>
+                        <div class="race-stake">Stake: £${b.amount_bet}</div>
 
-                    <div class="race-horse">
-                        (${b.horse_number}) ${b.horse_name} @ ${b.odds_fraction}
+                        <div class="race-horse">
+                            (${b.horse_number}) ${b.horse_name} @ ${b.odds_fraction}
+                        </div>
+
+                        <div class="race-meta">
+                            Player: ${PLAYER_MAP[b.player_id]}<br>
+                            Course: ${b.course}<br>
+                            Race Time: ${b.race_time}<br>
+                            Winnings: £${b.winnings || "0.00"}
+                        </div>
+
+                        <div class="race-status">
+                            <span class="result-${b.result.toLowerCase()}">
+                                ${icons[b.result]} ${b.result}
+                            </span>
+                        </div>
+
+                        <div class="race-buttons">
+                            <button onclick="updateRaceResult(${b.id}, 'WIN')">WIN</button>
+                            <button onclick="updateRaceResult(${b.id}, 'PLACE')">PLACE</button>
+                            <button onclick="updateRaceResult(${b.id}, 'LOSE')">LOSE</button>
+                            <button onclick="updateRaceResult(${b.id}, 'NR')">NR</button>
+                        </div>
+
                     </div>
+                `).join("")}
 
-                    <div class="race-meta">
-                        Player: ${PLAYER_MAP[b.player_id]}<br>
-                        Course: ${b.course}<br>
-                        Race Time: ${b.race_time}<br>
-                        Winnings: £${b.winnings || "0.00"}
-                    </div>
-
-                    <div class="race-status">
-                     <span class="result-${b.result.toLowerCase()}">
-                         ${icons[b.result]} ${b.result}
-                     </span>
-
-
-                    </div>
-
-                    <div class="race-buttons">
-                        <button onclick="updateRaceResult(${b.id}, 'WIN')">WIN</button>
-                        <button onclick="updateRaceResult(${b.id}, 'PLACE')">PLACE</button>
-                        <button onclick="updateRaceResult(${b.id}, 'LOSE')">LOSE</button>
-                        <button onclick="updateRaceResult(${b.id}, 'NR')">NR</button>
-                    </div>
-
-                </div>
             `).join("")}
 
         `).join("")}
-
-    `).join("");
+    </div>
+`;
 
     /* ============================================================
        GROUP STATS
