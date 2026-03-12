@@ -314,11 +314,11 @@ async function loadRecentActivity() {
    RACE DAY — UPDATE RESULT
    ============================================================ */
 
-async function updateRaceResult(id, result) {
-    await fetch(`${API}/raceday/${id}/result`, {
+async function updateRaceResult(id, status) {
+    await fetch(`${API}/picks/${id}/result`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ result })
+        body: JSON.stringify({ status })
     });
 
     loadRaceStats();
@@ -399,9 +399,9 @@ async function loadRaceStats() {
                     </div>
 
                     <div class="race-buttons">
-                        <button class="btn-win" onclick="updateRaceResult(${b.id}, 'Win')">WIN</button>
-                        <button onclick="updateRaceResult(${b.id}, 'Place')">PLACE</button>
-                        <button onclick="updateRaceResult(${b.id}, 'Lose')">LOSE</button>
+                        <button onclick="updateRaceResult(${b.id}, 'WIN')">WIN</button>
+                        <button onclick="updateRaceResult(${b.id}, 'PLACE')">PLACE</button>
+                        <button onclick="updateRaceResult(${b.id}, 'LOSE')">LOSE</button>
                         <button onclick="updateRaceResult(${b.id}, 'NR')">NR</button>
                     </div>
 
