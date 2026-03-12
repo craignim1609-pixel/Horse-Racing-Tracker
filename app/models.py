@@ -42,10 +42,8 @@ class RaceDay(Base):
     horse_number = Column(Integer)
 
     result = Column(String, default="Pending")
-    winnings = Column(Numeric, default=0)   # ⭐ ADD THIS
-
-    month = Column(Integer)
-    year = Column(Integer)
+    winnings = Column(Numeric, default=0)
 
     player = relationship("Player", back_populates="race_bets")
+
 
