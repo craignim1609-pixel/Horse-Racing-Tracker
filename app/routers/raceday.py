@@ -94,7 +94,7 @@ def recent_activity(db: Session = Depends(get_db)):
         .all()
     )
     
-   @router.patch("/{id}/result")
+@router.patch("/{id}/result")
 def update_race_day_result(id: int, status: str, db: Session = Depends(get_db)):
     bet = db.query(models.RaceDay).filter(models.RaceDay.id == id).first()
 
