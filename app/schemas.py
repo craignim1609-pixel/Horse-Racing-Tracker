@@ -1,36 +1,8 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 from typing import Optional, List
 
 # -------------------------
-# PICK MODELS
-# -------------------------
-
-class PickBase(BaseModel):
-    player_id: int
-    course: str
-    horse_name: str
-    horse_number: int
-    odds_fraction: str
-    race_time: str
-    month: int
-    year: int
-
-class PickCreate(PickBase):
-    pass
-
-class PickOut(PickBase):
-    id: int
-    status: str
-
-    class Config:
-        orm_mode = True
-
-class PickUpdateStatus(BaseModel):
-    status: str  # Win/Place/Lose/NR
-
-
-# -------------------------
-# RACEDAY MODELS (UPDATED)
+# RACEDAY MODELS (CLEANED)
 # -------------------------
 
 class RaceDayBase(BaseModel):
@@ -43,8 +15,6 @@ class RaceDayBase(BaseModel):
     amount_bet: float
     result: str
     winnings: float
-    month: int
-    year: int
 
 
 class RaceDayCreate(BaseModel):
@@ -57,14 +27,6 @@ class RaceDayCreate(BaseModel):
     amount_bet: float
 
     result: str = "Pending"
-    month: Optional[int] = None
-    year: Optional[int] = None
-
-    @validator("month", "year", pre=True)
-    def empty_to_none(cls, v):
-        if v in ("", None):
-            return None
-        return int(v)
 
 
 class RaceDayOut(RaceDayBase):
