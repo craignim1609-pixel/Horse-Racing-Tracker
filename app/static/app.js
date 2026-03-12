@@ -279,9 +279,9 @@ async function loadRecentActivity() {
     }
 
 const icons = {
-    "Win": "🟢",
-    "Place": "🔵",
-    "Lose": "🔴",
+    "WIN": "🟢",
+    "PLACE": "🔵",
+    "LOSE": "🔴",
     "NR": "⚪",
     "Pending": "⏳"
 };
