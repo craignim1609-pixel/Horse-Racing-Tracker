@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import List
 from app.database import get_db
 from app import models, schemas
-from app.utils import odds as odds_utils
 
 router = APIRouter(prefix="/raceday", tags=["Race Day"])
 
@@ -32,7 +32,21 @@ def list_race_day_bets(db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------------------
-# GROUP STATS
+# RECENT ACTIVITY (Frontend expects this)
+# ------------------------------------------------------------
+@router.get("/recent")
+def get_recent_activity(db: Session = Depends(get_db)):
+    recent = (
+        db.query(models.RaceDay)
+        .order_by(models.RaceDay.id.desc())
+        .limit(10)
+        .all()
+    )
+    return recent
+
+
+# ------------------------------------------------------------
+# GROUP + PLAYER STATS (Frontend expects this shape)
 # ------------------------------------------------------------
 @router.get("/stats")
 def race_day_stats(db: Session = Depends(get_db)):
