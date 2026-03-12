@@ -278,13 +278,13 @@ async function loadRecentActivity() {
         return;
     }
 
-    const icons = {
-        "Win": "🟢",
-        "Place": "🔵",
-        "Lose": "🔴",
-        "NR": "⚪",
-        "Pending": "⏳"
-    };
+const icons = {
+    "Win": "🟢",
+    "Place": "🔵",
+    "Lose": "🔴",
+    "NR": "⚪",
+    "Pending": "⏳"
+};
 
     box.innerHTML = items.map(a => `
         <div class="activity-card">
