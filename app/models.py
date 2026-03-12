@@ -45,5 +45,3 @@ class RaceDay(Base):
     winnings = Column(Numeric, default=0)
 
     player = relationship("Player", back_populates="race_bets")
-
-
