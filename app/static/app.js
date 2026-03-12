@@ -302,7 +302,7 @@ async function loadRecentActivity() {
 
             <div class="activity-status">
                 <span class="result-${a.result.toLowerCase()}">
-                    ${icons[a.result]} ${a.result}
+                    ${icons[a.status]} ${a.status}
                 </span>
             </div>
 
@@ -422,7 +422,7 @@ async function loadRaceStats() {
     const box = document.getElementById("raceStats");
 
     const totalBets = bets.length;
-    const wins = bets.filter(b => b.status === "Win").length;
+    const wins = bets.filter(b => b.status === "WIN").length;
     const strikeRate = totalBets ? (wins / totalBets * 100).toFixed(1) : 0;
 
     box.innerHTML = `
