@@ -340,11 +340,11 @@ async function loadRaceStats() {
    console.log("BETS:", bets);
 
     // Today-only filter
-    const todayOnly = document.getElementById("todayOnly")?.checked;
-    if (todayOnly) {
-        const today = new Date().toISOString().slice(0, 10);
-        bets = bets.filter(b => b.date === today);
-    }
+    //const todayOnly = document.getElementById("todayOnly")?.checked;
+    //if (todayOnly) {
+        //const today = new Date().toISOString().slice(0, 10);
+       // bets = bets.filter(b => b.date === today);
+    //}
 
     // Sort by course → race_time
     bets.sort((a, b) => {
