@@ -42,6 +42,7 @@ class RaceDayBase(BaseModel):
     odds_fraction: str
     amount_bet: float
     result: str
+    winnings: float
     month: int
     year: int
 
