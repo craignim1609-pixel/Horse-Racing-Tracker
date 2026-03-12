@@ -84,3 +84,13 @@ def seed_players(db: Session = Depends(get_db)):
 
     db.commit()
     return {"inserted": inserted}
+
+@router.get("/recent")
+def recent_activity(db: Session = Depends(get_db)):
+    return (
+        db.query(models.RaceDay)
+        .order_by(models.RaceDay.id.desc())
+        .limit(10)
+        .all()
+    )
+
