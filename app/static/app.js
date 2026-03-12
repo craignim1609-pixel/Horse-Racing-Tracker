@@ -301,7 +301,7 @@ async function loadRecentActivity() {
             </div>
 
             <div class="activity-status">
-                <span class="result-${a.result.toLowerCase()}">
+                <span class="result-${a.status.toLowerCase()}">
                     ${icons[a.status]} ${a.status}
                 </span>
             </div>
