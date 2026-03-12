@@ -105,7 +105,7 @@ async function loadCurrentPicks() {
 }
 
 async function updateResult(id, status) {
-    await fetch(`${API}/picks/${id}/result`, {
+    await fetch(`${API}/raceday/${id}/result`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ status })
@@ -316,7 +316,7 @@ const icons = {
    ============================================================ */
 
 async function updateRaceResult(id, status) {
-    await fetch(`${API}/picks/${id}/result`, {
+    await fetch(`${API}/raceday/${id}/result`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ status })
