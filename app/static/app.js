@@ -50,11 +50,12 @@ function setupAddPickForm() {
             return;
         }
 
-        const res = await fetch(`${API}/raceday/${id}/result`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(body)
-        });
+         const res = await fetch(`${API}/picks/`, {
+             method: "POST",
+             headers: {"Content-Type": "application/json"},
+             body: JSON.stringify(body)
+         });
+
 
         const text = await res.text();
 
