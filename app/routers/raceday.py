@@ -93,4 +93,28 @@ def recent_activity(db: Session = Depends(get_db)):
         .limit(10)
         .all()
     )
+    @router.patch("/{id}/result")
+def update_race_day_result(id: int, status: str, db: Session = Depends(get_db)):
+    bet = db.query(models.RaceDay).filter(models.RaceDay.id == id).first()
+
+    if not bet:
+        raise HTTPException(status_code=404, detail="Race Day bet not found")
+
+    # Update result
+    bet.result = status
+
+    # Recalculate winnings
+    dec = odds_utils.fractional_to_decimal(bet.odds_fraction)
+
+    if status == "WIN":
+        bet.winnings = float(bet.amount_bet) * dec
+    elif status == "PLACE":
+        bet.winnings = float(bet.amount_bet) * odds_utils.place_decimal(bet.odds_fraction)
+    else:
+        bet.winnings = 0.0
+
+    db.commit()
+    db.refresh(bet)
+    return bet
+
 
