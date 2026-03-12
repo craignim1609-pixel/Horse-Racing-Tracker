@@ -35,15 +35,17 @@ class RaceDay(Base):
     amount_bet = Column(Numeric)
     odds_fraction = Column(String)
 
-    # UPDATED FIELD NAMES
     course = Column(String)
     race_time = Column(String)
 
     horse_name = Column(String)
     horse_number = Column(Integer)
 
-    result = Column(String)
+    result = Column(String, default="Pending")
+    winnings = Column(Numeric, default=0)   # ⭐ ADD THIS
+
     month = Column(Integer)
     year = Column(Integer)
 
     player = relationship("Player", back_populates="race_bets")
+
