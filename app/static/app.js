@@ -366,7 +366,7 @@ async function loadRaceStats() {
         "PLACE": "🔵",
         "LOSE": "🔴",
         "NR": "⚪",
-        "PENDING": "⏳"
+        "Pending": "⏳"
     };
 
     // Build Race Day cards
@@ -393,9 +393,11 @@ async function loadRaceStats() {
                     </div>
 
                     <div class="race-status">
-                        <span class="result-${b.status.toLowerCase()}">
-                            ${icons[b.status]} ${b.status}
-                        </span>
+                     <span class="result-${a.result.toLowerCase()}">
+                         ${icons[a.result]} ${a.result}
+                     </span>
+
+
                     </div>
 
                     <div class="race-buttons">
@@ -422,7 +424,7 @@ async function loadRaceStats() {
     const box = document.getElementById("raceStats");
 
     const totalBets = bets.length;
-    const wins = bets.filter(b => b.status === "WIN").length;
+    const wins = bets.filter(b => b.result === "WIN").length;
     const strikeRate = totalBets ? (wins / totalBets * 100).toFixed(1) : 0;
 
     box.innerHTML = `
