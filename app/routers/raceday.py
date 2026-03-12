@@ -42,4 +42,26 @@ def race_day_stats(db: Session = Depends(get_db)):
     for p in players:
         bets = db.query(models.RaceDay).filter(models.RaceDay.player_id == p.id).all()
 
-        total_stake = sum(float(b.amount_bet) for
+        total_stake = sum(float(b.amount_bet) for b in bets)
+        total_return = sum(float(b.winnings) for b in bets)
+        profit = total_return - total_stake
+
+        result.append({
+            "player": p.name,
+            "total_stake": total_stake,
+            "total_return": total_return,
+            "profit": profit,
+        })
+
+    group_stake = sum(r["total_stake"] for r in result)
+    group_return = sum(r["total_return"] for r in result)
+    group_profit = group_return - group_stake
+
+    return {
+        "players": result,
+        "group": {
+            "total_stake": group_stake,
+            "total_return": group_return,
+            "profit": group_profit,
+        }
+    }
