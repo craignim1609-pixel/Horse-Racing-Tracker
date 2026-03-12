@@ -301,9 +301,9 @@ async function loadRecentActivity() {
             </div>
 
             <div class="activity-status">
-                <span class="result-${a.status.toLowerCase()}">
-                    ${icons[a.status]} ${a.status}
-                </span>
+                <span class="result-${b.result.toLowerCase()}">
+                   ${icons[b.result]} ${b.result}
+               </span>
             </div>
 
         </div>
@@ -393,8 +393,8 @@ async function loadRaceStats() {
                     </div>
 
                     <div class="race-status">
-                     <span class="result-${a.result.toLowerCase()}">
-                         ${icons[a.result]} ${a.result}
+                     <span class="result-${b.result.toLowerCase()}">
+                         ${icons[b.result]} ${b.result}
                      </span>
 
 
