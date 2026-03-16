@@ -47,6 +47,64 @@ button:active,
 }
 
 /* ============================================================
+   TYPOGRAPHY — PREMIUM BOOKMAKER STYLE
+   ============================================================ */
+
+/* Global text smoothing */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1 {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    margin-bottom: 12px;
+    text-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+
+h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+    text-shadow: 0 0 4px rgba(0,0,0,0.35);
+}
+
+/* Section labels (like “Recent Activity”, “Today’s Bets”) */
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: gold;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid rgba(247,198,0,0.35);
+    padding-bottom: 6px;
+}
+
+/* Small labels (form labels, meta text) */
+.label-small {
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+/* Improve readability of all meta text */
+.meta-text {
+    color: #ccc;
+    font-size: 0.9rem;
+    line-height: 1.35rem;
+}
+
+/* Improve spacing between stacked text blocks */
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* ============================================================
    NAVBAR — GREEN/GOLD
    ============================================================ */
 
