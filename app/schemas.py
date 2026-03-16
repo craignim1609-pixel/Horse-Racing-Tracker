@@ -26,11 +26,11 @@ class PickOut(PickBase):
         orm_mode = True
 
 class PickUpdateStatus(BaseModel):
-    status: str  # Win/Place/Lose/NR
+    status: str  # Win / Place / Lose / NR
 
 
 # -------------------------
-# RACEDAY MODELS (CLEANED)
+# RACEDAY MODELS (CLEAN + MATCHING FRONTEND)
 # -------------------------
 
 class RaceDayBase(BaseModel):
@@ -41,8 +41,10 @@ class RaceDayBase(BaseModel):
     race_time: str
     odds_fraction: str
     amount_bet: float
-    result: str
-    winnings: float
+
+    # Optional because DB sets defaults
+    result: Optional[str] = None
+    winnings: Optional[float] = None
 
 
 class RaceDayCreate(BaseModel):
@@ -54,14 +56,16 @@ class RaceDayCreate(BaseModel):
     odds_fraction: str
     amount_bet: float
 
-    result: str = "Pending"
-
 
 class RaceDayOut(RaceDayBase):
     id: int
 
     class Config:
         orm_mode = True
+
+
+class RaceDayResultUpdate(BaseModel):
+    result: str  # Win / Place / Lose / NR
 
 
 # -------------------------
