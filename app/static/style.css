@@ -443,3 +443,29 @@ input, select {
 #groupBalance strong {
     color: #f7c600; /* gold highlight */
 }
+
+/* ============================================================
+   GLOBAL LAYOUT — PANEL ALIGNMENT + SPACING
+   ============================================================ */
+
+.race-container {
+    display: flex;
+    gap: 20px;              /* tighter, cleaner spacing */
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+/* Panels take equal width */
+.left-panel,
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;              /* consistent spacing inside panels */
+}
+
+/* Tighten panel padding for bookmaker feel */
+.left-panel,
+.right-panel {
+    padding: 20px;
+}
