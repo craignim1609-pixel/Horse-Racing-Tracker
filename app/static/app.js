@@ -1,8 +1,69 @@
+/* ============================================================
+   GLOBALS + HELPERS
+   ============================================================ */
+
 const API = "https://horse-racing-tracker-production.up.railway.app";
+
 let PLAYER_MAP = {};
 let ALL_BETS = [];
 let FILTER_MODE = "all"; // "all" or "today"
 
+/* Icons for results */
+function getIcons() {
+    return {
+        "Win": "🟢",
+        "Place": "🔵",
+        "Lose": "🔴",
+        "NR": "⚪",
+        "Pending": "⏳"
+    };
+}
+
+/* Group bets by course → time */
+function groupBets(bets) {
+    const grouped = {};
+    bets.forEach(b => {
+        if (!grouped[b.course]) grouped[b.course] = {};
+        if (!grouped[b.course][b.race_time]) grouped[b.course][b.race_time] = [];
+        grouped[b.course][b.race_time].push(b);
+    });
+    return grouped;
+}
+
+/* Render a single race card */
+function renderRaceCard(b, icons) {
+    return `
+        <div class="race-card">
+
+            <div class="race-stake">Stake: £${b.amount_bet}</div>
+
+            <div class="race-horse">
+                (${b.horse_number}) ${b.horse_name} @ ${b.odds_fraction}
+            </div>
+
+            <div class="race-meta">
+                Player: ${PLAYER_MAP[b.player_id]}<br>
+                Course: ${b.course}<br>
+                Race Time: ${b.race_time}<br>
+                Winnings: £${b.winnings || "0.00"}
+            </div>
+
+            <div class="race-status">
+                <span class="result-${b.result.toLowerCase()}">
+                    ${icons[b.result]} ${b.result}
+                </span>
+            </div>
+
+            <div class="race-buttons">
+                <button type="button" onclick="updateRaceResult(${b.id}, 'Win')">WIN</button>
+                <button type="button" onclick="updateRaceResult(${b.id}, 'Place')">PLACE</button>
+                <button type="button" onclick="updateRaceResult(${b.id}, 'Lose')">LOSE</button>
+                <button type="button" onclick="updateRaceResult(${b.id}, 'NR')">NR</button>
+            </div>
+
+        </div>
+    `;
+}
 /* ============================================================
    HOME PAGE
    ============================================================ */
@@ -26,7 +87,6 @@ async function loadAccumulator() {
     const data = await res.json();
     document.getElementById("accumulator").innerHTML = JSON.stringify(data, null, 2);
 }
-
 /* ============================================================
    ADD PICK
    ============================================================ */
@@ -44,7 +104,6 @@ function setupAddPickForm() {
 
         const body = Object.fromEntries(new FormData(form).entries());
 
-        // Validate odds format (e.g. 5/2)
         if (!/^\d+\/\d+$/.test(body.odds_fraction)) {
             resultBox.style.display = "block";
             resultBox.style.background = "#5a0000";
@@ -69,7 +128,6 @@ function setupAddPickForm() {
         form.year.value = now.getFullYear();
     };
 }
-
 /* ============================================================
    CURRENT PICKS
    ============================================================ */
@@ -97,10 +155,10 @@ async function loadCurrentPicks() {
             </div>
 
             <div class="result-buttons">
-                <button type="button" class="btn-win" onclick="updateResult(${p.id}, 'Win')">Win</button>
-                <button type="button" class="btn-place" onclick="updateResult(${p.id}, 'Place')">Place</button>
-                <button type="button" class="btn-lose" onclick="updateResult(${p.id}, 'Lose')">Lose</button>
-                <button type="button" class="btn-nr" onclick="updateResult(${p.id}, 'NR')">NR</button>
+                <button type="button" onclick="updateResult(${p.id}, 'Win')">Win</button>
+                <button type="button" onclick="updateResult(${p.id}, 'Place')">Place</button>
+                <button type="button" onclick="updateResult(${p.id}, 'Lose')">Lose</button>
+                <button type="button" onclick="updateResult(${p.id}, 'NR')">NR</button>
             </div>
         </div>
     `).join("");
@@ -166,7 +224,6 @@ function setupStatsForm() {
         `).join("");
     };
 }
-
 /* ============================================================
    PLAYER DETAILS
    ============================================================ */
@@ -223,7 +280,6 @@ function setupPlayerDetailsForm() {
         `;
     };
 }
-
 /* ============================================================
    RACE DAY — FORM SETUP
    ============================================================ */
@@ -281,7 +337,6 @@ async function updateRaceResult(id, result) {
 
     loadRaceStats();
 }
-
 /* ============================================================
    RACE DAY — LOAD STATS + CARDS
    ============================================================ */
@@ -291,25 +346,10 @@ async function loadRaceStats() {
     ALL_BETS = await listRes.json();
     let bets = [...ALL_BETS];
 
-
     const list = document.getElementById("raceList");
 
-    // Group by course → race_time
-    const grouped = {};
-    bets.forEach(b => {
-        if (!grouped[b.course]) grouped[b.course] = {};
-        if (!grouped[b.course][b.race_time]) grouped[b.course][b.race_time] = [];
-        grouped[b.course][b.race_time].push(b);
-    });
-
-    // Unified icon map (correct casing)
-    const icons = {
-        "Win": "🟢",
-        "Place": "🔵",
-        "Lose": "🔴",
-        "NR": "⚪",
-        "Pending": "⏳"
-    };
+    const grouped = groupBets(bets);
+    const icons = getIcons();
 
     list.innerHTML = `
         <div class="race-list-wrapper">
@@ -319,37 +359,7 @@ async function loadRaceStats() {
                 ${Object.keys(grouped[course]).sort().map(time => `
                     <div class="race-time-header">${time}</div>
 
-                    ${grouped[course][time].map(b => `
-                        <div class="race-card">
-
-                            <div class="race-stake">Stake: £${b.amount_bet}</div>
-
-                            <div class="race-horse">
-                                (${b.horse_number}) ${b.horse_name} @ ${b.odds_fraction}
-                            </div>
-
-                            <div class="race-meta">
-                                Player: ${PLAYER_MAP[b.player_id]}<br>
-                                Course: ${b.course}<br>
-                                Race Time: ${b.race_time}<br>
-                                Winnings: £${b.winnings || "0.00"}
-                            </div>
-
-                            <div class="race-status">
-                                <span class="result-${b.result.toLowerCase()}">
-                                    ${icons[b.result]} ${b.result}
-                                </span>
-                            </div>
-
-                            <div class="race-buttons">
-                                <button type="button" onclick="updateRaceResult(${b.id}, 'Win')">WIN</button>
-                                <button type="button" onclick="updateRaceResult(${b.id}, 'Place')">PLACE</button>
-                                <button type="button" onclick="updateRaceResult(${b.id}, 'Lose')">LOSE</button>
-                                <button type="button" onclick="updateRaceResult(${b.id}, 'NR')">NR</button>
-                            </div>
-
-                        </div>
-                    `).join("")}
+                    ${grouped[course][time].map(b => renderRaceCard(b, icons)).join("")}
 
                 `).join("")}
 
@@ -357,10 +367,7 @@ async function loadRaceStats() {
         </div>
     `;
 
-    /* ============================================================
-       GROUP STATS
-       ============================================================ */
-
+    /* GROUP STATS */
     const statsRes = await fetch(`${API}/raceday/stats`);
     const stats = await statsRes.json();
 
@@ -397,10 +404,8 @@ async function loadRaceStats() {
     `;
 
     renderFilteredBets();
-   loadRecentActivity();
-
+    loadRecentActivity();
 }
-
 /* ============================================================
    RECENT ACTIVITY
    ============================================================ */
@@ -416,13 +421,7 @@ async function loadRecentActivity() {
         return;
     }
 
-    const icons = {
-        "Win": "🟢",
-        "Place": "🔵",
-        "Lose": "🔴",
-        "NR": "⚪",
-        "Pending": "⏳"
-    };
+    const icons = getIcons();
 
     box.innerHTML = items.map(a => `
         <div class="activity-card">
@@ -447,11 +446,13 @@ async function loadRecentActivity() {
         </div>
     `).join("");
 }
+/* ============================================================
+   FILTER BAR — TODAY ONLY / ALL BETS
+   ============================================================ */
 
 function filterToday() {
     FILTER_MODE = "today";
 
-    // Highlight button
     document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
     document.querySelector(".filter-btn:nth-child(1)").classList.add("active");
 
@@ -461,12 +462,12 @@ function filterToday() {
 function filterAll() {
     FILTER_MODE = "all";
 
-    // Highlight button
     document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
     document.querySelector(".filter-btn:nth-child(2)").classList.add("active");
 
     renderFilteredBets();
 }
+
 function renderFilteredBets() {
     let bets = [...ALL_BETS];
 
@@ -475,23 +476,10 @@ function renderFilteredBets() {
         bets = bets.filter(b => b.date === today);
     }
 
-    // Rebuild UI using the same grouping logic
-    const grouped = {};
-    bets.forEach(b => {
-        if (!grouped[b.course]) grouped[b.course] = {};
-        if (!grouped[b.course][b.race_time]) grouped[b.course][b.race_time] = [];
-        grouped[b.course][b.race_time].push(b);
-    });
+    const grouped = groupBets(bets);
+    const icons = getIcons();
 
     const list = document.getElementById("raceList");
-
-    const icons = {
-        "Win": "🟢",
-        "Place": "🔵",
-        "Lose": "🔴",
-        "NR": "⚪",
-        "Pending": "⏳"
-    };
 
     list.innerHTML = `
         <div class="race-list-wrapper">
@@ -501,37 +489,7 @@ function renderFilteredBets() {
                 ${Object.keys(grouped[course]).sort().map(time => `
                     <div class="race-time-header">${time}</div>
 
-                    ${grouped[course][time].map(b => `
-                        <div class="race-card">
-
-                            <div class="race-stake">Stake: £${b.amount_bet}</div>
-
-                            <div class="race-horse">
-                                (${b.horse_number}) ${b.horse_name} @ ${b.odds_fraction}
-                            </div>
-
-                            <div class="race-meta">
-                                Player: ${PLAYER_MAP[b.player_id]}<br>
-                                Course: ${b.course}<br>
-                                Race Time: ${b.race_time}<br>
-                                Winnings: £${b.winnings || "0.00"}
-                            </div>
-
-                            <div class="race-status">
-                                <span class="result-${b.result.toLowerCase()}">
-                                    ${icons[b.result]} ${b.result}
-                                </span>
-                            </div>
-
-                            <div class="race-buttons">
-                                <button type="button" onclick="updateRaceResult(${b.id}, 'Win')">WIN</button>
-                                <button type="button" onclick="updateRaceResult(${b.id}, 'Place')">PLACE</button>
-                                <button type="button" onclick="updateRaceResult(${b.id}, 'Lose')">LOSE</button>
-                                <button type="button" onclick="updateRaceResult(${b.id}, 'NR')">NR</button>
-                            </div>
-
-                        </div>
-                    `).join("")}
+                    ${grouped[course][time].map(b => renderRaceCard(b, icons)).join("")}
 
                 `).join("")}
 
@@ -539,4 +497,3 @@ function renderFilteredBets() {
         </div>
     `;
 }
-
