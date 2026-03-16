@@ -42,6 +42,7 @@ function setupAddPickForm() {
 
         const body = Object.fromEntries(new FormData(form).entries());
 
+        // Validate odds format (e.g. 5/2)
         if (!/^\d+\/\d+$/.test(body.odds_fraction)) {
             resultBox.style.display = "block";
             resultBox.style.background = "#5a0000";
@@ -112,7 +113,6 @@ async function updateResult(id, result) {
 
     loadCurrentPicks();
 }
-
 /* ============================================================
    STATS PAGE
    ============================================================ */
@@ -266,54 +266,6 @@ async function setupRaceForm() {
         loadRaceStats();
     };
 }
-
-/* ============================================================
-   RECENT ACTIVITY
-   ============================================================ */
-
-async function loadRecentActivity() {
-    const res = await fetch(`${API}/raceday/recent`);
-    const items = await res.json();
-
-    const box = document.getElementById("recentActivity");
-
-    if (!items.length) {
-        box.innerHTML = "No race day bets recorded yet.";
-        return;
-    }
-
-    const icons = {
-        "WIN": "🟢",
-        "PLACE": "🔵",
-        "LOSE": "🔴",
-        "NR": "⚪",
-        "Pending": "⏳"
-    };
-
-    box.innerHTML = items.map(a => `
-        <div class="activity-card">
-
-            <div class="activity-top">
-                (${a.horse_number}) ${a.horse_name} @ ${a.odds_fraction}
-            </div>
-
-            <div class="activity-meta">
-                Player: ${PLAYER_MAP[a.player_id]}<br>
-                Course: ${a.course}<br>
-                Time: ${a.race_time}<br>
-                Stake: £${a.amount_bet}
-            </div>
-
-            <div class="activity-status">
-                <span class="result-${a.result.toLowerCase()}">
-                  ${icons[a.result]} ${a.result}
-               </span>
-            </div>
-
-        </div>
-    `).join("");
-}
-
 /* ============================================================
    RACE DAY — UPDATE RESULT
    ============================================================ */
@@ -333,7 +285,6 @@ async function updateRaceResult(id, result) {
    ============================================================ */
 
 async function loadRaceStats() {
-    // Fetch ALL Race Day bets (month/year removed)
     const listRes = await fetch(`${API}/raceday/`);
     let bets = await listRes.json();
 
@@ -347,10 +298,11 @@ async function loadRaceStats() {
         grouped[b.course][b.race_time].push(b);
     });
 
+    // Unified icon map (correct casing)
     const icons = {
-        "WIN": "🟢",
-        "PLACE": "🔵",
-        "LOSE": "🔴",
+        "Win": "🟢",
+        "Place": "🔵",
+        "Lose": "🔴",
         "NR": "⚪",
         "Pending": "⏳"
     };
@@ -386,10 +338,10 @@ async function loadRaceStats() {
                             </div>
 
                             <div class="race-buttons">
-                                <button onclick="updateRaceResult(${b.id}, 'WIN')">WIN</button>
-                                <button onclick="updateRaceResult(${b.id}, 'PLACE')">PLACE</button>
-                                <button onclick="updateRaceResult(${b.id}, 'LOSE')">LOSE</button>
-                                <button onclick="updateRaceResult(${b.id}, 'NR')">NR</button>
+                                <button type="button" onclick="updateRaceResult(${b.id}, 'Win')">WIN</button>
+                                <button type="button" onclick="updateRaceResult(${b.id}, 'Place')">PLACE</button>
+                                <button type="button" onclick="updateRaceResult(${b.id}, 'Lose')">LOSE</button>
+                                <button type="button" onclick="updateRaceResult(${b.id}, 'NR')">NR</button>
                             </div>
 
                         </div>
@@ -411,7 +363,7 @@ async function loadRaceStats() {
     const box = document.getElementById("raceStats");
 
     const totalBets = bets.length;
-    const wins = bets.filter(b => b.result === "WIN").length;
+    const wins = bets.filter(b => b.result === "Win").length;
     const strikeRate = totalBets ? (wins / totalBets * 100).toFixed(1) : 0;
 
     box.innerHTML = `
@@ -441,4 +393,51 @@ async function loadRaceStats() {
     `;
 
     loadRecentActivity();
+}
+
+/* ============================================================
+   RECENT ACTIVITY
+   ============================================================ */
+
+async function loadRecentActivity() {
+    const res = await fetch(`${API}/raceday/recent`);
+    const items = await res.json();
+
+    const box = document.getElementById("recentActivity");
+
+    if (!items.length) {
+        box.innerHTML = "No race day bets recorded yet.";
+        return;
+    }
+
+    const icons = {
+        "Win": "🟢",
+        "Place": "🔵",
+        "Lose": "🔴",
+        "NR": "⚪",
+        "Pending": "⏳"
+    };
+
+    box.innerHTML = items.map(a => `
+        <div class="activity-card">
+
+            <div class="activity-top">
+                (${a.horse_number}) ${a.horse_name} @ ${a.odds_fraction}
+            </div>
+
+            <div class="activity-meta">
+                Player: ${PLAYER_MAP[a.player_id]}<br>
+                Course: ${a.course}<br>
+                Time: ${a.race_time}<br>
+                Stake: £${a.amount_bet}
+            </div>
+
+            <div class="activity-status">
+                <span class="result-${a.result.toLowerCase()}">
+                    ${icons[a.result]} ${a.result}
+                </span>
+            </div>
+
+        </div>
+    `).join("");
 }
