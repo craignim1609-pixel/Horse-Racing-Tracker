@@ -288,7 +288,9 @@ async function updateRaceResult(id, result) {
 
 async function loadRaceStats() {
     const listRes = await fetch(`${API}/raceday/`);
-    let bets = await listRes.json();
+    ALL_BETS = await listRes.json();
+    Let bets = [...ALL_BETS];
+
 
     const list = document.getElementById("raceList");
 
@@ -443,3 +445,96 @@ async function loadRecentActivity() {
         </div>
     `).join("");
 }
+
+function filterToday() {
+    FILTER_MODE = "today";
+
+    // Highlight button
+    document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+    document.querySelector(".filter-btn:nth-child(1)").classList.add("active");
+
+    renderFilteredBets();
+}
+
+function filterAll() {
+    FILTER_MODE = "all";
+
+    // Highlight button
+    document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+    document.querySelector(".filter-btn:nth-child(2)").classList.add("active");
+
+    renderFilteredBets();
+}
+function renderFilteredBets() {
+    let bets = [...ALL_BETS];
+
+    if (FILTER_MODE === "today") {
+        const today = new Date().toISOString().split("T")[0];
+        bets = bets.filter(b => b.date === today);
+    }
+
+    // Rebuild UI using the same grouping logic
+    const grouped = {};
+    bets.forEach(b => {
+        if (!grouped[b.course]) grouped[b.course] = {};
+        if (!grouped[b.course][b.race_time]) grouped[b.course][b.race_time] = [];
+        grouped[b.course][b.race_time].push(b);
+    });
+
+    const list = document.getElementById("raceList");
+
+    const icons = {
+        "Win": "🟢",
+        "Place": "🔵",
+        "Lose": "🔴",
+        "NR": "⚪",
+        "Pending": "⏳"
+    };
+
+    list.innerHTML = `
+        <div class="race-list-wrapper">
+            ${Object.keys(grouped).map(course => `
+                <div class="race-course-header">${course}</div>
+
+                ${Object.keys(grouped[course]).sort().map(time => `
+                    <div class="race-time-header">${time}</div>
+
+                    ${grouped[course][time].map(b => `
+                        <div class="race-card">
+
+                            <div class="race-stake">Stake: £${b.amount_bet}</div>
+
+                            <div class="race-horse">
+                                (${b.horse_number}) ${b.horse_name} @ ${b.odds_fraction}
+                            </div>
+
+                            <div class="race-meta">
+                                Player: ${PLAYER_MAP[b.player_id]}<br>
+                                Course: ${b.course}<br>
+                                Race Time: ${b.race_time}<br>
+                                Winnings: £${b.winnings || "0.00"}
+                            </div>
+
+                            <div class="race-status">
+                                <span class="result-${b.result.toLowerCase()}">
+                                    ${icons[b.result]} ${b.result}
+                                </span>
+                            </div>
+
+                            <div class="race-buttons">
+                                <button type="button" onclick="updateRaceResult(${b.id}, 'Win')">WIN</button>
+                                <button type="button" onclick="updateRaceResult(${b.id}, 'Place')">PLACE</button>
+                                <button type="button" onclick="updateRaceResult(${b.id}, 'Lose')">LOSE</button>
+                                <button type="button" onclick="updateRaceResult(${b.id}, 'NR')">NR</button>
+                            </div>
+
+                        </div>
+                    `).join("")}
+
+                `).join("")}
+
+            `).join("")}
+        </div>
+    `;
+}
+
