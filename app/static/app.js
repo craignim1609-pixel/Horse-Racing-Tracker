@@ -103,11 +103,11 @@ async function loadCurrentPicks() {
     `).join("");
 }
 
-async function updateResult(id, status) {
+async function updateResult(id, result) {
     await fetch(`${API}/raceday/${id}/result`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ status })
+        body: JSON.stringify({ result })
     });
 
     loadCurrentPicks();
@@ -318,11 +318,11 @@ async function loadRecentActivity() {
    RACE DAY — UPDATE RESULT
    ============================================================ */
 
-async function updateRaceResult(id, status) {
+async function updateRaceResult(id, result) {
     await fetch(`${API}/raceday/${id}/result`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ status })
+        body: JSON.stringify({ result })
     });
 
     loadRaceStats();
