@@ -499,3 +499,13 @@ input, select {
 .status-lost { background: #7a0f0f; color: #fff; }
 .status-pending { background: #777; color: #fff; }
 
+/* ============================================================
+   ANIMATIONS — FADE-IN FOR CARDS + HEADERS
+   ============================================================ */
+
+.race-card,
+.activity-card,
+.race-course-header,
+.race-time-header {
+    animation: fadeIn 0.35s ease forwards;
+}
