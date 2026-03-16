@@ -94,10 +94,10 @@ async function loadCurrentPicks() {
             </div>
 
             <div class="result-buttons">
-                <button class="btn-win" onclick="updateResult(${p.id}, 'WIN')">Win</button>
-                <button class="btn-place" onclick="updateResult(${p.id}, 'PLACE')">Place</button>
-                <button class="btn-lose" onclick="updateResult(${p.id}, 'LOSE')">Lose</button>
-                <button class="btn-nr" onclick="updateResult(${p.id}, 'NR')">NR</button>
+                <button type="button" class="btn-win" onclick="updateResult(${p.id}, 'Win')">Win</button>
+                <button type="button" class="btn-place" onclick="updateResult(${p.id}, 'Place')">Place</button>
+                <button type="button" class="btn-lose" onclick="updateResult(${p.id}, 'Lose')">Lose</button>
+                <button type="button" class="btn-nr" onclick="updateResult(${p.id}, 'NR')">NR</button>
             </div>
         </div>
     `).join("");
