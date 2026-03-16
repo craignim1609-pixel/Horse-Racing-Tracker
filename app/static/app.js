@@ -224,6 +224,29 @@ function setupStatsForm() {
         `).join("");
     };
 }
+
+//summary section//
+function renderTodaySummary() {
+    const today = new Date().toISOString().split("T")[0];
+
+    const todaysBets = ALL_BETS.filter(b => b.date === today);
+    const total = todaysBets.length;
+    const wins = todaysBets.filter(b => b.result === "Win").length;
+
+    const profit = todaysBets.reduce((sum, b) => {
+        const p = parseFloat(b.winnings || 0) - parseFloat(b.amount_bet || 0);
+        return sum + p;
+    }, 0);
+
+    const box = document.getElementById("todaySummary");
+
+    box.innerHTML = `
+        <strong>Total Bets Today:</strong> ${total}<br>
+        <strong>Wins Today:</strong> ${wins}<br>
+        <strong>Profit Today:</strong> £${profit.toFixed(2)}
+    `;
+}
+
 /* ============================================================
    PLAYER DETAILS
    ============================================================ */
@@ -405,6 +428,8 @@ async function loadRaceStats() {
 
     renderFilteredBets();
     loadRecentActivity();
+    renderTodaySummary();
+
 }
 /* ============================================================
    RECENT ACTIVITY
