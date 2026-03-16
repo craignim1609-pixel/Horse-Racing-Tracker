@@ -220,6 +220,41 @@ input, select {
     border-radius: 6px;
     color: #fff;
 }
+/* ============================================================
+   RESULT BADGES — MATCHING Win / Place / Lose / NR
+   ============================================================ */
+
+.result-win {
+    background: #0f7a0f;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.result-place {
+    background: #0077cc;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.result-lose {
+    background: #7a0f0f;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.result-nr {
+    background: #777;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
 
    /* ============================================================
    RECENT ACTIVITY — COMPACT BOOKMAKER CARDS
