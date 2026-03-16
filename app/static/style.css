@@ -307,15 +307,37 @@ input, select {
     gap: 10px;
 }
 
+/* ============================================================
+   RECENT ACTIVITY — PREMIUM BOOKMAKER CARD STYLE
+   ============================================================ */
+
 .activity-card {
-    background: #111;
+    background: #0d0d0d;
     border-left: 5px solid #f7c600;
-    padding: 10px 12px;
+    padding: 12px 14px;
     border-radius: 6px;
     color: #e6e6e6;
     font-size: 0.9rem;
-    box-shadow: 0 0 10px rgba(247,198,0,0.25);
+    box-shadow: 0 0 10px rgba(247,198,0,0.15);
+    margin-bottom: 10px;
 }
+
+.activity-top {
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.activity-meta {
+    color: #ccc;
+    line-height: 1.35rem;
+    margin-bottom: 6px;
+}
+
+.activity-status {
+    margin-top: 6px;
+}
+
 
 .activity-top {
     font-weight: bold;
