@@ -289,7 +289,7 @@ async function updateRaceResult(id, result) {
 async function loadRaceStats() {
     const listRes = await fetch(`${API}/raceday/`);
     ALL_BETS = await listRes.json();
-    Let bets = [...ALL_BETS];
+    let bets = [...ALL_BETS];
 
 
     const list = document.getElementById("raceList");
