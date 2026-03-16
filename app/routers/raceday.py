@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 from typing import List
+
 from app.database import get_db
 from app import models, schemas
 
 router = APIRouter(prefix="/raceday", tags=["Race Day"])
+
 
 # ------------------------------------------------------------
 # CREATE RACE DAY BET
@@ -32,7 +33,7 @@ def list_race_day_bets(db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------------------
-# RECENT ACTIVITY (Frontend expects this)
+# RECENT ACTIVITY (last 10 bets)
 # ------------------------------------------------------------
 @router.get("/recent")
 def get_recent_activity(db: Session = Depends(get_db)):
@@ -43,6 +44,26 @@ def get_recent_activity(db: Session = Depends(get_db)):
         .all()
     )
     return recent
+
+
+# ------------------------------------------------------------
+# UPDATE RESULT (Win / Place / Lose / NR)
+# ------------------------------------------------------------
+@router.patch("/{bet_id}/result")
+def update_race_result(
+    bet_id: int,
+    data: schemas.RaceDayResultUpdate,
+    db: Session = Depends(get_db)
+):
+    bet = db.query(models.RaceDay).filter(models.RaceDay.id == bet_id).first()
+    if not bet:
+        raise HTTPException(status_code=404, detail="Bet not found")
+
+    bet.result = data.result  # "Win", "Place", "Lose", "NR"
+    db.commit()
+    db.refresh(bet)
+
+    return {"message": "Result updated"}
 
 
 # ------------------------------------------------------------
