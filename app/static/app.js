@@ -1,5 +1,7 @@
 const API = "https://horse-racing-tracker-production.up.railway.app";
 let PLAYER_MAP = {};
+let ALL_BETS = [];
+let FILTER_MODE = "all"; // "all" or "today"
 
 /* ============================================================
    HOME PAGE
