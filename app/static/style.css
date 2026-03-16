@@ -426,3 +426,76 @@ input, select {
     flex-direction: column;
     gap: 20px;
 }
+
+/* ============================================================
+   PREMIUM HEADER BAR — EXACT IMAGE ONE STYLE
+   ============================================================ */
+
+.race-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0d0d0d;
+    padding: 18px 22px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    border-left: 6px solid gold;
+    box-shadow: 0 0 12px rgba(247,198,0,0.25);
+}
+
+.race-header-left h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    color: gold;
+    text-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+
+.player-badges {
+    margin-top: 6px;
+    display: flex;
+    gap: 8px;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.badge-gold { background: #f7c600; color: #000; }
+.badge-green { background: #00c46a; }
+.badge-blue { background: #0077cc; }
+
+.race-header-right {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.header-stat label {
+    display: block;
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin-bottom: 2px;
+}
+
+.stat-value {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.header-status {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.status-won { background: #0f7a0f; color: #fff; }
+.status-lost { background: #7a0f0f; color: #fff; }
+.status-pending { background: #777; color: #fff; }
+
