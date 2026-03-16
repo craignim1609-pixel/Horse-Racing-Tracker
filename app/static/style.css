@@ -509,3 +509,36 @@ input, select {
 .race-time-header {
     animation: fadeIn 0.35s ease forwards;
 }
+
+/* ============================================================
+   FILTER BAR — TODAY ONLY / ALL BETS
+   ============================================================ */
+
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filter-btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    background: #123412;
+    border: 2px solid #1a4d1a;
+    color: gold;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+
+.filter-btn:hover {
+    background: #1a4d1a;
+}
+
+.filter-btn.active {
+    background: gold;
+    color: black;
+    border-color: gold;
+    box-shadow: 0 0 10px rgba(247,198,0,0.35);
+}
+
