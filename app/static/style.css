@@ -186,25 +186,6 @@ h2 {
 }
 
 /* ============================================================
-   GROUP BALANCE — PREMIUM BOOKMAKER PANEL
-   ============================================================ */
-
-#groupBalance {
-    background: #0d0d0d;
-    padding: 18px 20px;
-    border-radius: 10px;
-    border-left: 6px solid #00c46a;
-    color: #fff;
-    box-shadow: 0 0 12px rgba(0,196,106,0.25);
-    line-height: 1.55rem;
-    font-size: 1rem;
-}
-
-#todaySummary strong {
-    color: #f7c600;
-}
-
-/* ============================================================
    FORMS — GLOBAL
    ============================================================ */
 
