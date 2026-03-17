@@ -413,6 +413,35 @@ function setupPlayerDetailsForm() {
         `;
     };
 }
+
+//group balance
+function renderGroupBalance() {
+    const totalSpent = ALL_BETS.reduce((sum, b) => sum + parseFloat(b.amount_bet || 0), 0);
+    const totalWon = ALL_BETS.reduce((sum, b) => sum + calculateWinnings(b), 0);
+    const profit = totalWon - totalSpent;
+
+    const box = document.getElementById("groupBalance");
+
+    box.innerHTML = `
+        <div class="summary-row">
+            <span>Total Spent:</span>
+            <strong>£${totalSpent.toFixed(2)}</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Total Won:</span>
+            <strong style="color:#f7c600;">£${totalWon.toFixed(2)}</strong>
+        </div>
+
+        <div class="summary-row" style="border-top:1px solid #333;padding-top:8px;margin-top:8px;">
+            <span style="font-weight:bold;">Net Profit:</span>
+            <strong style="color:${profit >= 0 ? '#0f7a0f' : '#7a0f0f'};">
+                £${profit.toFixed(2)}
+            </strong>
+        </div>
+    `;
+}
+
 /* ============================================================
    RACE DAY — FORM SETUP
    ============================================================ */
