@@ -448,29 +448,47 @@ async function loadRecentActivity() {
 
     const icons = getIcons();
 
-    box.innerHTML = items.map(a => `
-        <div class="activity-card">
+   box.innerHTML = items.map(a => {
+    const winnings = parseFloat(a.winnings || 0);
+    const stake = parseFloat(a.amount_bet || 0);
+    const profit = winnings - stake;
 
-            <div class="activity-top">
-                (${a.horse_number}) ${a.horse_name} @ ${a.odds_fraction}
+    return `
+        <div class="activity-card-modern">
+
+            <div class="activity-left">
+                <div class="stake-box">
+                    <span class="stake-label">Stake</span>
+                    <span class="stake-value">£${stake.toFixed(2)}</span>
+                </div>
             </div>
 
-            <div class="activity-meta">
-                Player: ${PLAYER_MAP[a.player_id]}<br>
-                Course: ${a.course}<br>
-                Time: ${a.race_time}<br>
-                Stake: £${a.amount_bet}
+            <div class="activity-middle">
+                <div class="horse-line">
+                    ${a.horse_number ? `<span class="horse-number">(${a.horse_number})</span>` : ""}
+                    <span class="horse-name">${a.horse_name}</span>
+                    <span class="horse-odds">@${a.odds_fraction}</span>
+                </div>
+
+                <div class="meta-line">
+                    <span class="meta-player">${PLAYER_MAP[a.player_id]}</span>
+                    <span>${a.course}</span>
+                    <span>${a.race_time}</span>
+                </div>
             </div>
 
-            <div class="activity-status">
-                <span class="result-${a.result.toLowerCase()}">
-                    ${icons[a.result]} ${a.result}
-                </span>
+            <div class="activity-right">
+                <div class="winnings-label">Winnings</div>
+                <div class="winnings-value ${profit > 0 ? "profit-pos" : profit < 0 ? "profit-neg" : ""}">
+                    £${winnings.toFixed(2)}
+                </div>
             </div>
 
         </div>
-    `).join("");
+    `;
+}).join("");
 }
+
 /* ============================================================
    FILTER BAR — TODAY ONLY / ALL BETS
    ============================================================ */
