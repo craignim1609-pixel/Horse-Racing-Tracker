@@ -693,3 +693,15 @@ function renderFilteredBets() {
         </div>
     `;
 }
+
+//delete button
+async function deleteRaceBet(id) {
+    if (!confirm("Delete this bet?")) return;
+
+    await fetch(`${API}/raceday/${id}`, {
+        method: "DELETE"
+    });
+
+    loadRaceStats();
+}
+
