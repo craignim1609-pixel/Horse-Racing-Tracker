@@ -222,6 +222,18 @@ input, select {
     border: none;
 }
 
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.race-form input:focus,
+.race-form select:focus {
+    outline: 2px solid gold;
+    box-shadow: 0 0 6px rgba(247,198,0,0.4);
+}
+
 /* ============================================================
    RACE DAY FORM — PREMIUM BOOKMAKER LAYOUT
    ============================================================ */
