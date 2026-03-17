@@ -46,6 +46,29 @@ button:active,
     transform: scale(0.95);
 }
 
+.status-btn {
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    opacity: 0.5;
+    transition: 0.15s ease;
+}
+
+.status-btn.active {
+    opacity: 1;
+    color: #000;
+}
+
+.status-win.active { background: #0f7a0f; }
+.status-place.active { background: #0077cc; }
+.status-lose.active { background: #7a0f0f; }
+.status-nr.active { background: #777; }
+
 /* ============================================================
    TYPOGRAPHY — PREMIUM BOOKMAKER STYLE
    ============================================================ */
