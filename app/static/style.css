@@ -542,3 +542,83 @@ input, select {
     box-shadow: 0 0 10px rgba(247,198,0,0.35);
 }
 
+.activity-card-modern {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.activity-left .stake-box {
+    background: rgba(255,255,255,0.08);
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-align: center;
+    min-width: 60px;
+}
+
+.stake-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.stake-value {
+    font-weight: bold;
+}
+
+.horse-line {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.horse-number {
+    color: #aaa;
+    margin-right: 4px;
+}
+
+.horse-odds {
+    color: #f7c600;
+    font-weight: bold;
+    margin-left: 6px;
+}
+
+.meta-line {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-top: 2px;
+    display: flex;
+    gap: 10px;
+}
+
+.meta-player {
+    color: #f7c600;
+    font-weight: bold;
+}
+
+.activity-right {
+    text-align: right;
+}
+
+.winnings-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.winnings-value {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.profit-pos {
+    color: #00c853;
+}
+
+.profit-neg {
+    color: #d32f2f;
+}
