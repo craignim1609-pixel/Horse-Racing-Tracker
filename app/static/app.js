@@ -30,6 +30,63 @@ function groupBets(bets) {
     return grouped;
 }
 
+function fractionalToDecimal(frac) {
+    if (!frac) return 1.0;
+
+    // If user enters decimal already (e.g. "3.5")
+    if (!frac.includes("/")) {
+        const d = parseFloat(frac);
+        return isNaN(d) ? 1.0 : d;
+    }
+
+    // Fractional odds: A/B → decimal = (A/B) + 1
+    const [a, b] = frac.split("/").map(Number);
+    if (!a || !b) return 1.0;
+
+    return (a / b) + 1;
+}
+
+function placeOdds(decimalOdds) {
+    // fractional odds = decimal - 1
+    const frac = decimalOdds - 1;
+    return (frac / 4) + 1;
+}
+
+function calculateAccaOdds(bets) {
+    const active = bets.filter(b => b.result !== "Lose");
+
+    if (!active.length) return 1.0;
+
+    return active.reduce((acc, b) => {
+        const dec = fractionalToDecimal(b.odds_fraction);
+        return acc * dec;
+    }, 1);
+}
+
+function ewReturns(accaDecimal) {
+    const place = placeOdds(accaDecimal);
+    return (2.5 * accaDecimal) + (2.5 * place);
+}
+
+function calculateWinnings(bet) {
+    const dec = fractionalToDecimal(bet.odds_fraction);
+    const stake = parseFloat(bet.amount_bet || 0);
+
+    if (bet.result === "Win") {
+        return stake * dec;
+    }
+
+    if (bet.result === "Place") {
+        return stake * placeOdds(dec);
+    }
+
+    if (bet.result === "NR") {
+        return stake; // stake returned
+    }
+
+    return 0;
+}
+
 /* Render a single race card */
 function renderRaceCard(b, icons) {
     return `
@@ -45,7 +102,7 @@ function renderRaceCard(b, icons) {
                 Player: ${PLAYER_MAP[b.player_id]}<br>
                 Course: ${b.course}<br>
                 Race Time: ${b.race_time}<br>
-                Winnings: £${b.winnings || "0.00"}
+                Winnings: £${calculateWinnings(b).toFixed(2)}
             </div>
 
             <div class="race-status">
@@ -475,7 +532,7 @@ async function loadRecentActivity() {
     const icons = getIcons();
 
    box.innerHTML = items.map(a => {
-    const winnings = parseFloat(a.winnings || 0);
+    const winnings = calculateWinnings(a);
     const stake = parseFloat(a.amount_bet || 0);
     const profit = winnings - stake;
 
