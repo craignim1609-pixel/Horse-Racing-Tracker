@@ -575,10 +575,11 @@ document.querySelector(".header-stat:nth-child(2) .stat-value").innerText =
         }).join("")}
     `;
 
-    renderFilteredBets();
-    loadRecentActivity();
-    renderTodaySummary();
+   renderFilteredBets();
+   loadRecentActivity();
+   renderTodaySummary();
    renderGroupBalance();
+
 }
 
 /* ============================================================
