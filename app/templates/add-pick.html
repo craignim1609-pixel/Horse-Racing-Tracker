@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>Add Pick</title>
@@ -59,10 +60,9 @@
     </div>
 </div>
 
+{% raw %}
 <script src="/static/app.js?v=9999"></script>
 <script>
-// If you already have a players endpoint, use that.
-// Otherwise, hard-code for now:
 const PLAYERS = ["Craig", "Donald", "Miller", "Nick", "Josh"];
 
 function populatePlayerSelect() {
@@ -71,7 +71,6 @@ function populatePlayerSelect() {
         PLAYERS.map(p => `<option value="${p}">${p}</option>`).join("");
 }
 
-// Simple helper: convert "5/1" or "6.0" into fraction + decimal
 function parseOdds(input) {
     input = input.trim();
     if (input.includes("/")) {
@@ -82,7 +81,6 @@ function parseOdds(input) {
     } else {
         const dec = parseFloat(input);
         if (!dec) return { fraction: input, decimal: 0 };
-        // convert decimal to "x/1" style fraction for display
         const frac = `${(dec - 1).toFixed(2)}/1`;
         return { fraction: frac, decimal: dec };
     }
@@ -133,6 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("pickForm").addEventListener("submit", submitPick);
 });
 </script>
+{% endraw %}
 
 </body>
 </html>
