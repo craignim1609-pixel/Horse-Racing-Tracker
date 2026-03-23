@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>Race Day</title>
@@ -48,13 +49,11 @@
 
 <div class="race-container">
 
-    <!-- LEFT PANEL -->
     <div class="left-panel">
         <h2>Group Stats</h2>
         <div id="raceStats" class="player-profile"></div>
     </div>
 
-    <!-- RIGHT PANEL -->
     <div class="right-panel">
         <h2>Race Day Tracker</h2>
 
@@ -86,13 +85,11 @@
                 <input id="raceTime" name="race_time" type="time" required>
             </div>
 
-            <!-- RESTORED ODDS FIELD -->
             <div class="form-row">
                 <label for="odds">Odds</label>
                 <input id="odds" name="odds_fraction" placeholder="e.g. 4/1" required>
             </div>
 
-            <!-- STAKE + E/W -->
             <div class="form-row" style="display:flex; gap:12px; align-items:flex-end;">
                 <div style="flex:1;">
                     <label for="stake">Stake (£)</label>
@@ -118,21 +115,21 @@
             No race day bets recorded yet.
         </div>
 
-    </div> <!-- END RIGHT PANEL -->
+    </div>
 
-</div> <!-- END RACE CONTAINER -->
+</div>
 
-
-<!-- RACE DAY LIST (Screenshot‑Style Cards) -->
 <h2>Today's Bets</h2>
 <div id="raceList"></div>
 
+{% raw %}
 <script src="/static/app.js?v=9999"></script>
 
 <script>
     setupRaceForm();
     loadRaceStats();
 </script>
+{% endraw %}
 
 </body>
 </html>
