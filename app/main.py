@@ -30,7 +30,7 @@ def home():
     return {"message": "Horse Racing Tracker API running"}
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="app/templates")
 
 @app.get("/home", response_class=HTMLResponse)
 def home_page(request: Request):
