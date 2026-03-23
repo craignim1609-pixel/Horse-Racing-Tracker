@@ -29,7 +29,7 @@ app.include_router(players.router)
 def home():
     return {"message": "Horse Racing Tracker API running"}
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+@app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/home", response_class=HTMLResponse)
