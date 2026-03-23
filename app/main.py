@@ -1,12 +1,11 @@
 from fastapi import FastAPI
 from app.database import Base, engine
 from app import models
-from app.routers import picks, accumulator, stats, raceday, export
+from app.routers import picks, accumulator, stats, raceday, export, players
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from fastapi.responses import HTMLResponse
-from app.startup import seed_players
 from app.routers.players import seed_players
 
 app = FastAPI()
