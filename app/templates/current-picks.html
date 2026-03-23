@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>Current Picks</title>
@@ -23,7 +24,6 @@
 
 <div class="race-container">
 
-    <!-- LEFT: Acca Status -->
     <div class="left-panel">
         <h2>Acca Status</h2>
         <div class="player-profile">
@@ -44,16 +44,14 @@
         </div>
     </div>
 
-    <!-- RIGHT: Player Picks -->
     <div class="right-panel">
         <h2>Current Picks</h2>
-        <div id="picksGrid" class="race-list">
-            <!-- Cards injected here -->
-        </div>
+        <div id="picksGrid" class="race-list"></div>
     </div>
 
 </div>
 
+{% raw %}
 <script src="/static/app.js?v=9999"></script>
 <script>
 const STATUSES = ["Pending", "Win", "Place", "Lose", "NR"];
@@ -176,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadAccumulator();
 });
 </script>
+{% endraw %}
 
 </body>
 </html>
-
