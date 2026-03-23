@@ -36,7 +36,7 @@ templates = Jinja2Templates(directory="templates")
 def home_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
     
-@app.get("/race-day", response_class=HTMLResponse)
+@app.get("/raceday", response_class=HTMLResponse)
 def raceday_page(request: Request):
     return templates.TemplateResponse("raceday.html", {"request": request})
 
