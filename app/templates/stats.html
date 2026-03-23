@@ -18,9 +18,9 @@
 
 <div class="race-container">
 
-    <!-- LEFT PANEL: Month Selector -->
+    <!-- LEFT PANEL: Filters + Comparison -->
     <div class="left-panel">
-        <h2>Filter</h2>
+        <h2>Filters</h2>
 
         <div class="player-profile">
             <label>Select Month</label>
@@ -40,12 +40,41 @@
                 <option>December</option>
             </select>
         </div>
+
+        <h2 style="margin-top:24px;">Compare Players</h2>
+        <div class="player-profile">
+            <label>Player A</label>
+            <select id="compareA" class="form-select"></select>
+
+            <label style="margin-top:8px;">Player B</label>
+            <select id="compareB" class="form-select"></select>
+
+            <button class="submit-btn" style="margin-top:12px;" onclick="renderComparison()">
+                Compare
+            </button>
+        </div>
     </div>
 
-    <!-- RIGHT PANEL: Player Cards -->
+    <!-- RIGHT PANEL: Player Cards + Charts -->
     <div class="right-panel">
         <h2>Player Stats</h2>
         <div id="statsGrid" class="race-list"></div>
+
+        <h2 style="margin-top:24px;">Profit & Strike Rate</h2>
+        <div class="charts-container">
+            <div class="chart-box">
+                <h3>Profit per Player (£)</h3>
+                <div id="profitChart" class="bar-chart"></div>
+            </div>
+            <div class="chart-box">
+                <h3>Wins / Places / Losses (Selected Player)</h3>
+                <select id="linePlayerSelect" class="form-select" style="margin-bottom:8px;"></select>
+                <div id="lineChart" class="line-chart"></div>
+            </div>
+        </div>
+
+        <h2 style="margin-top:24px;">Player Comparison</h2>
+        <div id="comparisonBox" class="comparison-box"></div>
     </div>
 
 </div>
@@ -74,14 +103,24 @@
                 <label>NR</label>
                 <span id="modalNR"></span>
             </div>
+            <div class="stat-box">
+                <label>Strike Rate</label>
+                <span id="modalStrike"></span>
+            </div>
+            <div class="stat-box">
+                <label>Profit</label>
+                <span id="modalProfit"></span>
+            </div>
         </div>
 
-        <h3>Course Breakdown</h3>
+        <h3>Course Win‑Rate Heatmap</h3>
         <table class="modal-table">
             <thead>
                 <tr>
                     <th>Course</th>
                     <th>Bets</th>
+                    <th>Wins</th>
+                    <th>Win %</th>
                     <th>Horses</th>
                 </tr>
             </thead>
@@ -94,6 +133,32 @@
 
 <script>
 const PLAYERS = ["Craig", "Donald", "Miller", "Nick", "Josh"];
+let latestMonthlyStats = {}; // cache for charts/comparison
+
+/* ---------------------------
+   HELPERS
+---------------------------- */
+function populatePlayerSelects() {
+    const selects = [
+        document.getElementById("compareA"),
+        document.getElementById("compareB"),
+        document.getElementById("linePlayerSelect")
+    ];
+    selects.forEach(sel => {
+        sel.innerHTML = PLAYERS.map(p => `<option value="${p}">${p}</option>`).join("");
+    });
+}
+
+function badgeHtml(stats) {
+    const badges = [];
+    if (stats.is_month_leader) {
+        badges.push('<span class="badge badge-gold">Monthly Leader</span>');
+    }
+    if (stats.is_year_leader) {
+        badges.push('<span class="badge badge-blue">Yearly Leader</span>');
+    }
+    return badges.join(" ");
+}
 
 /* ---------------------------
    LOAD MONTHLY STATS
@@ -102,12 +167,17 @@ async function loadMonthlyStats() {
     const month = document.getElementById("monthSelect").value;
     const res = await fetch(`${API}/stats/month?month=${month}`);
     const data = await res.json();
+    latestMonthlyStats = data;
 
     const grid = document.getElementById("statsGrid");
     grid.innerHTML = "";
 
     PLAYERS.forEach(player => {
-        const stats = data[player] || { wins: 0, places: 0, losses: 0, nrs: 0 };
+        const stats = data[player] || {
+            wins: 0, places: 0, losses: 0, nrs: 0,
+            strike_rate: 0, profit: 0,
+            is_month_leader: false, is_year_leader: false
+        };
 
         const card = document.createElement("div");
         card.className = "race-card stats-card";
@@ -115,7 +185,10 @@ async function loadMonthlyStats() {
 
         card.innerHTML = `
             <div class="stats-card-header">
-                <span class="player-name">${player}</span>
+                <div>
+                    <span class="player-name">${player}</span>
+                    ${badgeHtml(stats)}
+                </div>
                 <span class="trophy-icon ${stats.wins > 0 ? 'gold' : 'grey'}">🏆</span>
             </div>
 
@@ -136,11 +209,23 @@ async function loadMonthlyStats() {
                     <label>NR</label>
                     <span>${stats.nrs}</span>
                 </div>
+                <div class="stat-line">
+                    <label>Strike Rate</label>
+                    <span>${stats.strike_rate.toFixed(1)}%</span>
+                </div>
+                <div class="stat-line">
+                    <label>Profit</label>
+                    <span>£${stats.profit.toFixed(2)}</span>
+                </div>
             </div>
         `;
 
         grid.appendChild(card);
     });
+
+    renderProfitChart();
+    renderLineChart();
+    renderComparison();
 }
 
 /* ---------------------------
@@ -155,20 +240,27 @@ async function openPlayerModal(player) {
     document.getElementById("modalPlaces").textContent = data.places;
     document.getElementById("modalLosses").textContent = data.losses;
     document.getElementById("modalNR").textContent = data.nrs;
+    document.getElementById("modalStrike").textContent = `${data.strike_rate.toFixed(1)}%`;
+    document.getElementById("modalProfit").textContent = `£${data.profit.toFixed(2)}`;
 
     const table = document.getElementById("modalCourseTable");
     table.innerHTML = "";
 
     Object.entries(data.course_stats).forEach(([course, stats]) => {
-        const row = document.createElement("tr");
-
+        const winRate = stats.count > 0 ? (stats.wins / stats.count) * 100 : 0;
         const horses = stats.horses
             .map(h => `${h.number ? '(' + h.number + ') ' : ''}${h.name}`)
             .join(", ");
 
+        const row = document.createElement("tr");
+        row.className = "heatmap-cell";
+        row.style.background = heatmapColor(winRate);
+
         row.innerHTML = `
             <td>${course}</td>
             <td class="center">${stats.count}</td>
+            <td class="center">${stats.wins}</td>
+            <td class="center">${winRate.toFixed(1)}%</td>
             <td>${horses}</td>
         `;
 
@@ -183,11 +275,149 @@ function closeModal() {
 }
 
 /* ---------------------------
+   HEATMAP COLOR
+---------------------------- */
+function heatmapColor(winRate) {
+    // 0% = red, 50% = yellow, 100% = green
+    const r = winRate < 50 ? 255 : Math.round(255 - (winRate - 50) * 5.1);
+    const g = winRate < 50 ? Math.round(winRate * 5.1) : 255;
+    return `rgba(${r}, ${g}, 80, 0.25)`;
+}
+
+/* ---------------------------
+   PROFIT BAR CHART
+---------------------------- */
+function renderProfitChart() {
+    const container = document.getElementById("profitChart");
+    container.innerHTML = "";
+
+    const maxProfit = Math.max(
+        1,
+        ...PLAYERS.map(p => (latestMonthlyStats[p]?.profit ?? 0))
+    );
+
+    PLAYERS.forEach(player => {
+        const profit = latestMonthlyStats[player]?.profit ?? 0;
+        const bar = document.createElement("div");
+        bar.className = "bar-row";
+
+        const width = (Math.abs(profit) / maxProfit) * 100;
+
+        bar.innerHTML = `
+            <span class="bar-label">${player}</span>
+            <div class="bar-track">
+                <div class="bar-fill ${profit >= 0 ? 'bar-positive' : 'bar-negative'}"
+                     style="width:${width}%;"></div>
+            </div>
+            <span class="bar-value">£${profit.toFixed(2)}</span>
+        `;
+
+        container.appendChild(bar);
+    });
+}
+
+/* ---------------------------
+   LINE CHART (Wins/Places/Losses)
+---------------------------- */
+function renderLineChart() {
+    const player = document.getElementById("linePlayerSelect").value || PLAYERS[0];
+    const stats = latestMonthlyStats[player] || { wins: 0, places: 0, losses: 0 };
+
+    const container = document.getElementById("lineChart");
+    container.innerHTML = "";
+
+    const values = [stats.wins, stats.places, stats.losses];
+    const labels = ["Wins", "Places", "Losses"];
+    const maxVal = Math.max(1, ...values);
+
+    const svgWidth = 260;
+    const svgHeight = 120;
+    const padding = 20;
+    const stepX = (svgWidth - 2 * padding) / (values.length - 1);
+
+    const points = values.map((v, i) => {
+        const x = padding + i * stepX;
+        const y = svgHeight - padding - (v / maxVal) * (svgHeight - 2 * padding);
+        return { x, y };
+    });
+
+    const polylinePoints = points.map(p => `${p.x},${p.y}`).join(" ");
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", svgWidth);
+    svg.setAttribute("height", svgHeight);
+
+    const polyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    polyline.setAttribute("points", polylinePoints);
+    polyline.setAttribute("fill", "none");
+    polyline.setAttribute("stroke", "#2ecc71");
+    polyline.setAttribute("stroke-width", "2");
+
+    svg.appendChild(polyline);
+
+    points.forEach((p, i) => {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", p.x);
+        circle.setAttribute("cy", p.y);
+        circle.setAttribute("r", 4);
+        circle.setAttribute("fill", "#27ae60");
+        svg.appendChild(circle);
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", p.x);
+        text.setAttribute("y", svgHeight - 4);
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("font-size", "10");
+        text.textContent = labels[i];
+        svg.appendChild(text);
+    });
+
+    container.appendChild(svg);
+}
+
+/* ---------------------------
+   PLAYER COMPARISON
+---------------------------- */
+function renderComparison() {
+    const a = document.getElementById("compareA").value || PLAYERS[0];
+    const b = document.getElementById("compareB").value || PLAYERS[1];
+
+    const sa = latestMonthlyStats[a] || { wins: 0, places: 0, losses: 0, nrs: 0, strike_rate: 0, profit: 0 };
+    const sb = latestMonthlyStats[b] || { wins: 0, places: 0, losses: 0, nrs: 0, strike_rate: 0, profit: 0 };
+
+    const box = document.getElementById("comparisonBox");
+    box.innerHTML = `
+        <div class="comparison-row">
+            <div class="comparison-col">
+                <h4>${a}</h4>
+                <p>Wins: ${sa.wins}</p>
+                <p>Places: ${sa.places}</p>
+                <p>Losses: ${sa.losses}</p>
+                <p>NR: ${sa.nrs}</p>
+                <p>Strike: ${sa.strike_rate.toFixed(1)}%</p>
+                <p>Profit: £${sa.profit.toFixed(2)}</p>
+            </div>
+            <div class="comparison-col">
+                <h4>${b}</h4>
+                <p>Wins: ${sb.wins}</p>
+                <p>Places: ${sb.places}</p>
+                <p>Losses: ${sb.losses}</p>
+                <p>NR: ${sb.nrs}</p>
+                <p>Strike: ${sb.strike_rate.toFixed(1)}%</p>
+                <p>Profit: £${sb.profit.toFixed(2)}</p>
+            </div>
+        </div>
+    `;
+}
+
+/* ---------------------------
    INIT
 ---------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
-    loadMonthlyStats();
+    populatePlayerSelects();
     document.getElementById("monthSelect").addEventListener("change", loadMonthlyStats);
+    document.getElementById("linePlayerSelect").addEventListener("change", renderLineChart);
+    loadMonthlyStats();
 });
 </script>
 
