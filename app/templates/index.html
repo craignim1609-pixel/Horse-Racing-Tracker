@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Horse Racing Tracker</title>
+    <title>Home</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
 <nav class="navbar">
-    <a href="/home">Home</a>
+    <a href="/home" class="active">Home</a>
     <a href="/add-pick">Add Pick</a>
     <a href="/current-picks">Current Picks</a>
     <a href="/stats">Stats</a>
@@ -15,33 +15,18 @@
     <a href="/raceday">Race Day</a>
 </nav>
 
-<h1>🏆 Leader Podium</h1>
+<h1>Welcome to the Racing Tracker</h1>
 
-<div class="podium-container">
-    <div class="podium podium-2">
-        <div class="podium-rank">2</div>
-        <div id="secondPlayer" class="podium-name"></div>
-    </div>
-
-    <div class="podium podium-1">
-        <div class="podium-rank">1</div>
-        <div id="firstPlayer" class="podium-name"></div>
-    </div>
-
-    <div class="podium podium-3">
-        <div class="podium-rank">3</div>
-        <div id="thirdPlayer" class="podium-name"></div>
-    </div>
+<div class="home-container">
+    <p>Select an option from the menu to begin.</p>
 </div>
 
-<h2>Accumulator</h2>
-<div id="accumulator" class="accumulator-box"></div>
-
-<script src="/static/app.js"></script>
+{% raw %}
+<script src="/static/app.js?v=9999"></script>
 <script>
-    loadPodium();
-    loadAccumulator();
+    console.log("Home loaded");
 </script>
+{% endraw %}
 
 </body>
 </html>
