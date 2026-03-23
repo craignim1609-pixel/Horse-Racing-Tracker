@@ -5,7 +5,7 @@ from typing import List
 from app.database import get_db
 from app import models, schemas
 
-router = APIRouter(prefix="/raceday", tags=["Race Day"])
+router = APIRouter(prefix="/api/raceday", tags=["Race Day"])
 
 
 # ------------------------------------------------------------
