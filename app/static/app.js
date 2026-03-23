@@ -250,7 +250,7 @@ async function loadCurrentPicks() {
 }
 
 async function updateResult(id, result) {
-    await fetch(`${API}/raceday/${id}/result`, {
+    await fetch(`${API}/api/raceday/${id}/result`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ result })
@@ -467,7 +467,7 @@ async function setupRaceForm() {
 
         const body = Object.fromEntries(new FormData(form).entries());
 
-        const submitRes = await fetch(`${API}/raceday/`, {
+        const submitRes = await fetch(`${API}/api/raceday/`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body)
@@ -493,7 +493,7 @@ async function setupRaceForm() {
    ============================================================ */
 
 async function updateRaceResult(id, result) {
-    await fetch(`${API}/raceday/${id}/result`, {
+    await fetch(`${API}/api/raceday/${id}/result`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ result })
@@ -506,7 +506,7 @@ async function updateRaceResult(id, result) {
    ============================================================ */
 
 async function loadRaceStats() {
-    const listRes = await fetch(`${API}/raceday/`);
+    const listRes = await fetch(`${API}/api/raceday/`);
     ALL_BETS = await listRes.json();
     let bets = [...ALL_BETS];
 
@@ -542,7 +542,7 @@ document.querySelector(".header-stat:nth-child(2) .stat-value").innerText =
     `;
 
     /* GROUP STATS */
-    const statsRes = await fetch(`${API}/raceday/stats`);
+    const statsRes = await fetch(`${API}/api/raceday/stats`);
     const stats = await statsRes.json();
 
     const box = document.getElementById("raceStats");
@@ -589,7 +589,7 @@ document.querySelector(".header-stat:nth-child(2) .stat-value").innerText =
    ============================================================ */
 
 async function loadRecentActivity() {
-    const res = await fetch(`${API}/raceday/recent`);
+    const res = await fetch(`${API}/api/raceday/recent`);
     const items = await res.json();
 
     const box = document.getElementById("recentActivity");
@@ -698,7 +698,7 @@ function renderFilteredBets() {
 async function deleteRaceBet(id) {
     if (!confirm("Delete this bet?")) return;
 
-    await fetch(`${API}/raceday/${id}`, {
+    await fetch(`${API}/api/raceday/${id}`, {
         method: "DELETE"
     });
 
