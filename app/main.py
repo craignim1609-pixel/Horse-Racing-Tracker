@@ -10,12 +10,13 @@ from app.routers.players import seed_players
 
 app = FastAPI()
 
+# Create tables first
+Base.metadata.create_all(bind=engine)
+
 @app.on_event("startup")
 def startup_event():
     seed_players()
 
-# Create tables
-Base.metadata.create_all(bind=engine)
 
 app.include_router(picks.router)
 app.include_router(accumulator.router)
