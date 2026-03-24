@@ -17,7 +17,6 @@ Base.metadata.create_all(bind=engine)
 def startup_event():
     seed_players()
 
-
 app.include_router(picks.router)
 app.include_router(accumulator.router)
 app.include_router(stats.router)
@@ -25,17 +24,16 @@ app.include_router(raceday.router)
 app.include_router(export.router)
 app.include_router(players.router)
 
-@app.get("/")
-def home():
-    return {"message": "Horse Racing Tracker API running"}
-
+# STATIC + TEMPLATES MUST COME BEFORE ROUTES
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
-@app.get("/home", response_class=HTMLResponse)
+# HOMEPAGE
+@app.get("/", response_class=HTMLResponse)
 def home_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
-    
+
+# OTHER PAGES
 @app.get("/raceday", response_class=HTMLResponse)
 def raceday_page(request: Request):
     return templates.TemplateResponse("raceday.html", {"request": request})
@@ -59,6 +57,8 @@ def stats_page(request: Request):
 @app.get("/debug-js")
 def debug_js():
     with open("app/static/app_v10001.js", "r") as f:
+        return {"content": f.read()}
+
         return {"content": f.read()}
 
 
