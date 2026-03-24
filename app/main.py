@@ -56,5 +56,9 @@ def player_details_page(request: Request):
 def stats_page(request: Request):
     return templates.TemplateResponse("stats.html", {"request": request})
 
+@app.get("/debug-js")
+def debug_js():
+    with open("app/static/app.js", "r") as f:
+        return {"content": f.read()}
 
 
