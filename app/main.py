@@ -26,7 +26,7 @@ app.include_router(players.router)
 
 # STATIC + TEMPLATES MUST COME BEFORE ROUTES
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="/app/templates")
 
 # HOMEPAGE
 @app.get("/", response_class=HTMLResponse)
