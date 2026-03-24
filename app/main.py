@@ -9,8 +9,6 @@ from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from app.routers.players import seed_players
-import os
-print("TEMPLATES:", os.listdir("app/templates"))
 
 app = FastAPI()
 
