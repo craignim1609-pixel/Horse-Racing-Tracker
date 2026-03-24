@@ -8,6 +8,8 @@ from fastapi import Request
 from fastapi.responses import HTMLResponse
 from app.routers.players import seed_players
 
+print("RUNNING VERSION: 999")
+
 app = FastAPI()
 
 # Create tables first
