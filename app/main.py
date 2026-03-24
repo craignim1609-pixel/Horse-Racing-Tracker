@@ -1,5 +1,3 @@
-import os
-print("TEMPLATES:", os.listdir("app/templates"))
 from fastapi import FastAPI
 from app.database import Base, engine
 from app import models
