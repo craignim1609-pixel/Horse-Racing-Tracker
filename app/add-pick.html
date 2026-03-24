@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Pick</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="active">Home</a>
+    <a href="/add-pick" class="active">Add Pick</a>
+    <a href="/current-picks">Current Picks</a>
+    <a href="/stats">Stats</a>
+    <a href="/player-details">Player Details</a>
+    <a href="/raceday">Race Day</a>
+</nav>
+
+<h1>Add New Pick</h1>
+
+<div class="race-container">
+    <div class="right-panel" style="max-width:600px; margin:0 auto;">
+        <form id="pickForm" class="race-form">
+
+            <div class="form-row">
+                <label for="playerSelect">Player</label>
+                <select id="playerSelect" name="player" required></select>
+            </div>
+
+            <div class="form-row">
+                <label for="courseInput">Course</label>
+                <input id="courseInput" name="course" type="text" placeholder="Enter course name..." required>
+            </div>
+
+            <div class="horse-group">
+                <div>
+                    <label for="horseNumber">No.</label>
+                    <input id="horseNumber" name="horse_number" placeholder="No.">
+                </div>
+                <div>
+                    <label for="horseName">Horse Name</label>
+                    <input id="horseName" name="horse_name" placeholder="Enter horse name..." required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label for="raceTime">Race Time</label>
+                <input id="raceTime" name="race_time" type="time" required>
+            </div>
+
+            <div class="form-row">
+                <label for="oddsInput">Odds</label>
+                <input id="oddsInput" name="odds_input" placeholder="e.g. 5/1 or 6.0" required>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                Lock In Pick
+            </button>
+
+        </form>
+    </div>
+</div>
+
+{% raw %}
+<script src="/static/app_v10001.js">
+const PLAYERS = ["Craig", "Donald", "Miller", "Nick", "Josh"];
+
+function populatePlayerSelect() {
+    const sel = document.getElementById("playerSelect");
+    sel.innerHTML = `<option value="">Select Player</option>` +
+        PLAYERS.map(p => `<option value="${p}">${p}</option>`).join("");
+}
+
+function parseOdds(input) {
+    input = input.trim();
+    if (input.includes("/")) {
+        const [num, den] = input.split("/").map(Number);
+        if (!den || !num) return { fraction: input, decimal: 0 };
+        const dec = num / den + 1;
+        return { fraction: input, decimal: dec };
+    } else {
+        const dec = parseFloat(input);
+        if (!dec) return { fraction: input, decimal: 0 };
+        const frac = `${(dec - 1).toFixed(2)}/1`;
+        return { fraction: frac, decimal: dec };
+    }
+}
+
+async function submitPick(e) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+
+    const player = data.get("player");
+    const course = data.get("course");
+    const horse_name = data.get("horse_name");
+    const horse_number = data.get("horse_number");
+    const race_time = data.get("race_time");
+    const odds_raw = data.get("odds_input");
+
+    const { fraction, decimal } = parseOdds(odds_raw);
+
+    const body = {
+        player,
+        course,
+        horse_name,
+        horse_number,
+        race_time,
+        odds_fraction: fraction,
+        odds_decimal: decimal,
+        status: "Pending"
+    };
+
+    try {
+        await fetch(`${API}/picks`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+
+        form.reset();
+        window.location = "/current-picks";
+    } catch (e) {
+        console.error("Failed to create pick", e);
+        alert("Could not save pick. Please try again.");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    populatePlayerSelect();
+    document.getElementById("pickForm").addEventListener("submit", submitPick);
+});
+</script>
+{% endraw %}
+
+</body>
+</html>

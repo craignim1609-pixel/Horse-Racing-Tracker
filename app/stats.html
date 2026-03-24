@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stats</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="active">Home</a>
+    <a href="/add-pick">Add Pick</a>
+    <a href="/current-picks">Current Picks</a>
+    <a href="/stats" class="active">Stats</a>
+    <a href="/player-details">Player Details</a>
+    <a href="/raceday">Race Day</a>
+</nav>
+
+<h1>Group Stats</h1>
+
+<div id="statsContainer"></div>
+
+{% raw %}
+<script src="/static/app_v10001.js"></script>
+<script>
+    loadStats();
+</script>
+{% endraw %}
+
+</body>
+</html>
