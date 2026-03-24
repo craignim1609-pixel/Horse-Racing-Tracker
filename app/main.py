@@ -58,7 +58,8 @@ def stats_page(request: Request):
 
 @app.get("/debug-js")
 def debug_js():
-    with open("app/static/app.js", "r") as f:
+    with open("app/static/app_v10001.js", "r") as f:
         return {"content": f.read()}
+
 
 
