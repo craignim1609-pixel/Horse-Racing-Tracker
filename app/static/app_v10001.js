@@ -114,42 +114,46 @@ function renderRaceCard(b, icons) {
             </div>
 
             <div class="race-buttons">
-<button 
-    type="button"
-    class="status-btn status-win ${b.result === 'Win' ? 'active' : ''}"
-    onclick="updateRaceResult(${b.id}, 'Win')">
-    WIN
-</button>
+                <button 
+                    type="button"
+                    class="status-btn status-win ${b.result === 'Win' ? 'active' : ''}"
+                    onclick="updateRaceResult(${b.id}, 'Win')">
+                    WIN
+                </button>
 
-<button 
-    type="button"
-    class="status-btn status-place ${b.result === 'Place' ? 'active' : ''}"
-    onclick="updateRaceResult(${b.id}, 'Place')">
-    PLACE
-</button>
+                <button 
+                    type="button"
+                    class="status-btn status-place ${b.result === 'Place' ? 'active' : ''}"
+                    onclick="updateRaceResult(${b.id}, 'Place')">
+                    PLACE
+                </button>
 
-<button 
-    type="button"
-    class="status-btn status-lose ${b.result === 'Lose' ? 'active' : ''}"
-    onclick="updateRaceResult(${b.id}, 'Lose')">
-    LOSE
-</button>
+                <button 
+                    type="button"
+                    class="status-btn status-lose ${b.result === 'Lose' ? 'active' : ''}"
+                    onclick="updateRaceResult(${b.id}, 'Lose')">
+                    LOSE
+                </button>
 
-<button 
-    type="button"
-    class="status-btn status-nr ${b.result === 'NR' ? 'active' : ''}"
-    onclick="updateRaceResult(${b.id}, 'NR')">
-    NR
-</button>
+                <button 
+                    type="button"
+                    class="status-btn status-nr ${b.result === 'NR' ? 'active' : ''}"
+                    onclick="updateRaceResult(${b.id}, 'NR')">
+                    NR
+                </button>
 
-<button 
-    type="button"
-    class="status-btn"
-    style="background:#7a0f0f; opacity:1;"
-    onclick="deleteRaceBet(${b.id})">
-    DELETE
-</button>
+                <button 
+                    type="button"
+                    class="status-btn"
+                    style="background:#7a0f0f; opacity:1;"
+                    onclick="deleteRaceBet(${b.id})">
+                    DELETE
+                </button>
+            </div>
 
+        </div>
+    `;
+}
 
 /* ============================================================
    HOME PAGE
