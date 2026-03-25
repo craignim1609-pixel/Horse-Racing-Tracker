@@ -56,4 +56,7 @@ def player_details_page(request: Request):
 def stats_page(request: Request):
     return templates.TemplateResponse("stats.html", {"request": request})
 
+@app.get("/acca", response_class=HTMLResponse)
+def acca_page(request: Request):
+    return templates.TemplateResponse("acca.html", {"request": request})
 
