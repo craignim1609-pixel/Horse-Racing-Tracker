@@ -24,6 +24,17 @@ app.include_router(raceday.router)
 app.include_router(export.router)
 app.include_router(players.router)
 
+import os
+
+@app.get("/debug")
+def debug():
+    return {
+        "cwd": os.getcwd(),
+        "templates_dir_exists": os.path.exists("app/templates"),
+        "index_exists": os.path.exists("app/templates/index.html"),
+        "templates_list": os.listdir("app/templates") if os.path.exists("app/templates") else "missing"
+    }
+
 # STATIC + TEMPLATES MUST COME BEFORE ROUTES
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
