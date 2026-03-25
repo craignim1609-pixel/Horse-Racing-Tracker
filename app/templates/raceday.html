@@ -1,24 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Race Day</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    
+{% extends "base.html" %}
+{% block content %}
+
 <div class="filter-bar">
     <button class="filter-btn active" onclick="filterToday()">Today Only</button>
     <button class="filter-btn" onclick="filterAll()">All Bets</button>
 </div>
-    
-<nav class="navbar">
-    <a href="/" class="active">Home</a>
-    <a href="/add-pick">Add Pick</a>
-    <a href="/current-picks">Current Picks</a>
-    <a href="/stats">Stats</a>
-    <a href="/player-details">Player Details</a>
-    <a href="/raceday" class="active">Race Day</a>
-</nav>
 
 <div class="race-header">
     <div class="race-header-left">
@@ -128,5 +114,4 @@
     loadRaceStats();
 </script>
 
-</body>
-</html>
+{% endblock %}
