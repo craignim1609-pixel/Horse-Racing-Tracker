@@ -1,3 +1,54 @@
+/* GLOBAL THEME */
+body {
+    background-color: #0d1f1a;
+    color: #f5f1e8;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+}
+
+/* HEADER */
+.main-header {
+    background-color: #0b1915;
+    border-bottom: 2px solid #d4af37;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.site-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: #d4af37;
+    margin: 0;
+}
+
+/* NAV BUTTONS */
+.header-nav {
+    display: flex;
+    gap: 15px;
+}
+
+.nav-btn {
+    padding: 8px 16px;
+    border: 1px solid #d4af37;
+    border-radius: 6px;
+    color: #d4af37;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.2s ease;
+}
+
+.nav-btn:hover {
+    background-color: #d4af37;
+    color: #0d1f1a;
+}
+
+/* PAGE CONTENT WRAPPER */
+.page-content {
+    padding: 30px;
+}
+
 /* ============================================================
    GLOBAL THEME — GREEN/GOLD SITE-WIDE
    ============================================================ */
