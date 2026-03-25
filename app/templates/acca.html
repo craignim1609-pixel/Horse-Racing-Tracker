@@ -4,6 +4,25 @@
 
 <h1>Accumulator</h1>
 
+<!-- ACCA HERO BOX -->
+<div class="acca-hero">
+
+    <div class="acca-hero-section">
+        <label>Shared Acca Odds</label>
+        <div id="accaOdds" class="acca-hero-value">0.00/1</div>
+    </div>
+
+    <div class="acca-hero-section">
+        <label>£2.50 E/W Returns</label>
+        <div id="accaReturns" class="acca-hero-value">£0.00</div>
+    </div>
+
+    <div class="acca-hero-status acca-status-empty" id="accaStatus">
+        No Picks
+    </div>
+
+</div>
+
 <!-- PAGE LAYOUT -->
 <div class="acca-layout">
 
@@ -22,9 +41,13 @@
 </div>
 
 <script src="/static/app_v10001.js"></script>
+
 <script>
-    // We will fill this in Step 4
-    console.log("Accumulator page loaded");
+document.addEventListener("DOMContentLoaded", () => {
+    loadAccaHero();
+    loadAccaPicks();
+    loadAccaStandings();
+});
 </script>
 
 {% endblock %}
