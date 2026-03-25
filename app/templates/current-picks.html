@@ -1,24 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Current Picks</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
 
 <div class="filter-bar">
     <button class="filter-btn" onclick="window.location='/raceday'">Race Day</button>
     <button class="filter-btn active">Accumulator</button>
 </div>
-
-<nav class="navbar">
-    <a href="/" class="active">Home</a>
-    <a href="/add-pick">Add Pick</a>
-    <a href="/current-picks" class="active">Current Picks</a>
-    <a href="/stats">Stats</a>
-    <a href="/player-details">Player Details</a>
-    <a href="/raceday">Race Day</a>
-</nav>
 
 <h1>Current Picks & Accumulator</h1>
 
@@ -51,10 +38,8 @@
 
 </div>
 
-{% extends "base.html" %}
-{% block content %}
-    
 <script src="/static/app_v10001.js"></script>
+
 <script>
 const STATUSES = ["Pending", "Win", "Place", "Lose", "NR"];
 
@@ -176,7 +161,5 @@ document.addEventListener("DOMContentLoaded", () => {
     loadAccumulator();
 });
 </script>
-{% endblock %}
 
-</body>
-</html>
+{% endblock %}
