@@ -44,9 +44,9 @@ def raceday_page(request: Request):
 def current_picks_page(request: Request):
     return templates.TemplateResponse("current-picks.html", {"request": request})
 
-@app.get("/new-pick", response_class=HTMLResponse)
-def new_pick_page(request: Request):
-    return templates.TemplateResponse("new-pick.html", {"request": request})
+@app.get("/add-pick", response_class=HTMLResponse)
+def add_pick_page(request: Request):
+    return templates.TemplateResponse("add-pick.html", {"request": request})
 
 @app.get("/player-details", response_class=HTMLResponse)
 def player_details_page(request: Request):
