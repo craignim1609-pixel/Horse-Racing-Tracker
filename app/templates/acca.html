@@ -4,36 +4,19 @@
 
 <h1>Accumulator</h1>
 
-<!-- ACCA HERO BOX -->
-<div class="acca-hero">
-
-    <div class="acca-hero-section">
-        <label>Shared Acca Odds</label>
-        <div id="accaOdds" class="acca-hero-value">0.00/1</div>
-    </div>
-
-    <div class="acca-hero-section">
-        <label>£2.50 E/W Returns</label>
-        <div id="accaReturns" class="acca-hero-value">£0.00</div>
-    </div>
-
-    <div class="acca-hero-status acca-status-empty" id="accaStatus">
-        No Picks
-    </div>
-
-</div>
-
-<!-- PAGE LAYOUT (will be filled in Step 3) -->
+<!-- PAGE LAYOUT -->
 <div class="acca-layout">
 
+    <!-- LEFT: CURRENT PICKS -->
     <div class="acca-left">
         <h2>Current Picks</h2>
-        <div id="accaPicks"></div>
+        <div id="accaPicks" class="acca-picks-grid"></div>
     </div>
 
+    <!-- RIGHT: GROUP STANDINGS -->
     <div class="acca-right">
         <h2>Group Standings</h2>
-        <div id="accaStandings"></div>
+        <div id="accaStandings" class="acca-standings-list"></div>
     </div>
 
 </div>
