@@ -707,3 +707,155 @@ async function deleteRaceBet(id) {
     loadRaceStats();
 }
 
+/* ============================================================
+   ACCUMULATOR PAGE
+   ============================================================ */
+
+async function loadAccaHero() {
+    try {
+        const res = await fetch(`${API}/accumulator`);
+        const data = await res.json();
+
+        const oddsEl = document.getElementById("accaOdds");
+        const returnsEl = document.getElementById("accaReturns");
+        const statusEl = document.getElementById("accaStatus");
+
+        oddsEl.textContent = `${data.odds.toFixed(2)}/1`;
+        returnsEl.textContent = `£${data.ew_returns.toFixed(2)}`;
+
+        statusEl.textContent = data.status;
+        statusEl.className = "acca-hero-status";
+
+        if (data.status === "Live") statusEl.classList.add("acca-status-live");
+        else if (data.status === "Won") statusEl.classList.add("acca-status-won");
+        else if (data.status === "Busted") statusEl.classList.add("acca-status-busted");
+        else statusEl.classList.add("acca-status-empty");
+
+    } catch (err) {
+        console.error("Failed to load acca hero", err);
+    }
+}
+
+async function loadAccaPicks() {
+    try {
+        const res = await fetch(`${API}/picks/current`);
+        const picks = await res.json();
+
+        const container = document.getElementById("accaPicks");
+        container.innerHTML = "";
+
+        if (!picks.length) {
+            container.innerHTML = "<p>No picks yet.</p>";
+            return;
+        }
+
+        picks.forEach(p => {
+            const card = document.createElement("div");
+            card.className = "acca-card";
+
+            card.innerHTML = `
+                <div class="acca-card-header">
+                    <span class="acca-player">${p.player}</span>
+                    <button class="acca-delete-btn" onclick="deleteAccaPick(${p.id})">✕</button>
+                </div>
+
+                <div class="acca-horse-line">
+                    ${p.horse_number ? `<span class="acca-horse-number">(${p.horse_number})</span>` : ""}
+                    <span class="acca-horse-name">${p.horse_name}</span>
+                    <span class="acca-horse-odds">@${p.odds_fraction}</span>
+                </div>
+
+                <div class="acca-meta">
+                    ${p.course} — ${p.race_time}
+                </div>
+
+                <div class="acca-status-buttons">
+                    ${["Pending", "Win", "Place", "Lose", "NR"].map(s => `
+                        <button 
+                            class="acca-status-btn ${p.status === s ? 'active' : ''}"
+                            onclick="updateAccaStatus(${p.id}, '${s}')"
+                        >
+                            ${s.toUpperCase()}
+                        </button>
+                    `).join("")}
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+
+    } catch (err) {
+        console.error("Failed to load acca picks", err);
+    }
+}
+
+async function loadAccaStandings() {
+    try {
+        const res = await fetch(`${API}/accumulator/standings`);
+        const standings = await res.json();
+
+        const container = document.getElementById("accaStandings");
+        container.innerHTML = "";
+
+        if (!standings.length) {
+            container.innerHTML = "<p>No standings available.</p>";
+            return;
+        }
+
+        standings.forEach(s => {
+            const row = document.createElement("div");
+            row.className = "acca-standing-item";
+
+            row.innerHTML = `
+                <span class="acca-standing-player">${s.player}</span>
+                <span class="acca-standing-status">${s.status}</span>
+            `;
+
+            container.appendChild(row);
+        });
+
+    } catch (err) {
+        console.error("Failed to load acca standings", err);
+    }
+}
+
+async function updateAccaStatus(id, status) {
+    try {
+        await fetch(`${API}/picks/${id}/status`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status })
+        });
+
+        loadAccaPicks();
+        loadAccaHero();
+        loadAccaStandings();
+
+    } catch (err) {
+        console.error("Failed to update acca status", err);
+    }
+}
+
+async function deleteAccaPick(id) {
+    if (!confirm("Delete this pick?")) return;
+
+    try {
+        await fetch(`${API}/picks/${id}`, { method: "DELETE" });
+
+        loadAccaPicks();
+        loadAccaHero();
+        loadAccaStandings();
+
+    } catch (err) {
+        console.error("Failed to delete pick", err);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadAccaHero();
+    loadAccaPicks();
+    loadAccaStandings();
+});
+
+
+
