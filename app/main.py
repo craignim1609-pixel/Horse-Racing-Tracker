@@ -26,15 +26,6 @@ app.include_router(players.router)
 
 import os
 
-@app.get("/debug")
-def debug():
-    return {
-        "cwd": os.getcwd(),
-        "templates_dir_exists": os.path.exists("app/templates"),
-        "index_exists": os.path.exists("app/templates/index.html"),
-        "templates_list": os.listdir("app/templates") if os.path.exists("app/templates") else "missing"
-    }
-
 # STATIC + TEMPLATES MUST COME BEFORE ROUTES
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
@@ -65,8 +56,4 @@ def player_details_page(request: Request):
 def stats_page(request: Request):
     return templates.TemplateResponse("stats.html", {"request": request})
 
-@app.get("/debug-js")
-def debug_js():
-    with open("app/static/app_v10001.js", "r") as f:
-        return {"content": f.read()}
 
