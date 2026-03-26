@@ -40,22 +40,21 @@ def place_decimal(decimal_odds: float) -> float:
 # -----------------------------
 @router.get("/", response_model=schemas.AccumulatorOut)
 def get_accumulator(db: Session = Depends(get_db)):
-    # Load all pending picks with player relationship
+    # Load ALL picks (except deleted if you use that)
     picks = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
-        .filter(models.Pick.status == "Pending")
+        .filter(models.Pick.status != "Deleted")
         .all()
     )
 
-    # Must have 5 unique players
-    unique_players = {p.player_id for p in picks}
-    if len(unique_players) < 5:
+    # If no picks at all
+    if not picks:
         return schemas.AccumulatorOut(
-            picks=picks,
+            picks=[],
             combined_decimal_odds=None,
             ew_250_potential_return=None,
-            status="incomplete",
+            status="empty",
         )
 
     # Calculate combined decimal odds
@@ -71,10 +70,14 @@ def get_accumulator(db: Session = Depends(get_db)):
     # -----------------------------
     # ACCA STATUS LOGIC
     # -----------------------------
-    if any(p.status == "Lose" for p in picks):
+    statuses = [p.status for p in picks]
+
+    if "Lose" in statuses:
         acca_status = "busted"
-    elif all(p.status in ["Win", "Place", "NR"] for p in picks):
+    elif all(s in ["Win", "Place", "NR"] for s in statuses):
         acca_status = "won"
+    elif any(s == "Pending" for s in statuses):
+        acca_status = "live"
     else:
         acca_status = "live"
 
