@@ -21,8 +21,6 @@ class Pick(Base):
     odds_fraction = Column(String)
     race_time = Column(String)
     status = Column(String, default="Pending")
-    month = Column(Integer)
-    year = Column(Integer)
 
     player = relationship("Player", back_populates="picks")
 
