@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import joinedload
 from typing import List
 from app.database import get_db
 from app import models, schemas
@@ -37,6 +37,7 @@ def add_pick(data: schemas.PickCreate, db: Session = Depends(get_db)):
 def get_current_picks(db: Session = Depends(get_db)):
     picks = (
         db.query(models.Pick)
+        .options(joinedload(models.Pick.player))
         .filter(models.Pick.status == "Pending")
         .all()
     )
