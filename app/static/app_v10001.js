@@ -184,7 +184,7 @@ async function loadAccumulator() {
 
 function setupAddPickForm() {
     const form = document.getElementById("pickForm");
-    const resultBox = document.getElementById("result");
+    const resultBox = document.getElementById("resultBox");
 
     const now = new Date();
     form.month.value = now.getMonth() + 1;
