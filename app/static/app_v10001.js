@@ -740,7 +740,7 @@ async function loadAccaHero() {
         // If ANY of the required elements are missing, skip this function
         if (!oddsEl || !returnsEl || !statusEl) return;
 
-        const res = await fetch(`${API}/accumulator`);
+        const res = await fetch(`${API}/accumulator/`);
         const data = await res.json();
 
         // Handle incomplete accumulator (less than 5 picks)
