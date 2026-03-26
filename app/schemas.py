@@ -12,8 +12,7 @@ class PickBase(BaseModel):
     horse_number: int
     odds_fraction: str
     race_time: str
-    month: int
-    year: int
+
 
 class PickCreate(PickBase):
     pass
