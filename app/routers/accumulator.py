@@ -1,58 +1,118 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 from typing import List
 from app.database import get_db
 from app import models, schemas
-from app.utils import odds as odds_utils
+
 
 router = APIRouter(prefix="/accumulator", tags=["Accumulator"])
 
 
+# -----------------------------
+# Helper: Convert fractional odds to decimal
+# -----------------------------
+def fractional_to_decimal(frac: str) -> float:
+    if not frac:
+        return 1.0
+
+    if "/" not in frac:
+        try:
+            return float(frac)
+        except:
+            return 1.0
+
+    a, b = frac.split("/")
+    try:
+        return (float(a) / float(b)) + 1
+    except:
+        return 1.0
+
+
+# -----------------------------
+# Helper: Calculate place odds (1/4 rule)
+# -----------------------------
+def place_decimal(decimal_odds: float) -> float:
+    return ((decimal_odds - 1) / 4) + 1
+
+
+# -----------------------------
+# GET ACCUMULATOR STATUS + ODDS
+# -----------------------------
 @router.get("/", response_model=schemas.AccumulatorOut)
 def get_accumulator(db: Session = Depends(get_db)):
-    # Get one active pick per player
-    players = db.query(models.Player).all()
-    picks: List[models.Pick] = []
+    # Load all pending picks with player relationship
+    picks = (
+        db.query(models.Pick)
+        .options(joinedload(models.Pick.player))
+        .filter(models.Pick.status == "Pending")
+        .all()
+    )
 
-    for p in players:
-        pick = (
-            db.query(models.Pick)
-            .options(joinedload(models.Pick.player))   # <-- IMPORTANT
-            .filter(models.Pick.player_id == p.id, models.Pick.status == "Pending")
-            .order_by(models.Pick.id.desc())
-            .first()
-        )
-        if pick:
-            picks.append(pick)
-
-    # If not all 5 players have a pick
-    if len(picks) < 5:
+    # Must have 5 unique players
+    unique_players = {p.player_id for p in picks}
+    if len(unique_players) < 5:
         return schemas.AccumulatorOut(
             picks=picks,
             combined_decimal_odds=None,
-            status="incomplete",
             ew_250_potential_return=None,
+            status="incomplete",
         )
 
-    # Convert fractional odds to decimals
-    decimals = [odds_utils.fractional_to_decimal(p.odds_fraction) for p in picks]
-    combined = odds_utils.accumulator_decimal(decimals)
+    # Calculate combined decimal odds
+    combined = 1.0
+    for p in picks:
+        combined *= fractional_to_decimal(p.odds_fraction)
 
-    # Determine accumulator status
-    statuses = [p.status for p in picks]
-    if any(s == "Lose" for s in statuses):
-        status = "busted"
-    elif all(s == "Win" for s in statuses):
-        status = "won"
-    else:
-        status = "live"
-
-    # E/W return calculation
-    ew_return = odds_utils.ew_250_return(combined, combined)
+    # Calculate EW returns (£2.50 win + £2.50 place)
+    win_return = 2.5 * combined
+    place_return = 2.5 * place_decimal(combined)
+    ew_total = win_return + place_return
 
     return schemas.AccumulatorOut(
         picks=picks,
         combined_decimal_odds=combined,
-        status=status,
-        ew_250_potential_return=ew_return,
+        ew_250_potential_return=ew_total,
+        status="live",
     )
+
+
+# -----------------------------
+# UPDATE PICK STATUS (Win/Place/Lose/NR)
+# -----------------------------
+@router.patch("/{pick_id}/status", response_model=schemas.PickOut)
+def update_acca_pick_status(
+    pick_id: int,
+    data: schemas.PickUpdateStatus,
+    db: Session = Depends(get_db),
+):
+    pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
+    if not pick:
+        raise HTTPException(status_code=404, detail="Pick not found")
+
+    pick.status = data.status
+    db.commit()
+
+    # Reload with player relationship
+    pick = (
+        db.query(models.Pick)
+        .options(joinedload(models.Pick.player))
+        .filter(models.Pick.id == pick_id)
+        .first()
+    )
+
+    return pick
+
+
+# -----------------------------
+# DELETE PICK
+# -----------------------------
+@router.delete("/{pick_id}")
+def delete_acca_pick(pick_id: int, db: Session = Depends(get_db)):
+    pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
+    if not pick:
+        raise HTTPException(status_code=404, detail="Pick not found")
+
+    db.delete(pick)
+    db.commit()
+
+    return {"message": "Pick deleted"}
