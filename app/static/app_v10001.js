@@ -731,12 +731,15 @@ async function deleteRaceBet(id) {
 
 async function loadAccaHero() {
     try {
-        const res = await fetch(`${API}/accumulator`);
-        const data = await res.json();
-
         const oddsEl = document.getElementById("accaOdds");
         const returnsEl = document.getElementById("accaReturns");
         const statusEl = document.getElementById("accaStatus");
+
+        // If ANY of the required elements are missing, skip this function
+        if (!oddsEl || !returnsEl || !statusEl) return;
+
+        const res = await fetch(`${API}/accumulator`);
+        const data = await res.json();
 
         oddsEl.textContent = `${data.odds.toFixed(2)}/1`;
         returnsEl.textContent = `£${data.ew_returns.toFixed(2)}`;
@@ -755,11 +758,13 @@ async function loadAccaHero() {
 }
 
 async function loadAccaPicks() {
+    const container = document.getElementById("accaPicks");
+    if (!container) return;  // <-- FIX: prevents crashes on pages without this element
+
     try {
         const res = await fetch(`${API}/picks/current`);
         const picks = await res.json();
 
-        const container = document.getElementById("accaPicks");
         container.innerHTML = "";
 
         if (!picks.length) {
@@ -808,11 +813,13 @@ async function loadAccaPicks() {
 }
 
 async function loadAccaStandings() {
+    const container = document.getElementById("accaStandings");
+    if (!container) return;  // <-- Prevents crashes on pages without this element
+
     try {
         const res = await fetch(`${API}/accumulator/standings`);
         const standings = await res.json();
 
-        const container = document.getElementById("accaStandings");
         container.innerHTML = "";
 
         if (!standings.length) {
@@ -836,6 +843,7 @@ async function loadAccaStandings() {
         console.error("Failed to load acca standings", err);
     }
 }
+
 
 async function updateAccaStatus(id, status) {
     try {
@@ -870,10 +878,14 @@ async function deleteAccaPick(id) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadAccaHero();
-    loadAccaPicks();
-    loadAccaStandings();
+    if (document.getElementById("accaOdds")) {
+        loadAccaHero();
+        loadAccaPicks();
+        loadAccaStandings();
+    }
 });
+
+
 
 
 
