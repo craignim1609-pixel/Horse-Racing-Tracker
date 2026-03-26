@@ -101,7 +101,12 @@ class RaceDayPlayerStats(BaseModel):
     total_stake: float
     total_return: float
     profit: float
+    
+class RaceDayCreate(RaceDayBase):
+    pass
 
+class RaceDayResultUpdate(BaseModel):
+    result: str
 
 class RaceDayGroupStats(BaseModel):
     total_stake: float
