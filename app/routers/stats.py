@@ -1,69 +1,83 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from datetime import date, datetime
 from app.database import get_db
 from app import models
 
 router = APIRouter(prefix="/stats", tags=["Stats"])
 
-@router.get("/month/{month}")
-def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
+
+# ---------------------------------------------------------
+# OVERVIEW: Performance Center
+# ---------------------------------------------------------
+@router.get("/overview")
+def get_stats_overview(db: Session = Depends(get_db)):
+    today = date.today()
+    start_of_month = today.replace(day=1)
+
     players = db.query(models.Player).all()
     results = []
 
-    for p in players:
-        wins = db.query(models.Pick).filter_by(player_id=p.id, month=month, year=year, result="Win").count()
-        places = db.query(models.Pick).filter_by(player_id=p.id, month=month, year=year, result="Place").count()
-        loses = db.query(models.Pick).filter_by(player_id=p.id, month=month, year=year, result="Lose").count()
-        nr = db.query(models.Pick).filter_by(player_id=p.id, month=month, year=year, result="NR").count()
+    for player in players:
+        picks = (
+            db.query(models.Pick)
+            .filter(models.Pick.player_id == player.id)
+            .all()
+        )
+
+        month_picks = (
+            db.query(models.Pick)
+            .filter(models.Pick.player_id == player.id)
+            .filter(models.Pick.created_at >= start_of_month)
+            .all()
+        )
 
         results.append({
-            "player": p.name,
-            "wins": wins,
-            "places": places,
-            "loses": loses,
-            "nr": nr
+            "player_id": player.id,
+            "player_name": player.name,
+            "month_wins": len([p for p in month_picks if p.status == "Win"]),
+            "wins": len([p for p in picks if p.status == "Win"]),
+            "places": len([p for p in picks if p.status == "Place"]),
+            "losses": len([p for p in picks if p.status == "Lose"]),
+            "nr": len([p for p in picks if p.status == "NR"]),
         })
 
     return results
 
 
-@router.get("/player/{name}")
-def player_details(name: str, db: Session = Depends(get_db)):
-    player = db.query(models.Player).filter_by(name=name).first()
+# ---------------------------------------------------------
+# PLAYER DETAIL VIEW
+# ---------------------------------------------------------
+@router.get("/player/{player_id}")
+def get_player_detail(player_id: int, db: Session = Depends(get_db)):
+    player = db.query(models.Player).filter(models.Player.id == player_id).first()
     if not player:
         return {"error": "Player not found"}
 
-    picks = db.query(models.Pick).filter_by(player_id=player.id).all()
+    picks = (
+        db.query(models.Pick)
+        .filter(models.Pick.player_id == player_id)
+        .all()
+    )
 
-    wins = sum(1 for p in picks if p.result == "Win")
-    places = sum(1 for p in picks if p.result == "Place")
-    loses = sum(1 for p in picks if p.result == "Lose")
-    nr = sum(1 for p in picks if p.result == "NR")
-
-    total = wins + places + loses
-    win_rate = wins / total if total > 0 else 0
-
-    # biggest winner
-    biggest = None
+    # Group by racetrack
+    track_map = {}
     for p in picks:
-        if p.result == "Win":
-            if biggest is None or p.decimal_odds > biggest.decimal_odds:
-                biggest = p
-
-    # recent form (last 5 picks)
-    recent = [p.result[0].upper() for p in picks[-5:]]
+        if p.course not in track_map:
+            track_map[p.course] = {
+                "track": p.course,
+                "bets": 0,
+                "horses": []
+            }
+        track_map[p.course]["bets"] += 1
+        track_map[p.course]["horses"].append(p.horse_name)
 
     return {
-        "player": player.name,
-        "wins": wins,
-        "places": places,
-        "loses": loses,
-        "nr": nr,
-        "win_rate": win_rate,
-        "biggest_winner": {
-            "horse_name": biggest.horse_name,
-            "odds_fraction": biggest.odds_fraction
-        } if biggest else None,
-        "recent_form": recent
+        "player_id": player.id,
+        "player_name": player.name,
+        "wins": len([p for p in picks if p.status == "Win"]),
+        "places": len([p for p in picks if p.status == "Place"]),
+        "losses": len([p for p in picks if p.status == "Lose"]),
+        "nr": len([p for p in picks if p.status == "NR"]),
+        "tracks": list(track_map.values())
     }
-
