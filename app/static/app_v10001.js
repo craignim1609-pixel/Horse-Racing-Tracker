@@ -255,7 +255,7 @@ async function loadCurrentPicks() {
             <div class="pick-header">${p.horse_name} <span style="color:white;">(${p.odds_fraction})</span></div>
 
             <div class="pick-meta">
-                Player: ${p.player_id}<br>
+                Player: ${p.player.name}<br>
                 Course: ${p.course}<br>
                 Time: ${p.race_time}<br>
                 Horse No: ${p.horse_number}
@@ -590,7 +590,7 @@ document.querySelector(".header-stat:nth-child(2) .stat-value").innerText =
 
             return `
                 <div class="profile-section" style="border-left: 6px solid ${profitColor}; padding-left: 10px;">
-                    <strong>${p.player}</strong><br>
+                    <strong>${p.player.name}</strong><br>
                     Stake: £${p.total_stake.toFixed(2)}<br>
                     Return: £${p.total_return.toFixed(2)}<br>
                     Profit: £${p.profit.toFixed(2)}
@@ -780,7 +780,7 @@ async function loadAccaPicks() {
 
             card.innerHTML = `
                 <div class="acca-card-header">
-                    <span class="acca-player">${p.player}</span>
+                    <span class="acca-player">${p.player.name}</span>
                     <button class="acca-delete-btn" onclick="deleteAccaPick(${p.id})">✕</button>
                 </div>
 
