@@ -1,46 +1,58 @@
-from sqlalchemy import Column, Integer, String, Numeric, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
 
+
+# -----------------------------
+# PLAYER
+# -----------------------------
 class Player(Base):
     __tablename__ = "players"
+
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True)
 
+    # Relationships
     picks = relationship("Pick", back_populates="player")
-    race_bets = relationship("RaceDay", back_populates="player")
+    racedays = relationship("RaceDay", back_populates="player")
 
 
+# -----------------------------
+# PICK (Accumulator + Current Picks)
+# -----------------------------
 class Pick(Base):
     __tablename__ = "picks"
+
     id = Column(Integer, primary_key=True, index=True)
+
     player_id = Column(Integer, ForeignKey("players.id"))
     course = Column(String)
     horse_name = Column(String)
-    horse_number = Column(Integer)
+    horse_number = Column(Integer, nullable=True)
     odds_fraction = Column(String)
     race_time = Column(String)
-    status = Column(String, default="Pending")
+    status = Column(String, default="Pending")  # Pending / Win / Place / Lose / NR
 
+    # Relationship
     player = relationship("Player", back_populates="picks")
 
 
+# -----------------------------
+# RACE DAY BETS
+# -----------------------------
 class RaceDay(Base):
-    __tablename__ = "race_day"
+    __tablename__ = "raceday"
+
     id = Column(Integer, primary_key=True, index=True)
+
     player_id = Column(Integer, ForeignKey("players.id"))
-
-    amount_bet = Column(Numeric)
-    odds_fraction = Column(String)
-
     course = Column(String)
-    race_time = Column(String)
-
     horse_name = Column(String)
-    horse_number = Column(Integer)
+    horse_number = Column(Integer, nullable=True)
+    odds_fraction = Column(String)
+    race_time = Column(String)
+    amount_bet = Column(Float)
+    result = Column(String, default="Pending")  # Win / Place / Lose / NR / Pending
 
-    result = Column(String, default="Pending")
-    winnings = Column(Numeric, default=0)
-
-    player = relationship("Player", back_populates="race_bets")
-
+    # Relationship
+    player = relationship("Player", back_populates="racedays")
