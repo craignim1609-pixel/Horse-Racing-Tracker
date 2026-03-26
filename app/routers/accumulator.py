@@ -68,12 +68,21 @@ def get_accumulator(db: Session = Depends(get_db)):
     place_return = 2.5 * place_decimal(combined)
     ew_total = win_return + place_return
 
-    return schemas.AccumulatorOut(
-        picks=picks,
-        combined_decimal_odds=combined,
-        ew_250_potential_return=ew_total,
-        status="live",
-    )
+# Determine acca status
+if any(p.status == "Lose" for p in picks):
+    acca_status = "busted"
+elif all(p.status in ["Win", "Place", "NR"] for p in picks):
+    acca_status = "won"
+else:
+    acca_status = "live"
+
+return schemas.AccumulatorOut(
+    picks=picks,
+    combined_decimal_odds=combined,
+    ew_250_potential_return=ew_total,
+    status=acca_status,
+)
+
 
 
 # -----------------------------
@@ -85,14 +94,31 @@ def update_acca_pick_status(
     data: schemas.PickUpdateStatus,
     db: Session = Depends(get_db),
 ):
+    # Fetch pick
     pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
     if not pick:
         raise HTTPException(status_code=404, detail="Pick not found")
 
+    # Update status
     pick.status = data.status
     db.commit()
 
-    # Reload with player relationship
+    # -----------------------------
+    # ACCA STATUS LOGIC
+    # -----------------------------
+    all_picks = db.query(models.Pick).all()
+
+    if any(p.status == "Lose" for p in all_picks):
+        acca_status = "busted"
+    elif all(p.status in ["Win", "Place", "NR"] for p in all_picks):
+        acca_status = "won"
+    else:
+        acca_status = "live"
+
+    # (Optional) You can store acca_status somewhere if needed
+    # For now, frontend reads it from /accumulator/
+
+    # Reload pick with player relationship
     pick = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
@@ -101,6 +127,7 @@ def update_acca_pick_status(
     )
 
     return pick
+
 
 
 # -----------------------------
