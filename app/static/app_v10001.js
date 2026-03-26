@@ -864,7 +864,7 @@ async function loadAccaStandings() {
 
 async function updateAccaStatus(id, status) {
     try {
-        await fetch(`${API}/picks/${id}/status`, {
+        await fetch(`${API}/picks/${id}/result`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status })
