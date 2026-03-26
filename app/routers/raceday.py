@@ -1,11 +1,51 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List
 
 from app.database import get_db
 from app import models, schemas
 
-router = APIRouter(prefix="/api/raceday-api", tags=["Race Day"])
+router = APIRouter(prefix="/api/raceday", tags=["Race Day"])
+
+
+# ------------------------------------------------------------
+# Helper: Convert fractional odds to decimal
+# ------------------------------------------------------------
+def fractional_to_decimal(frac: str) -> float:
+    if not frac:
+        return 1.0
+
+    if "/" not in frac:
+        try:
+            return float(frac)
+        except:
+            return 1.0
+
+    a, b = frac.split("/")
+    try:
+        return (float(a) / float(b)) + 1
+    except:
+        return 1.0
+
+
+# ------------------------------------------------------------
+# Helper: Calculate winnings
+# ------------------------------------------------------------
+def calculate_winnings(bet: models.RaceDay) -> float:
+    dec = fractional_to_decimal(bet.odds_fraction)
+    stake = float(bet.amount_bet)
+
+    if bet.result == "Win":
+        return stake * dec
+
+    if bet.result == "Place":
+        place_dec = ((dec - 1) / 4) + 1
+        return stake * place_dec
+
+    if bet.result == "NR":
+        return stake  # stake returned
+
+    return 0.0
 
 
 # ------------------------------------------------------------
@@ -21,6 +61,15 @@ def add_race_day_bet(data: schemas.RaceDayCreate, db: Session = Depends(get_db))
     db.add(bet)
     db.commit()
     db.refresh(bet)
+
+    # Reload with player relationship
+    bet = (
+        db.query(models.RaceDay)
+        .options(joinedload(models.RaceDay.player))
+        .filter(models.RaceDay.id == bet.id)
+        .first()
+    )
+
     return bet
 
 
@@ -29,16 +78,22 @@ def add_race_day_bet(data: schemas.RaceDayCreate, db: Session = Depends(get_db))
 # ------------------------------------------------------------
 @router.get("/", response_model=List[schemas.RaceDayOut])
 def list_race_day_bets(db: Session = Depends(get_db)):
-    return db.query(models.RaceDay).all()
+    bets = (
+        db.query(models.RaceDay)
+        .options(joinedload(models.RaceDay.player))
+        .all()
+    )
+    return bets
 
 
 # ------------------------------------------------------------
 # RECENT ACTIVITY (last 10 bets)
 # ------------------------------------------------------------
-@router.get("/recent")
+@router.get("/recent", response_model=List[schemas.RaceDayOut])
 def get_recent_activity(db: Session = Depends(get_db)):
     recent = (
         db.query(models.RaceDay)
+        .options(joinedload(models.RaceDay.player))
         .order_by(models.RaceDay.id.desc())
         .limit(10)
         .all()
@@ -49,7 +104,7 @@ def get_recent_activity(db: Session = Depends(get_db)):
 # ------------------------------------------------------------
 # UPDATE RESULT (Win / Place / Lose / NR)
 # ------------------------------------------------------------
-@router.patch("/{bet_id}/result")
+@router.patch("/{bet_id}/result", response_model=schemas.RaceDayOut)
 def update_race_result(
     bet_id: int,
     data: schemas.RaceDayResultUpdate,
@@ -59,44 +114,66 @@ def update_race_result(
     if not bet:
         raise HTTPException(status_code=404, detail="Bet not found")
 
-    bet.result = data.result  # "Win", "Place", "Lose", "NR"
+    bet.result = data.result
     db.commit()
-    db.refresh(bet)
 
-    return {"message": "Result updated"}
+    # Reload with player relationship
+    bet = (
+        db.query(models.RaceDay)
+        .options(joinedload(models.RaceDay.player))
+        .filter(models.RaceDay.id == bet_id)
+        .first()
+    )
+
+    return bet
 
 
 # ------------------------------------------------------------
-# GROUP + PLAYER STATS (Frontend expects this shape)
+# GROUP + PLAYER STATS
 # ------------------------------------------------------------
 @router.get("/stats")
 def race_day_stats(db: Session = Depends(get_db)):
     players = db.query(models.Player).all()
-    result = []
+    player_stats = []
 
     for p in players:
         bets = db.query(models.RaceDay).filter(models.RaceDay.player_id == p.id).all()
 
         total_stake = sum(float(b.amount_bet) for b in bets)
-        total_return = sum(float(b.winnings) for b in bets)
+        total_return = sum(calculate_winnings(b) for b in bets)
         profit = total_return - total_stake
 
-        result.append({
-            "player": p.name,
+        player_stats.append({
+            "player": {"name": p.name},
             "total_stake": total_stake,
             "total_return": total_return,
             "profit": profit,
         })
 
-    group_stake = sum(r["total_stake"] for r in result)
-    group_return = sum(r["total_return"] for r in result)
+    group_stake = sum(p["total_stake"] for p in player_stats)
+    group_return = sum(p["total_return"] for p in player_stats)
     group_profit = group_return - group_stake
 
     return {
-        "players": result,
+        "players": player_stats,
         "group": {
             "total_stake": group_stake,
             "total_return": group_return,
             "profit": group_profit,
         }
     }
+
+
+# ------------------------------------------------------------
+# DELETE RACE DAY BET
+# ------------------------------------------------------------
+@router.delete("/{bet_id}")
+def delete_race_day_bet(bet_id: int, db: Session = Depends(get_db)):
+    bet = db.query(models.RaceDay).filter(models.RaceDay.id == bet_id).first()
+    if not bet:
+        raise HTTPException(status_code=404, detail="Bet not found")
+
+    db.delete(bet)
+    db.commit()
+
+    return {"message": "Bet deleted"}
