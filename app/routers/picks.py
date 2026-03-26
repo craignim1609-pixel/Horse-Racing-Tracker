@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session, joinedload
 from typing import List
 from app.database import get_db
 from app import models, schemas
+from app.stats_engine import update_all_stats
 
 router = APIRouter(prefix="/picks", tags=["Picks"])
 
