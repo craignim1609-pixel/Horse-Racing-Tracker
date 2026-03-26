@@ -174,7 +174,7 @@ async function loadPodium() {
 }
 
 async function loadAccumulator() {
-    const res = await fetch(`${API}/accumulator`);
+    const res = await fetch(`${API}/accumulator/`);
     const data = await res.json();
     document.getElementById("accumulator").innerHTML = JSON.stringify(data, null, 2);
 }
