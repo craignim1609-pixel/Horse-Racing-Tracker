@@ -219,6 +219,20 @@ function setupAddPickForm() {
         form.year.value = now.getFullYear();
     };
 }
+
+async function loadPlayersForAddPick() {
+    const dropdown = document.getElementById("playerSelect");
+
+    const res = await fetch(`${API}/players/`);
+    const players = await res.json();
+
+    dropdown.innerHTML = '<option value="">Select Player</option>';
+
+    players.forEach(p => {
+        dropdown.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+    });
+}
+
 /* ============================================================
    CURRENT PICKS
    ============================================================ */
