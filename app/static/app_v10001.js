@@ -743,15 +743,30 @@ async function loadAccaHero() {
         const res = await fetch(`${API}/accumulator`);
         const data = await res.json();
 
-        oddsEl.textContent = `${data.odds.toFixed(2)}/1`;
-        returnsEl.textContent = `£${data.ew_returns.toFixed(2)}`;
+        // Handle incomplete accumulator (less than 5 picks)
+        if (!data.combined_decimal_odds || !data.ew_250_potential_return) {
+            oddsEl.textContent = "0.00/1";
+            returnsEl.textContent = "£0.00";
+            statusEl.textContent = "No Picks";
+            statusEl.className = "acca-hero-status acca-status-empty";
+            return;
+        }
 
-        statusEl.textContent = data.status;
+        // Display odds (decimal - 1 = fractional equivalent)
+        oddsEl.textContent = `${(data.combined_decimal_odds - 1).toFixed(2)}/1`;
+
+        // Display E/W returns
+        returnsEl.textContent = `£${data.ew_250_potential_return.toFixed(2)}`;
+
+        // Normalise status to lowercase
+        const status = data.status.toLowerCase();
+
+        statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
         statusEl.className = "acca-hero-status";
 
-        if (data.status === "Live") statusEl.classList.add("acca-status-live");
-        else if (data.status === "Won") statusEl.classList.add("acca-status-won");
-        else if (data.status === "Busted") statusEl.classList.add("acca-status-busted");
+        if (status === "live") statusEl.classList.add("acca-status-live");
+        else if (status === "won") statusEl.classList.add("acca-status-won");
+        else if (status === "busted") statusEl.classList.add("acca-status-busted");
         else statusEl.classList.add("acca-status-empty");
 
     } catch (err) {
