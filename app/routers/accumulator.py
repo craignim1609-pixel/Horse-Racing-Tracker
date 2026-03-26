@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
-from typing import List
+from datetime import datetime, date
 from app.database import get_db
 from app import models, schemas
-
 
 router = APIRouter(prefix="/accumulator", tags=["Accumulator"])
 
@@ -40,15 +39,23 @@ def place_decimal(decimal_odds: float) -> float:
 # -----------------------------
 @router.get("/", response_model=schemas.AccumulatorOut)
 def get_accumulator(db: Session = Depends(get_db)):
-    # Load ALL picks (except deleted if you use that)
+
+    # -----------------------------
+    # Load ONLY today's picks
+    # -----------------------------
+    today = date.today()
+    start_of_day = datetime.combine(today, datetime.min.time())
+
     picks = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
-        .filter(models.Pick.status != "Deleted")
+        .filter(models.Pick.created_at >= start_of_day)
         .all()
     )
 
-    # If no picks at all
+    # -----------------------------
+    # EMPTY STATE
+    # -----------------------------
     if not picks:
         return schemas.AccumulatorOut(
             picks=[],
@@ -57,18 +64,22 @@ def get_accumulator(db: Session = Depends(get_db)):
             status="empty",
         )
 
-    # Calculate combined decimal odds
+    # -----------------------------
+    # CALCULATE COMBINED ODDS
+    # -----------------------------
     combined = 1.0
     for p in picks:
         combined *= fractional_to_decimal(p.odds_fraction)
 
-    # Calculate EW returns (£2.50 win + £2.50 place)
+    # -----------------------------
+    # CALCULATE EW RETURNS (£2.50 win + £2.50 place)
+    # -----------------------------
     win_return = 2.5 * combined
     place_return = 2.5 * place_decimal(combined)
     ew_total = win_return + place_return
 
     # -----------------------------
-    # ACCA STATUS LOGIC
+    # DETERMINE ACCA STATUS
     # -----------------------------
     statuses = [p.status for p in picks]
 
@@ -87,6 +98,7 @@ def get_accumulator(db: Session = Depends(get_db)):
         ew_250_potential_return=ew_total,
         status=acca_status,
     )
+
 
 # -----------------------------
 # DELETE PICK
