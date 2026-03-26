@@ -27,9 +27,9 @@ def add_pick(data: schemas.PickCreate, db: Session = Depends(get_db)):
 
     db.add(pick)
     db.commit()
+    db.refresh(pick)
 
     # Reload WITH player relationship
-    db.refresh(pick)
     pick = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
@@ -96,3 +96,16 @@ def cancel_pick(pick_id: int, db: Session = Depends(get_db)):
     )
 
     return pick
+
+
+# DELETE PICK (needed for Accumulator page)
+@router.delete("/{pick_id}")
+def delete_pick(pick_id: int, db: Session = Depends(get_db)):
+    pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
+    if not pick:
+        raise HTTPException(status_code=404, detail="Pick not found")
+
+    db.delete(pick)
+    db.commit()
+
+    return {"message": "Pick deleted"}
