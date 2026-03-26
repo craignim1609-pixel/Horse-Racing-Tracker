@@ -53,20 +53,29 @@ def get_current_picks(db: Session = Depends(get_db)):
 
 
 # UPDATE PICK RESULT
-@router.patch("/{pick_id}/result", response_model=schemas.PickOut)
-def update_pick_result(
+@router.patch("/{pick_id}/status", response_model=schemas.PickOut)
+def update_acca_pick_status(
     pick_id: int,
     data: schemas.PickUpdateStatus,
     db: Session = Depends(get_db),
 ):
+    # Fetch pick
     pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
     if not pick:
         raise HTTPException(status_code=404, detail="Pick not found")
 
+    # Update status
     pick.status = data.status
     db.commit()
 
-    # Reload WITH player relationship
+    # -----------------------------
+    # STATS HOOKS (optional)
+    # -----------------------------
+    # update_player_stats(db, pick.player_id)
+    # update_group_stats(db)
+    # update_monthly_stats(db, pick)
+
+    # Reload pick with player relationship
     pick = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
@@ -75,7 +84,6 @@ def update_pick_result(
     )
 
     return pick
-
 
 # CANCEL PICK (NR)
 @router.patch("/{pick_id}/cancel", response_model=schemas.PickOut)
