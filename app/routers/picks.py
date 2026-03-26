@@ -15,7 +15,6 @@ def add_pick(data: schemas.PickCreate, db: Session = Depends(get_db)):
     if not player:
         raise HTTPException(status_code=400, detail="Player not found")
 
-    # Create pick (month/year removed)
     pick = models.Pick(
         player_id=data.player_id,
         course=data.course,
@@ -28,7 +27,16 @@ def add_pick(data: schemas.PickCreate, db: Session = Depends(get_db)):
 
     db.add(pick)
     db.commit()
+
+    # Reload WITH player relationship
     db.refresh(pick)
+    pick = (
+        db.query(models.Pick)
+        .options(joinedload(models.Pick.player))
+        .filter(models.Pick.id == pick.id)
+        .first()
+    )
+
     return pick
 
 
@@ -57,7 +65,15 @@ def update_pick_result(
 
     pick.status = data.status
     db.commit()
-    db.refresh(pick)
+
+    # Reload WITH player relationship
+    pick = (
+        db.query(models.Pick)
+        .options(joinedload(models.Pick.player))
+        .filter(models.Pick.id == pick_id)
+        .first()
+    )
+
     return pick
 
 
@@ -70,5 +86,13 @@ def cancel_pick(pick_id: int, db: Session = Depends(get_db)):
 
     pick.status = "NR"
     db.commit()
-    db.refresh(pick)
+
+    # Reload WITH player relationship
+    pick = (
+        db.query(models.Pick)
+        .options(joinedload(models.Pick.player))
+        .filter(models.Pick.id == pick_id)
+        .first()
+    )
+
     return pick
