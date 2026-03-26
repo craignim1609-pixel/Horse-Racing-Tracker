@@ -191,6 +191,7 @@ function setupAddPickForm() {
 
         const body = Object.fromEntries(new FormData(form).entries());
 
+        // Validate odds format
         if (!/^\d+\/\d+$/.test(body.odds_fraction)) {
             resultBox.style.display = "block";
             resultBox.style.background = "#5a0000";
@@ -204,15 +205,20 @@ function setupAddPickForm() {
             body: JSON.stringify(body)
         });
 
-        const text = await res.text();
+        if (!res.ok) {
+            const errorText = await res.text();
+            resultBox.style.display = "block";
+            resultBox.style.background = "#5a0000";
+            resultBox.innerText = errorText;
+            return;
+        }
 
+        // Success
         resultBox.style.display = "block";
         resultBox.style.background = "#0f2a0f";
-        resultBox.innerText = text;
+        resultBox.innerText = "Pick added successfully!";
 
         form.reset();
-        form.month.value = now.getMonth() + 1;
-        form.year.value = now.getFullYear();
     };
 }
 
