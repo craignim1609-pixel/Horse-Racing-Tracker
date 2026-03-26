@@ -186,10 +186,6 @@ function setupAddPickForm() {
     const form = document.getElementById("pickForm");
     const resultBox = document.getElementById("resultBox");
 
-    const now = new Date();
-    form.month.value = now.getMonth() + 1;
-    form.year.value = now.getFullYear();
-
     form.onsubmit = async (e) => {
         e.preventDefault();
 
