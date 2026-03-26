@@ -2,6 +2,18 @@ from pydantic import BaseModel
 from typing import Optional, List
 
 # -------------------------
+# PLAYER (needed for nested pick output)
+# -------------------------
+
+class PlayerOut(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
+# -------------------------
 # PICK MODELS
 # -------------------------
 
@@ -17,20 +29,22 @@ class PickBase(BaseModel):
 class PickCreate(PickBase):
     pass
 
+
 class PickOut(PickBase):
     id: int
     status: str
-    player: PlayerOut   # <-- ADD THIS for player names in new pick
+    player: PlayerOut   # <-- CRITICAL FIX
 
     class Config:
         orm_mode = True
+
 
 class PickUpdateStatus(BaseModel):
     status: str  # Win / Place / Lose / NR
 
 
 # -------------------------
-# RACEDAY MODELS (CLEAN + MATCHING FRONTEND)
+# RACEDAY MODELS (unchanged)
 # -------------------------
 
 class RaceDayBase(BaseModel):
@@ -42,7 +56,6 @@ class RaceDayBase(BaseModel):
     odds_fraction: str
     amount_bet: float
 
-    # Optional because DB sets defaults
     result: Optional[str] = None
     winnings: Optional[float] = None
 
