@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
+from datetime import datetime
 from app.database import Base
 
 
@@ -33,6 +34,9 @@ class Pick(Base):
     race_time = Column(String)
     status = Column(String, default="Pending")  # Pending / Win / Place / Lose / NR
 
+    # NEW — timestamp so we can filter today's picks
+    created_at = Column(DateTime, default=datetime.utcnow)
+
     # Relationship
     player = relationship("Player", back_populates="picks")
 
@@ -53,6 +57,9 @@ class RaceDay(Base):
     race_time = Column(String)
     amount_bet = Column(Float)
     result = Column(String, default="Pending")  # Win / Place / Lose / NR / Pending
+
+    # NEW — timestamp for daily stats/history
+    created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationship
     player = relationship("Player", back_populates="racedays")
