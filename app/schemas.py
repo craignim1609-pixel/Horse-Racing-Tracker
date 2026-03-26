@@ -20,6 +20,7 @@ class PickCreate(PickBase):
 class PickOut(PickBase):
     id: int
     status: str
+    player: PlayerOut   # <-- ADD THIS for player names in new pick
 
     class Config:
         orm_mode = True
