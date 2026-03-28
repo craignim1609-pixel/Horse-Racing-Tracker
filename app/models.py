@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database import Base
@@ -36,6 +36,9 @@ class Pick(Base):
 
     # NEW — timestamp so we can filter today's picks
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    # NEW — accumulator flag
+    is_acca = Column(Boolean, default=False, nullable=False)
 
     # Relationship
     player = relationship("Player", back_populates="picks")
