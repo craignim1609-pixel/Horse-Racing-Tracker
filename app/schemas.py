@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List
+from datetime import datetime
 
 
 # -----------------------------
@@ -39,6 +40,8 @@ class PickOut(PickBase):
     id: int
     status: str
     player: PlayerOut
+    is_acca: bool            # ← REQUIRED
+    created_at: datetime     # ← Your DB returns this
 
     class Config:
         orm_mode = True
@@ -56,6 +59,7 @@ class AccaPickOut(BaseModel):
     course: str
     race_time: str
     player: PlayerOut
+    is_acca: bool            # ← REQUIRED
 
     class Config:
         orm_mode = True
@@ -101,12 +105,15 @@ class RaceDayPlayerStats(BaseModel):
     total_stake: float
     total_return: float
     profit: float
-    
+
+
 class RaceDayCreate(RaceDayBase):
     pass
 
+
 class RaceDayResultUpdate(BaseModel):
     result: str
+
 
 class RaceDayGroupStats(BaseModel):
     total_stake: float
