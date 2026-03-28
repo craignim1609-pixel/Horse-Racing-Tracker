@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session, joinedload
 from typing import List
 from app.database import get_db
 from app import models, schemas
-from app.stats_engine import update_all_stats
 
 router = APIRouter(prefix="/picks", tags=["Picks"])
 
@@ -25,7 +24,8 @@ def add_pick(data: schemas.PickCreate, db: Session = Depends(get_db)):
         horse_number=data.horse_number,
         odds_fraction=data.odds_fraction,
         race_time=data.race_time,
-        status="Pending"
+        status="Pending",
+        is_acca=False  # NEW FIELD
     )
 
     db.add(pick)
@@ -59,7 +59,6 @@ def get_current_picks(db: Session = Depends(get_db)):
 
 # ---------------------------------------------------------
 # UPDATE PICK RESULT (Win / Place / Lose / NR)
-# Used by BOTH Race Day and Accumulator
 # ---------------------------------------------------------
 @router.patch("/{pick_id}/result", response_model=schemas.PickOut)
 def update_pick_result(
@@ -73,13 +72,6 @@ def update_pick_result(
 
     pick.status = data.status
     db.commit()
-
-    # -----------------------------
-    # STATS HOOKS (optional)
-    # -----------------------------
-    # update_player_stats(db, pick.player_id)
-    # update_group_stats(db)
-    # update_monthly_stats(db, pick)
 
     # Reload WITH player relationship
     pick = (
