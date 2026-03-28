@@ -119,3 +119,53 @@ def delete_pick(pick_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Pick deleted"}
+
+
+# =========================================================
+# ACCUMULATOR ENDPOINTS
+# =========================================================
+
+# ---------------------------------------------------------
+# ADD PICK TO ACCUMULATOR
+# ---------------------------------------------------------
+@router.patch("/{pick_id}/acca/add", response_model=schemas.PickOut)
+def add_to_acca(pick_id: int, db: Session = Depends(get_db)):
+    pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
+    if not pick:
+        raise HTTPException(status_code=404, detail="Pick not found")
+
+    pick.is_acca = True
+    db.commit()
+    db.refresh(pick)
+
+    return pick
+
+
+# ---------------------------------------------------------
+# REMOVE PICK FROM ACCUMULATOR
+# ---------------------------------------------------------
+@router.patch("/{pick_id}/acca/remove", response_model=schemas.PickOut)
+def remove_from_acca(pick_id: int, db: Session = Depends(get_db)):
+    pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
+    if not pick:
+        raise HTTPException(status_code=404, detail="Pick not found")
+
+    pick.is_acca = False
+    db.commit()
+    db.refresh(pick)
+
+    return pick
+
+
+# ---------------------------------------------------------
+# GET ALL ACCUMULATOR PICKS
+# ---------------------------------------------------------
+@router.get("/acca", response_model=List[schemas.PickOut])
+def get_acca_picks(db: Session = Depends(get_db)):
+    picks = (
+        db.query(models.Pick)
+        .options(joinedload(models.Pick.player))
+        .filter(models.Pick.is_acca == True)
+        .all()
+    )
+    return picks
