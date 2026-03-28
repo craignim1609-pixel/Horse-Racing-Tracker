@@ -1,15 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
-from datetime import datetime, date
 from app.database import get_db
 from app import models, schemas
 
 router = APIRouter(prefix="/accumulator", tags=["Accumulator"])
 
 
-# -----------------------------
-# Helper: Convert fractional odds to decimal
-# -----------------------------
+# ---------------------------------------------------------
+# Convert fractional odds to decimal
+# ---------------------------------------------------------
 def fractional_to_decimal(frac: str) -> float:
     if not frac:
         return 1.0
@@ -20,42 +19,35 @@ def fractional_to_decimal(frac: str) -> float:
         except:
             return 1.0
 
-    a, b = frac.split("/")
     try:
+        a, b = frac.split("/")
         return (float(a) / float(b)) + 1
     except:
         return 1.0
 
 
-# -----------------------------
-# Helper: Calculate place odds (1/4 rule)
-# -----------------------------
+# ---------------------------------------------------------
+# Calculate place odds (1/4 rule)
+# ---------------------------------------------------------
 def place_decimal(decimal_odds: float) -> float:
     return ((decimal_odds - 1) / 4) + 1
 
 
-# -----------------------------
-# GET ACCUMULATOR STATUS + ODDS
-# -----------------------------
+# ---------------------------------------------------------
+# GET ACCUMULATOR STATUS + ODDS + RETURNS
+# ---------------------------------------------------------
 @router.get("/", response_model=schemas.AccumulatorOut)
 def get_accumulator(db: Session = Depends(get_db)):
 
-    # -----------------------------
-    # Load ONLY today's picks
-    # -----------------------------
-    today = date.today()
-    start_of_day = datetime.combine(today, datetime.min.time())
-
+    # Load ONLY picks marked as accumulator picks
     picks = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
-        .filter(models.Pick.created_at >= start_of_day)
+        .filter(models.Pick.is_acca == True)
         .all()
     )
 
-    # -----------------------------
-    # EMPTY STATE
-    # -----------------------------
+    # EMPTY ACCA
     if not picks:
         return schemas.AccumulatorOut(
             picks=[],
@@ -64,23 +56,17 @@ def get_accumulator(db: Session = Depends(get_db)):
             status="empty",
         )
 
-    # -----------------------------
-    # CALCULATE COMBINED ODDS
-    # -----------------------------
+    # COMBINED DECIMAL ODDS
     combined = 1.0
     for p in picks:
         combined *= fractional_to_decimal(p.odds_fraction)
 
-    # -----------------------------
-    # CALCULATE EW RETURNS (£2.50 win + £2.50 place)
-    # -----------------------------
+    # EW RETURNS (£2.50 win + £2.50 place)
     win_return = 2.5 * combined
     place_return = 2.5 * place_decimal(combined)
     ew_total = win_return + place_return
 
-    # -----------------------------
     # DETERMINE ACCA STATUS
-    # -----------------------------
     statuses = [p.status for p in picks]
 
     if "Lose" in statuses:
@@ -94,15 +80,15 @@ def get_accumulator(db: Session = Depends(get_db)):
 
     return schemas.AccumulatorOut(
         picks=picks,
-        combined_decimal_odds=combined,
-        ew_250_potential_return=ew_total,
+        combined_decimal_odds=round(combined, 2),
+        ew_250_potential_return=round(ew_total, 2),
         status=acca_status,
     )
 
 
-# -----------------------------
-# DELETE PICK
-# -----------------------------
+# ---------------------------------------------------------
+# DELETE ACCA PICK
+# ---------------------------------------------------------
 @router.delete("/{pick_id}")
 def delete_acca_pick(pick_id: int, db: Session = Depends(get_db)):
     pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
