@@ -7,6 +7,7 @@ from app.database import Base, engine
 from app.routers.players import seed_players
 from app.routers import picks, accumulator, stats, raceday, export, players
 
+
 # ---------------------------------------------------------
 # APP INITIALISATION
 # ---------------------------------------------------------
