@@ -239,47 +239,81 @@ async function loadPlayersForAddPick() {
    CURRENT PICKS
    ============================================================ */
 
+// ---------------------------------------------------------
+// LOAD CURRENT PENDING PICKS
+// ---------------------------------------------------------
 async function loadCurrentPicks() {
-    const res = await fetch(`${API}/picks/current`);
-    const picks = await res.json();
+    try {
+        const res = await fetch("/picks/current");
+        const picks = await res.json();
 
-    const container = document.getElementById("currentPicks");
+        renderCurrentPicks(picks);
+    } catch (err) {
+        console.error("Error loading current picks:", err);
+    }
+}
 
-    if (!picks.length) {
-        container.innerHTML = "<p>No active picks right now.</p>";
+
+// ---------------------------------------------------------
+// RENDER CURRENT PICKS TABLE
+// ---------------------------------------------------------
+function renderCurrentPicks(picks) {
+    const tbody = document.getElementById("current-picks-body");
+    tbody.innerHTML = "";
+
+    if (!picks || picks.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center">No current picks</td>
+            </tr>
+        `;
         return;
     }
 
-    container.innerHTML = picks.map(p => `
-        <div class="pick-card">
-            <div class="pick-header">${p.horse_name} <span style="color:white;">(${p.odds_fraction})</span></div>
+    picks.forEach(p => {
+        const row = document.createElement("tr");
 
-            <div class="pick-meta">
-                Player: ${p.player.name}<br>
-                Course: ${p.course}<br>
-                Time: ${p.race_time}<br>
-                Horse No: ${p.horse_number}
-            </div>
+        row.innerHTML = `
+            <td>${p.player.name}</td>
+            <td>${p.course}</td>
+            <td>${p.horse_name}</td>
+            <td>${p.horse_number ?? "-"}</td>
+            <td>${p.odds_fraction}</td>
+            <td>${p.race_time}</td>
+            <td>
+                <button class="btn btn-primary btn-sm" onclick="addAccaPick(${p.id})">
+                    Add to Acca
+                </button>
+            </td>
+        `;
 
-            <div class="result-buttons">
-                <button type="button" onclick="updateResult(${p.id}, 'Win')">Win</button>
-                <button type="button" onclick="updateResult(${p.id}, 'Place')">Place</button>
-                <button type="button" onclick="updateResult(${p.id}, 'Lose')">Lose</button>
-                <button type="button" onclick="updateResult(${p.id}, 'NR')">NR</button>
-            </div>
-        </div>
-    `).join("");
-}
-
-async function updateResult(id, result) {
-    await fetch(`${API}/api/raceday/${id}/result`, {
-        method: "PATCH",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ result })
+        tbody.appendChild(row);
     });
-
-    loadCurrentPicks();
 }
+
+
+// ---------------------------------------------------------
+// ADD PICK TO ACCA
+// ---------------------------------------------------------
+async function addAccaPick(id) {
+    try {
+        await fetch(`/picks/${id}/acca/add`, {
+            method: "PATCH"
+        });
+
+        // Refresh the table after adding
+        loadCurrentPicks();
+    } catch (err) {
+        console.error("Error adding pick to acca:", err);
+    }
+}
+
+
+// ---------------------------------------------------------
+// INITIAL LOAD
+// ---------------------------------------------------------
+document.addEventListener("DOMContentLoaded", loadCurrentPicks);
+
 /* ============================================================
    STATS PAGE
    ============================================================ */
