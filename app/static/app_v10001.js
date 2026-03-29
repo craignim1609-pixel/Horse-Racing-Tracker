@@ -80,7 +80,7 @@ function renderRaceCard(b, icons) {
             <div class="race-stake">Stake: £${b.amount_bet}</div>
 
             <div class="race-horse">
-                (${b.horse_number}) ${b.horse_name} @ ${b.odds_fraction}
+                ${b.horse_number ? `(${b.horse_number}) ` : ""}${b.horse_name} @ ${b.odds_fraction}
             </div>
 
             <div class="race-meta">
@@ -151,9 +151,13 @@ async function loadPodium() {
 
         const sorted = stats.sort((a, b) => b.wins - a.wins);
 
-        document.getElementById("firstPlayer").innerText = sorted[0]?.player || "-";
-        document.getElementById("secondPlayer").innerText = sorted[1]?.player || "-";
-        document.getElementById("thirdPlayer").innerText = sorted[2]?.player || "-";
+        const first = document.getElementById("firstPlayer");
+        const second = document.getElementById("secondPlayer");
+        const third = document.getElementById("thirdPlayer");
+
+        if (first) first.innerText = sorted[0]?.player || "-";
+        if (second) second.innerText = sorted[1]?.player || "-";
+        if (third) third.innerText = sorted[2]?.player || "-";
     } catch (err) {
         console.error("Error loading podium:", err);
     }
@@ -171,7 +175,7 @@ async function loadPlayersForAddPick() {
         const select = document.getElementById("player");
         if (!select) return;
 
-        select.innerHTML = "";
+        select.innerHTML = '<option value="">Select Player</option>';
 
         players.forEach(p => {
             const opt = document.createElement("option");
@@ -220,7 +224,7 @@ function setupAddPickForm() {
 
             if (!res.ok) {
                 const errData = await res.json();
-                alert("Error: " + errData.detail);
+                alert("Error: " + (errData.detail || "Failed to create pick."));
                 return;
             }
 
@@ -237,6 +241,9 @@ function setupAddPickForm() {
    ============================================================ */
 
 async function loadCurrentPicks() {
+    const tbody = document.getElementById("current-picks-body");
+    if (!tbody) return;
+
     try {
         const res = await fetch("/picks/current");
         const picks = await res.json();
@@ -307,36 +314,42 @@ function setupStatsForm() {
             const stats = await res.json();
 
             if (!stats.length) {
-                summaryBox.style.display = "block";
-                summaryBox.innerHTML = "No stats available for this month.";
-                grid.innerHTML = "";
+                if (summaryBox) {
+                    summaryBox.style.display = "block";
+                    summaryBox.innerHTML = "No stats available for this month.";
+                }
+                if (grid) grid.innerHTML = "";
                 return;
             }
 
             stats.sort((a, b) => b.wins - a.wins);
 
             const top = stats[0];
-            summaryBox.style.display = "block";
-            summaryBox.innerHTML = `
-                <strong>Player of the Month:</strong> ${top.player}<br>
-                <strong>Total Wins:</strong> ${top.wins}
-            `;
+            if (summaryBox) {
+                summaryBox.style.display = "block";
+                summaryBox.innerHTML = `
+                    <strong>Player of the Month:</strong> ${top.player}<br>
+                    <strong>Total Wins:</strong> ${top.wins}
+                `;
+            }
 
-            grid.innerHTML = stats
-                .map(
-                    s => `
-                <div class="stats-card">
-                    <div class="player-name">${s.player}</div>
+            if (grid) {
+                grid.innerHTML = stats
+                    .map(
+                        s => `
+                    <div class="stats-card">
+                        <div class="player-name">${s.player}</div>
 
-                    <div class="stat-row"><span>Month Wins:</span> <span>${s.wins}</span></div>
-                    <div class="stat-row"><span>Wins:</span> <span>${s.wins}</span></div>
-                    <div class="stat-row"><span>Places:</span> <span>${s.places}</span></div>
-                    <div class="stat-row"><span>Loses:</span> <span>${s.loses}</span></div>
-                    <div class="stat-row"><span>NR:</span> <span>${s.nr}</span></div>
-                </div>
-            `
-                )
-                .join("");
+                        <div class="stat-row"><span>Month Wins:</span> <span>${s.wins}</span></div>
+                        <div class="stat-row"><span>Wins:</span> <span>${s.wins}</span></div>
+                        <div class="stat-row"><span>Places:</span> <span>${s.places}</span></div>
+                        <div class="stat-row"><span>Loses:</span> <span>${s.loses}</span></div>
+                        <div class="stat-row"><span>NR:</span> <span>${s.nr}</span></div>
+                    </div>
+                `
+                    )
+                    .join("");
+            }
         } catch (err) {
             console.error("Error loading stats:", err);
         }
@@ -400,7 +413,7 @@ function renderTodaySummary() {
 function setupPlayerDetailsForm() {
     const form = document.getElementById("playerForm");
     const profile = document.getElementById("playerProfile");
-    if (!form) return;
+    if (!form || !profile) return;
 
     form.onsubmit = async e => {
         e.preventDefault();
@@ -468,7 +481,7 @@ async function setupRaceForm() {
     const form = document.getElementById("raceForm");
     const resultBox = document.getElementById("raceResult");
     const playerSelect = document.getElementById("playerSelect");
-    if (!form) return;
+    if (!form || !resultBox || !playerSelect) return;
 
     try {
         const res = await fetch(`${API}/players/`);
@@ -488,27 +501,31 @@ async function setupRaceForm() {
 
         const body = Object.fromEntries(new FormData(form).entries());
 
-        const submitRes = await fetch(`${API}/api/raceday/`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body)
-        });
-
-        let message = "Bet saved successfully!";
-
         try {
-            const data = await submitRes.json();
-            const playerName = PLAYER_MAP[data.player_id] || "Player";
-            message = `${playerName}'s bet has been added!`;
-        } catch {
-            // ignore JSON parse errors
+            const submitRes = await fetch(`${API}/api/raceday/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
+
+            let message = "Bet saved successfully!";
+
+            try {
+                const data = await submitRes.json();
+                const playerName = PLAYER_MAP[data.player_id] || "Player";
+                message = `${playerName}'s bet has been added!`;
+            } catch {
+                // ignore JSON parse errors
+            }
+
+            resultBox.style.display = "block";
+            resultBox.innerText = message;
+
+            form.reset();
+            loadRaceStats();
+        } catch (err) {
+            console.error("Error submitting race bet:", err);
         }
-
-        resultBox.style.display = "block";
-        resultBox.innerText = message;
-
-        form.reset();
-        loadRaceStats();
     };
 }
 
@@ -650,8 +667,6 @@ async function loadRecentActivity() {
             box.innerHTML = "No race day bets recorded yet.";
             return;
         }
-
-        const icons = getIcons();
 
         box.innerHTML = items
             .map(a => {
@@ -799,54 +814,26 @@ async function loadAccumulator() {
     const statusEl = document.getElementById("acca-status");
     const oddsEl = document.getElementById("acca-odds");
     const ewEl = document.getElementById("acca-ew-return");
-    const tbody = document.getElementById("acca-picks-body");
+    const picksBox = document.getElementById("acca-current-picks");
+    const standingsBox = document.getElementById("acca-standings");
 
-    if (!statusEl || !oddsEl || !ewEl || !tbody) return;
+    if (!statusEl || !oddsEl || !ewEl || !picksBox || !standingsBox) return;
 
     try {
-        const res = await fetch("/accumulator");
-        const data = await res.json();
+        const [accaRes, playersRes] = await Promise.all([
+            fetch("/accumulator"),
+            fetch("/players")
+        ]);
 
-        renderAccaPicks(data.picks);
+        const data = await accaRes.json();
+        const players = await playersRes.json();
+
         renderAccaSummary(data);
+        renderAccaCurrentPicks(data.picks || []);
+        renderAccaStandings(players, data.picks || []);
     } catch (err) {
         console.error("Error loading accumulator:", err);
     }
-}
-
-function renderAccaPicks(picks) {
-    const tbody = document.getElementById("acca-picks-body");
-    if (!tbody) return;
-
-    tbody.innerHTML = "";
-
-    if (!picks || picks.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center">No accumulator picks yet</td>
-            </tr>
-        `;
-        return;
-    }
-
-    picks.forEach(p => {
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-            <td>${p.player.name}</td>
-            <td>${p.course}</td>
-            <td>${p.horse_name}</td>
-            <td>${p.odds_fraction}</td>
-            <td>${p.status}</td>
-            <td>
-                <button class="btn btn-danger btn-sm" onclick="removeAccaPick(${p.id})">
-                    Remove
-                </button>
-            </td>
-        `;
-
-        tbody.appendChild(row);
-    });
 }
 
 function renderAccaSummary(data) {
@@ -855,7 +842,7 @@ function renderAccaSummary(data) {
     const ewEl = document.getElementById("acca-ew-return");
     if (!statusEl || !oddsEl || !ewEl) return;
 
-    statusEl.innerText = data.status;
+    statusEl.innerText = data.status || "No Picks";
 
     if (!data.combined_decimal_odds) {
         oddsEl.innerText = "-";
@@ -867,13 +854,80 @@ function renderAccaSummary(data) {
     ewEl.innerText = data.ew_250_potential_return.toFixed(2);
 }
 
+function renderAccaCurrentPicks(picks) {
+    const box = document.getElementById("acca-current-picks");
+    if (!box) return;
+
+    box.innerHTML = "";
+
+    if (!picks || picks.length === 0) {
+        box.innerHTML = `<div class="empty-message">No picks entered yet. Start by adding one.</div>`;
+        return;
+    }
+
+    box.innerHTML = picks
+        .map(p => {
+            return `
+            <div class="acca-pick-card">
+                <div class="pick-main">
+                    <div class="pick-horse">
+                        ${p.horse_number ? `(${p.horse_number}) ` : ""}${p.horse_name}
+                    </div>
+                    <div class="pick-odds">@ ${p.odds_fraction}</div>
+                </div>
+
+                <div class="pick-meta">
+                    <span>${p.player.name}</span>
+                    <span>${p.course}</span>
+                    <span>${p.race_time}</span>
+                </div>
+
+                <div class="pick-footer">
+                    <span class="pick-status">${p.status}</span>
+                    <button class="btn-remove" onclick="removeAccaPick(${p.id})">
+                        Remove
+                    </button>
+                </div>
+            </div>
+        `;
+        })
+        .join("");
+}
+
+function renderAccaStandings(players, picks) {
+    const box = document.getElementById("acca-standings");
+    if (!box) return;
+
+    const picksByPlayerId = new Map();
+    picks.forEach(p => {
+        picksByPlayerId.set(p.player.id, true);
+    });
+
+    box.innerHTML = players
+        .map(p => {
+            const hasPick = picksByPlayerId.has(p.id);
+            const statusText = hasPick ? "Pick locked in" : "Waiting for pick...";
+            const statusClass = hasPick ? "standing-ready" : "standing-waiting";
+
+            return `
+            <div class="standing-row ${statusClass}">
+                <span class="standing-name">${p.name}</span>
+                <span class="standing-status">${statusText}</span>
+            </div>
+        `;
+        })
+        .join("");
+}
+
 async function removeAccaPick(id) {
     try {
         await fetch(`/picks/${id}/acca/remove`, {
             method: "PATCH"
         });
 
-        loadAccumulator();
+        if (document.getElementById("acca-status")) {
+            loadAccumulator();
+        }
         if (document.getElementById("current-picks-body")) {
             loadCurrentPicks();
         }
@@ -888,7 +942,7 @@ async function addAccaPick(id) {
             method: "PATCH"
         });
 
-        if (document.getElementById("acca-picks-body")) {
+        if (document.getElementById("acca-status")) {
             loadAccumulator();
         }
         if (document.getElementById("current-picks-body")) {
@@ -913,7 +967,7 @@ document.addEventListener("DOMContentLoaded", () => {
         loadCurrentPicks();
     }
 
-    if (document.getElementById("acca-picks-body")) {
+    if (document.getElementById("acca-status")) {
         loadAccumulator();
     }
 
