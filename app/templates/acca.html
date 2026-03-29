@@ -1,65 +1,52 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container mt-4">
+<div class="acca-header">
+    <div class="acca-header-left">
+        <h1 class="page-title">Premium Shared Accumulator Tracker</h1>
+    </div>
 
-    <h2 class="mb-4">Accumulator</h2>
+    <div class="acca-header-right">
+        <div class="header-stat">
+            <div class="stat-label">SHARED ACCA ODDS</div>
+            <div id="acca-odds" class="stat-value">-</div>
+        </div>
 
-    <!-- ACCA SUMMARY -->
-    <div class="card mb-4">
-        <div class="card-body">
+        <div class="header-stat">
+            <div class="stat-label">£2.50 E/W RETURNS</div>
+            <div id="acca-ew-return" class="stat-value">-</div>
+        </div>
 
-            <h4 class="mb-3">Accumulator Summary</h4>
+        <button id="acca-status" class="acca-status-btn">No Picks</button>
+    </div>
+</div>
 
-            <div class="row text-center">
-                <div class="col-md-4">
-                    <h6>Status</h6>
-                    <div id="acca-status" class="fw-bold">-</div>
-                </div>
+<div class="acca-container">
 
-                <div class="col-md-4">
-                    <h6>Combined Odds</h6>
-                    <div id="acca-odds" class="fw-bold">-</div>
-                </div>
+    <!-- LEFT SIDE: CURRENT PICKS -->
+    <div class="acca-left">
+        <h2 class="section-title">Current Picks</h2>
 
-                <div class="col-md-4">
-                    <h6>E/W Return (£2.50)</h6>
-                    <div id="acca-ew-return" class="fw-bold">-</div>
-                </div>
-            </div>
-
+        <div id="acca-current-picks" class="acca-picks-box">
+            <!-- JS will inject pick cards here -->
+            <div class="empty-message">No picks entered yet. Start by adding one.</div>
         </div>
     </div>
 
+    <!-- RIGHT SIDE: GROUP STANDINGS -->
+    <div class="acca-right">
+        <h2 class="section-title">Group Standings</h2>
 
-    <!-- ACCA PICKS TABLE -->
-    <div class="card">
-        <div class="card-body">
-
-            <h4 class="mb-3">Accumulator Picks</h4>
-
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Player</th>
-                        <th>Course</th>
-                        <th>Horse</th>
-                        <th>Odds</th>
-                        <th>Status</th>
-                        <th>Remove</th>
-                    </tr>
-                </thead>
-
-                <tbody id="acca-picks-body">
-                    <!-- JS will populate -->
-                </tbody>
-            </table>
-
+        <div id="acca-standings" class="standings-box">
+            <!-- JS will inject standings here -->
         </div>
     </div>
 
 </div>
 
-<script src="/static/js/acca.js"></script>
+<script src="/static/app_v10001.js"></script>
+<script>
+    loadAccumulator();
+</script>
 
 {% endblock %}
