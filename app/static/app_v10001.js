@@ -182,58 +182,91 @@ async function loadAccumulator() {
    ADD PICK
    ============================================================ */
 
-function setupAddPickForm() {
-    const form = document.getElementById("pickForm");
-    const resultBox = document.getElementById("resultBox");
+// ---------------------------------------------------------
+// LOAD PLAYERS INTO DROPDOWN
+// ---------------------------------------------------------
+async function loadPlayers() {
+    try {
+        const res = await fetch("/players");
+        const players = await res.json();
 
-    form.onsubmit = async (e) => {
-        e.preventDefault();
+        const select = document.getElementById("player");
+        select.innerHTML = "";
 
-        const body = Object.fromEntries(new FormData(form).entries());
+        players.forEach(p => {
+            const option = document.createElement("option");
+            option.value = p.id;
+            option.textContent = p.name;
+            select.appendChild(option);
+        });
 
-        // Validate odds format
-        if (!/^\d+\/\d+$/.test(body.odds_fraction)) {
-            resultBox.style.display = "block";
-            resultBox.style.background = "#5a0000";
-            resultBox.innerText = "Odds must be in fraction format (e.g. 5/2).";
-            return;
-        }
+    } catch (err) {
+        console.error("Error loading players:", err);
+    }
+}
 
-        const res = await fetch(`${API}/picks/`, {
+
+// ---------------------------------------------------------
+// SUBMIT NEW PICK
+// ---------------------------------------------------------
+async function submitPick(event) {
+    event.preventDefault();
+
+    const player_id = document.getElementById("player").value;
+    const course = document.getElementById("course").value.trim();
+    const horse_name = document.getElementById("horse_name").value.trim();
+    const horse_number = document.getElementById("horse_number").value.trim();
+    const odds_fraction = document.getElementById("odds_fraction").value.trim();
+    const race_time = document.getElementById("race_time").value.trim();
+
+    if (!player_id || !course || !horse_name || !odds_fraction || !race_time) {
+        alert("Please fill in all required fields.");
+        return;
+    }
+
+    const payload = {
+        player_id: parseInt(player_id),
+        course,
+        horse_name,
+        horse_number: horse_number ? parseInt(horse_number) : null,
+        odds_fraction,
+        race_time
+    };
+
+    try {
+        const res = await fetch("/picks/", {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(body)
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
         });
 
         if (!res.ok) {
-            const errorText = await res.text();
-            resultBox.style.display = "block";
-            resultBox.style.background = "#5a0000";
-            resultBox.innerText = errorText;
+            const errData = await res.json();
+            alert("Error: " + errData.detail);
             return;
         }
 
-        // Success
-        resultBox.style.display = "block";
-        resultBox.style.background = "#0f2a0f";
-        resultBox.innerText = "Pick added successfully!";
+        // Success — redirect to current picks
+        window.location.href = "/current-picks";
 
-        form.reset();
-    };
+    } catch (err) {
+        console.error("Error submitting pick:", err);
+        alert("Failed to submit pick.");
+    }
 }
 
-async function loadPlayersForAddPick() {
-    const dropdown = document.getElementById("playerSelect");
 
-    const res = await fetch(`${API}/players/`);
-    const players = await res.json();
+// ---------------------------------------------------------
+// INITIALISE PAGE
+// ---------------------------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+    loadPlayers();
 
-    dropdown.innerHTML = '<option value="">Select Player</option>';
-
-    players.forEach(p => {
-        dropdown.innerHTML += `<option value="${p.id}">${p.name}</option>`;
-    });
-}
+    const form = document.getElementById("add-pick-form");
+    if (form) {
+        form.addEventListener("submit", submitPick);
+    }
+});
 
 /* ============================================================
    CURRENT PICKS
