@@ -727,182 +727,109 @@ async function deleteRaceBet(id) {
     loadRaceStats();
 }
 
-/* ============================================================
-   ACCUMULATOR PAGE
-   ============================================================ */
-
-async function loadAccaHero() {
+// ---------------------------------------------------------
+// LOAD ACCUMULATOR PICKS + SUMMARY
+// ---------------------------------------------------------
+async function loadAccumulator() {
     try {
-        const oddsEl = document.getElementById("accaOdds");
-        const returnsEl = document.getElementById("accaReturns");
-        const statusEl = document.getElementById("accaStatus");
-
-        // If ANY of the required elements are missing, skip this function
-        if (!oddsEl || !returnsEl || !statusEl) return;
-
-        const res = await fetch(`${API}/accumulator/`);
+        const res = await fetch("/accumulator");
         const data = await res.json();
 
-        // Handle incomplete accumulator (less than 5 picks)
-        if (!data.combined_decimal_odds || !data.ew_250_potential_return) {
-            oddsEl.textContent = "0.00/1";
-            returnsEl.textContent = "£0.00";
-            statusEl.textContent = "No Picks";
-            statusEl.className = "acca-hero-status acca-status-empty";
-            return;
-        }
-
-        // Display odds (decimal - 1 = fractional equivalent)
-        oddsEl.textContent = `${(data.combined_decimal_odds - 1).toFixed(2)}/1`;
-
-        // Display E/W returns
-        returnsEl.textContent = `£${data.ew_250_potential_return.toFixed(2)}`;
-
-        // Normalise status to lowercase
-        const status = data.status.toLowerCase();
-
-        statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-        statusEl.className = "acca-hero-status";
-
-        if (status === "live") statusEl.classList.add("acca-status-live");
-        else if (status === "won") statusEl.classList.add("acca-status-won");
-        else if (status === "busted") statusEl.classList.add("acca-status-busted");
-        else statusEl.classList.add("acca-status-empty");
-
+        renderAccaPicks(data.picks);
+        renderAccaSummary(data);
     } catch (err) {
-        console.error("Failed to load acca hero", err);
+        console.error("Error loading accumulator:", err);
     }
 }
 
-async function loadAccaPicks() {
-    const container = document.getElementById("accaPicks");
-    if (!container) return;  // <-- FIX: prevents crashes on pages without this element
 
+// ---------------------------------------------------------
+// RENDER ACCA PICKS TABLE
+// ---------------------------------------------------------
+function renderAccaPicks(picks) {
+    const tbody = document.getElementById("acca-picks-body");
+    tbody.innerHTML = "";
+
+    if (!picks || picks.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center">No accumulator picks yet</td>
+            </tr>
+        `;
+        return;
+    }
+
+    picks.forEach(p => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${p.player.name}</td>
+            <td>${p.course}</td>
+            <td>${p.horse_name}</td>
+            <td>${p.odds_fraction}</td>
+            <td>${p.status}</td>
+            <td>
+                <button class="btn btn-danger btn-sm" onclick="removeAccaPick(${p.id})">
+                    Remove
+                </button>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+
+// ---------------------------------------------------------
+// RENDER ACCA SUMMARY (ODDS + RETURNS + STATUS)
+// ---------------------------------------------------------
+function renderAccaSummary(data) {
+    document.getElementById("acca-status").innerText = data.status;
+
+    if (!data.combined_decimal_odds) {
+        document.getElementById("acca-odds").innerText = "-";
+        document.getElementById("acca-ew-return").innerText = "-";
+        return;
+    }
+
+    document.getElementById("acca-odds").innerText = data.combined_decimal_odds.toFixed(2);
+    document.getElementById("acca-ew-return").innerText = data.ew_250_potential_return.toFixed(2);
+}
+
+
+// ---------------------------------------------------------
+// REMOVE PICK FROM ACCA
+// ---------------------------------------------------------
+async function removeAccaPick(id) {
     try {
-        const res = await fetch(`${API}/picks/current`);
-        const picks = await res.json();
-
-        container.innerHTML = "";
-
-        if (!picks.length) {
-            container.innerHTML = "<p>No picks yet.</p>";
-            return;
-        }
-
-        picks.forEach(p => {
-            const card = document.createElement("div");
-            card.className = "acca-card";
-
-            card.innerHTML = `
-                <div class="acca-card-header">
-                    <span class="acca-player">${p.player.name}</span>
-                    <button class="acca-delete-btn" onclick="deleteAccaPick(${p.id})">✕</button>
-                </div>
-
-                <div class="acca-horse-line">
-                    ${p.horse_number ? `<span class="acca-horse-number">(${p.horse_number})</span>` : ""}
-                    <span class="acca-horse-name">${p.horse_name}</span>
-                    <span class="acca-horse-odds">@${p.odds_fraction}</span>
-                </div>
-
-                <div class="acca-meta">
-                    ${p.course} — ${p.race_time}
-                </div>
-
-                <div class="acca-status-buttons">
-                    ${["Pending", "Win", "Place", "Lose", "NR"].map(s => `
-                        <button 
-                            class="acca-status-btn ${p.status === s ? 'active' : ''}"
-                            onclick="updateAccaStatus(${p.id}, '${s}')"
-                        >
-                            ${s.toUpperCase()}
-                        </button>
-                    `).join("")}
-                </div>
-            `;
-
-            container.appendChild(card);
+        await fetch(`/picks/${id}/acca/remove`, {
+            method: "PATCH"
         });
 
+        loadAccumulator();
     } catch (err) {
-        console.error("Failed to load acca picks", err);
+        console.error("Error removing acca pick:", err);
     }
 }
 
-async function loadAccaStandings() {
-    const container = document.getElementById("accaStandings");
-    if (!container) return;  // <-- Prevents crashes on pages without this element
 
+// ---------------------------------------------------------
+// ADD PICK TO ACCA (used on current picks page)
+// ---------------------------------------------------------
+async function addAccaPick(id) {
     try {
-        const res = await fetch(`${API}/accumulator/standings`);
-        const standings = await res.json();
-
-        container.innerHTML = "";
-
-        if (!standings.length) {
-            container.innerHTML = "<p>No standings available.</p>";
-            return;
-        }
-
-        standings.forEach(s => {
-            const row = document.createElement("div");
-            row.className = "acca-standing-item";
-
-            row.innerHTML = `
-                <span class="acca-standing-player">${s.player}</span>
-                <span class="acca-standing-status">${s.status}</span>
-            `;
-
-            container.appendChild(row);
+        await fetch(`/picks/${id}/acca/add`, {
+            method: "PATCH"
         });
 
+        loadAccumulator();
     } catch (err) {
-        console.error("Failed to load acca standings", err);
+        console.error("Error adding acca pick:", err);
     }
 }
 
 
-async function updateAccaStatus(id, status) {
-    try {
-        await fetch(`${API}/picks/${id}/result`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status })
-        });
-
-        loadAccaPicks();
-        loadAccaHero();
-        loadAccaStandings();
-
-    } catch (err) {
-        console.error("Failed to update acca status", err);
-    }
-}
-
-async function deleteAccaPick(id) {
-    if (!confirm("Delete this pick?")) return;
-
-    try {
-        await fetch(`${API}/picks/${id}`, { method: "DELETE" });
-
-        loadAccaPicks();
-        loadAccaHero();
-        loadAccaStandings();
-
-    } catch (err) {
-        console.error("Failed to delete pick", err);
-    }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    if (document.getElementById("accaOdds")) {
-        loadAccaHero();
-        loadAccaPicks();
-        loadAccaStandings();
-    }
-});
-
-
-
-
-
+// ---------------------------------------------------------
+// INITIAL LOAD
+// ---------------------------------------------------------
+document.addEventListener("DOMContentLoaded", loadAccumulator);
