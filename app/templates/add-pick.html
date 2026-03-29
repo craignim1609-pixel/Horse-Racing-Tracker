@@ -1,52 +1,76 @@
 {% extends "base.html" %}
-
 {% block content %}
 
-<h1>Add New Pick</h1>
+<div class="page-header">
+    <h1 class="page-title">Enter Your Pick</h1>
+</div>
 
-<form id="add-pick-form">
+<div class="add-pick-container">
 
-    <div class="form-row">
-        <label for="playerSelect">Player</label>
-        <select id="playerSelect" name="player_id" required></select>
-    </div>
+    <form id="add-pick-form" class="add-pick-form">
 
-    <div class="form-row">
-        <label for="courseSelect">Course</label>
-        <input id="courseSelect" name="course" type="text" placeholder="e.g. Ascot" required>
-    </div>
+        <!-- PLAYER -->
+        <label class="form-label">Player</label>
+        <select id="player" class="form-input">
+            <option value="">Select Player</option>
+        </select>
 
-    <div class="horse-group">
-        <div>
-            <label for="horseNumber">#</label>
-            <input id="horseNumber" name="horse_number" placeholder="3" required>
+        <!-- COURSE -->
+        <label class="form-label">Course</label>
+        <input 
+            id="course" 
+            type="text" 
+            class="form-input" 
+            placeholder="Enter course name..."
+        />
+
+        <!-- HORSE NUMBER + NAME -->
+        <label class="form-label">Horse Name & No.</label>
+        <div class="horse-row">
+            <input 
+                id="horse_number" 
+                type="text" 
+                class="form-input horse-number" 
+                placeholder="No."
+            />
+            <input 
+                id="horse_name" 
+                type="text" 
+                class="form-input horse-name" 
+                placeholder="Enter horse name..."
+            />
         </div>
-        <div>
-            <label for="horseName">Horse Name</label>
-            <input id="horseName" name="horse_name" placeholder="e.g. Frankel" required>
-        </div>
-    </div>
 
-    <div class="form-row">
-        <label for="raceTime">Race Time</label>
-        <input id="raceTime" name="race_time" type="time" required>
-    </div>
+        <!-- RACE TIME -->
+        <label class="form-label">Race Time</label>
+        <input 
+            id="race_time" 
+            type="time" 
+            class="form-input"
+        />
 
-    <div class="form-row">
-        <label for="odds">Odds</label>
-        <input id="odds" name="odds_fraction" placeholder="e.g. 4/1" required>
-    </div>
+        <!-- ODDS -->
+        <label class="form-label">Odds</label>
+        <input 
+            id="odds_fraction" 
+            type="text" 
+            class="form-input" 
+            placeholder="e.g. 5/1 or 6.0"
+        />
 
-    <button type="submit" class="submit-btn">Submit Pick</button>
+        <!-- SUBMIT BUTTON -->
+        <button type="submit" class="submit-btn">
+            Lock In Pick
+        </button>
 
-</form>
+    </form>
 
-<div id="resultBox" class="result-box"></div>
+</div>
 
 <script src="/static/app_v10001.js"></script>
 <script>
-    setupAddPickForm();
     loadPlayersForAddPick();
+    setupAddPickForm();
 </script>
 
 {% endblock %}
