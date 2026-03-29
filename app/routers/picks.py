@@ -25,7 +25,7 @@ def add_pick(data: schemas.PickCreate, db: Session = Depends(get_db)):
         odds_fraction=data.odds_fraction,
         race_time=data.race_time,
         status="Pending",
-        is_acca=False  # NEW FIELD
+        is_acca=False
     )
 
     db.add(pick)
@@ -73,7 +73,6 @@ def update_pick_result(
     pick.status = data.status
     db.commit()
 
-    # Reload WITH player relationship
     pick = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
