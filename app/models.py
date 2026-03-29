@@ -4,9 +4,9 @@ from datetime import datetime
 from app.database import Base
 
 
-# -----------------------------
+# ---------------------------------------------------------
 # PLAYER
-# -----------------------------
+# ---------------------------------------------------------
 class Player(Base):
     __tablename__ = "players"
 
@@ -18,9 +18,9 @@ class Player(Base):
     racedays = relationship("RaceDay", back_populates="player")
 
 
-# -----------------------------
+# ---------------------------------------------------------
 # PICK (Accumulator + Current Picks)
-# -----------------------------
+# ---------------------------------------------------------
 class Pick(Base):
     __tablename__ = "picks"
 
@@ -34,7 +34,7 @@ class Pick(Base):
     race_time = Column(String)
     status = Column(String, default="Pending")  # Pending / Win / Place / Lose / NR
 
-    # NEW — timestamp so we can filter today's picks
+    # Timestamp for daily filtering
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # NEW — accumulator flag
@@ -44,9 +44,9 @@ class Pick(Base):
     player = relationship("Player", back_populates="picks")
 
 
-# -----------------------------
+# ---------------------------------------------------------
 # RACE DAY BETS
-# -----------------------------
+# ---------------------------------------------------------
 class RaceDay(Base):
     __tablename__ = "raceday"
 
@@ -61,7 +61,7 @@ class RaceDay(Base):
     amount_bet = Column(Float)
     result = Column(String, default="Pending")  # Win / Place / Lose / NR / Pending
 
-    # NEW — timestamp for daily stats/history
+    # Timestamp for stats/history
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationship
