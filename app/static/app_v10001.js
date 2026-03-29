@@ -179,82 +179,76 @@ async function loadAccumulator() {
     document.getElementById("accumulator").innerHTML = JSON.stringify(data, null, 2);
 }
 /* ============================================================
-   ADD PICK
+   ADD PICK PAGE
    ============================================================ */
 
-// ---------------------------------------------------------
-// LOAD PLAYERS INTO DROPDOWN
-// ---------------------------------------------------------
-async function loadPlayers() {
+// Load players into the dropdown
+async function loadPlayersForAddPick() {
     try {
         const res = await fetch("/players");
         const players = await res.json();
 
         const select = document.getElementById("player");
+        if (!select) return;
+
         select.innerHTML = "";
 
         players.forEach(p => {
-            const option = document.createElement("option");
-            option.value = p.id;
-            option.textContent = p.name;
-            select.appendChild(option);
+            const opt = document.createElement("option");
+            opt.value = p.id;
+            opt.textContent = p.name;
+            select.appendChild(opt);
         });
 
     } catch (err) {
-        console.error("Error loading players:", err);
+        console.error("Failed to load players:", err);
     }
 }
 
 
-// ---------------------------------------------------------
-// SUBMIT NEW PICK
-// ---------------------------------------------------------
-async function submitPick(event) {
-    event.preventDefault();
+// Handle form submission
+function setupAddPickForm() {
+    const form = document.getElementById("add-pick-form");
+    if (!form) return;
 
-    const player_id = document.getElementById("player").value;
-    const course = document.getElementById("course").value.trim();
-    const horse_name = document.getElementById("horse_name").value.trim();
-    const horse_number = document.getElementById("horse_number").value.trim();
-    const odds_fraction = document.getElementById("odds_fraction").value.trim();
-    const race_time = document.getElementById("race_time").value.trim();
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    if (!player_id || !course || !horse_name || !odds_fraction || !race_time) {
-        alert("Please fill in all required fields.");
-        return;
-    }
+        const payload = {
+            player_id: parseInt(document.getElementById("player").value),
+            course: document.getElementById("course").value.trim(),
+            horse_name: document.getElementById("horse_name").value.trim(),
+            horse_number: document.getElementById("horse_number").value.trim() || null,
+            odds_fraction: document.getElementById("odds_fraction").value.trim(),
+            race_time: document.getElementById("race_time").value.trim()
+        };
 
-    const payload = {
-        player_id: parseInt(player_id),
-        course,
-        horse_name,
-        horse_number: horse_number ? parseInt(horse_number) : null,
-        odds_fraction,
-        race_time
-    };
-
-    try {
-        const res = await fetch("/picks/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) {
-            const errData = await res.json();
-            alert("Error: " + errData.detail);
+        if (!payload.player_id || !payload.course || !payload.horse_name || !payload.odds_fraction || !payload.race_time) {
+            alert("Please fill in all required fields.");
             return;
         }
 
-        // Success — redirect to current picks
-        window.location.href = "/current-picks";
+        try {
+            const res = await fetch("/picks/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
 
-    } catch (err) {
-        console.error("Error submitting pick:", err);
-        alert("Failed to submit pick.");
-    }
+            if (!res.ok) {
+                const errData = await res.json();
+                alert("Error: " + errData.detail);
+                return;
+            }
+
+            window.location.href = "/current-picks";
+
+        } catch (err) {
+            console.error("Failed to submit pick:", err);
+            alert("Failed to submit pick.");
+        }
+    });
 }
-
 
 // ---------------------------------------------------------
 // INITIALISE PAGE
