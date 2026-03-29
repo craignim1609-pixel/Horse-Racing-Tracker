@@ -1,53 +1,65 @@
 {% extends "base.html" %}
-
 {% block content %}
 
-<h1>Accumulator</h1>
+<div class="container mt-4">
 
-<!-- ACCA HERO BOX -->
-<div class="acca-hero">
+    <h2 class="mb-4">Accumulator</h2>
 
-    <div class="acca-hero-section">
-        <label>Shared Acca Odds</label>
-        <div id="accaOdds" class="acca-hero-value">0.00/1</div>
+    <!-- ACCA SUMMARY -->
+    <div class="card mb-4">
+        <div class="card-body">
+
+            <h4 class="mb-3">Accumulator Summary</h4>
+
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <h6>Status</h6>
+                    <div id="acca-status" class="fw-bold">-</div>
+                </div>
+
+                <div class="col-md-4">
+                    <h6>Combined Odds</h6>
+                    <div id="acca-odds" class="fw-bold">-</div>
+                </div>
+
+                <div class="col-md-4">
+                    <h6>E/W Return (£2.50)</h6>
+                    <div id="acca-ew-return" class="fw-bold">-</div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
-    <div class="acca-hero-section">
-        <label>£2.50 E/W Returns</label>
-        <div id="accaReturns" class="acca-hero-value">£0.00</div>
-    </div>
 
-    <div class="acca-hero-status acca-status-empty" id="accaStatus">
-        No Picks
+    <!-- ACCA PICKS TABLE -->
+    <div class="card">
+        <div class="card-body">
+
+            <h4 class="mb-3">Accumulator Picks</h4>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Course</th>
+                        <th>Horse</th>
+                        <th>Odds</th>
+                        <th>Status</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+
+                <tbody id="acca-picks-body">
+                    <!-- JS will populate -->
+                </tbody>
+            </table>
+
+        </div>
     </div>
 
 </div>
 
-<!-- PAGE LAYOUT -->
-<div class="acca-layout">
-
-    <!-- LEFT: CURRENT PICKS -->
-    <div class="acca-left">
-        <h2>Current Picks</h2>
-        <div id="accaPicks" class="acca-picks-grid"></div>
-    </div>
-
-    <!-- RIGHT: GROUP STANDINGS -->
-    <div class="acca-right">
-        <h2>Group Standings</h2>
-        <div id="accaStandings" class="acca-standings-list"></div>
-    </div>
-
-</div>
-
-<script src="/static/app_v10001.js"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    loadAccaHero();
-    loadAccaPicks();
-    loadAccaStandings();
-});
-</script>
+<script src="/static/js/acca.js"></script>
 
 {% endblock %}
