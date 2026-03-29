@@ -10,18 +10,16 @@ let PLAYER_MAP = {};
 let ALL_BETS = [];
 let FILTER_MODE = "all"; // "all" or "today"
 
-/* Icons for results */
 function getIcons() {
     return {
-        "Win": "🟢",
-        "Place": "🔵",
-        "Lose": "🔴",
-        "NR": "⚪",
-        "Pending": "⏳"
+        Win: "🟢",
+        Place: "🔵",
+        Lose: "🔴",
+        NR: "⚪",
+        Pending: "⏳"
     };
 }
 
-/* Group bets by course → time */
 function groupBets(bets) {
     const grouped = {};
     bets.forEach(b => {
@@ -35,28 +33,24 @@ function groupBets(bets) {
 function fractionalToDecimal(frac) {
     if (!frac) return 1.0;
 
-    // If user enters decimal already (e.g. "3.5")
     if (!frac.includes("/")) {
         const d = parseFloat(frac);
         return isNaN(d) ? 1.0 : d;
     }
 
-    // Fractional odds: A/B → decimal = (A/B) + 1
     const [a, b] = frac.split("/").map(Number);
     if (!a || !b) return 1.0;
 
-    return (a / b) + 1;
+    return a / b + 1;
 }
 
 function placeOdds(decimalOdds) {
-    // fractional odds = decimal - 1
     const frac = decimalOdds - 1;
-    return (frac / 4) + 1;
+    return frac / 4 + 1;
 }
 
 function calculateAccaOdds(bets) {
     const active = bets.filter(b => b.result !== "Lose");
-
     if (!active.length) return 1.0;
 
     return active.reduce((acc, b) => {
@@ -67,33 +61,22 @@ function calculateAccaOdds(bets) {
 
 function ewReturns(accaDecimal) {
     const place = placeOdds(accaDecimal);
-    return (2.5 * accaDecimal) + (2.5 * place);
+    return 2.5 * accaDecimal + 2.5 * place;
 }
 
 function calculateWinnings(bet) {
     const dec = fractionalToDecimal(bet.odds_fraction);
     const stake = parseFloat(bet.amount_bet || 0);
 
-    if (bet.result === "Win") {
-        return stake * dec;
-    }
-
-    if (bet.result === "Place") {
-        return stake * placeOdds(dec);
-    }
-
-    if (bet.result === "NR") {
-        return stake; // stake returned
-    }
-
+    if (bet.result === "Win") return stake * dec;
+    if (bet.result === "Place") return stake * placeOdds(dec);
+    if (bet.result === "NR") return stake;
     return 0;
 }
 
-/* Render a single race card */
 function renderRaceCard(b, icons) {
     return `
         <div class="race-card">
-
             <div class="race-stake">Stake: £${b.amount_bet}</div>
 
             <div class="race-horse">
@@ -116,28 +99,28 @@ function renderRaceCard(b, icons) {
             <div class="race-buttons">
                 <button 
                     type="button"
-                    class="status-btn status-win ${b.result === 'Win' ? 'active' : ''}"
+                    class="status-btn status-win ${b.result === "Win" ? "active" : ""}"
                     onclick="updateRaceResult(${b.id}, 'Win')">
                     WIN
                 </button>
 
                 <button 
                     type="button"
-                    class="status-btn status-place ${b.result === 'Place' ? 'active' : ''}"
+                    class="status-btn status-place ${b.result === "Place" ? "active" : ""}"
                     onclick="updateRaceResult(${b.id}, 'Place')">
                     PLACE
                 </button>
 
                 <button 
                     type="button"
-                    class="status-btn status-lose ${b.result === 'Lose' ? 'active' : ''}"
+                    class="status-btn status-lose ${b.result === "Lose" ? "active" : ""}"
                     onclick="updateRaceResult(${b.id}, 'Lose')">
                     LOSE
                 </button>
 
                 <button 
                     type="button"
-                    class="status-btn status-nr ${b.result === 'NR' ? 'active' : ''}"
+                    class="status-btn status-nr ${b.result === "NR" ? "active" : ""}"
                     onclick="updateRaceResult(${b.id}, 'NR')">
                     NR
                 </button>
@@ -150,7 +133,6 @@ function renderRaceCard(b, icons) {
                     DELETE
                 </button>
             </div>
-
         </div>
     `;
 }
@@ -160,29 +142,27 @@ function renderRaceCard(b, icons) {
    ============================================================ */
 
 async function loadPodium() {
-    const month = new Date().getMonth() + 1;
-    const year = new Date().getFullYear();
+    try {
+        const month = new Date().getMonth() + 1;
+        const year = new Date().getFullYear();
 
-    const res = await fetch(`${API}/stats/month/${month}?year=${year}`);
-    const stats = await res.json();
+        const res = await fetch(`${API}/stats/month/${month}?year=${year}`);
+        const stats = await res.json();
 
-    const sorted = stats.sort((a, b) => b.wins - a.wins);
+        const sorted = stats.sort((a, b) => b.wins - a.wins);
 
-    document.getElementById("firstPlayer").innerText = sorted[0]?.player || "-";
-    document.getElementById("secondPlayer").innerText = sorted[1]?.player || "-";
-    document.getElementById("thirdPlayer").innerText = sorted[2]?.player || "-";
+        document.getElementById("firstPlayer").innerText = sorted[0]?.player || "-";
+        document.getElementById("secondPlayer").innerText = sorted[1]?.player || "-";
+        document.getElementById("thirdPlayer").innerText = sorted[2]?.player || "-";
+    } catch (err) {
+        console.error("Error loading podium:", err);
+    }
 }
 
-async function loadAccumulator() {
-    const res = await fetch(`${API}/accumulator/`);
-    const data = await res.json();
-    document.getElementById("accumulator").innerHTML = JSON.stringify(data, null, 2);
-}
 /* ============================================================
    ADD PICK PAGE
    ============================================================ */
 
-// Load players into the dropdown
 async function loadPlayersForAddPick() {
     try {
         const res = await fetch("/players");
@@ -199,19 +179,16 @@ async function loadPlayersForAddPick() {
             opt.textContent = p.name;
             select.appendChild(opt);
         });
-
     } catch (err) {
         console.error("Failed to load players:", err);
     }
 }
 
-
-// Handle form submission
 function setupAddPickForm() {
     const form = document.getElementById("add-pick-form");
     if (!form) return;
 
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", async e => {
         e.preventDefault();
 
         const payload = {
@@ -223,7 +200,13 @@ function setupAddPickForm() {
             race_time: document.getElementById("race_time").value.trim()
         };
 
-        if (!payload.player_id || !payload.course || !payload.horse_name || !payload.odds_fraction || !payload.race_time) {
+        if (
+            !payload.player_id ||
+            !payload.course ||
+            !payload.horse_name ||
+            !payload.odds_fraction ||
+            !payload.race_time
+        ) {
             alert("Please fill in all required fields.");
             return;
         }
@@ -242,7 +225,6 @@ function setupAddPickForm() {
             }
 
             window.location.href = "/current-picks";
-
         } catch (err) {
             console.error("Failed to submit pick:", err);
             alert("Failed to submit pick.");
@@ -250,42 +232,24 @@ function setupAddPickForm() {
     });
 }
 
-// ---------------------------------------------------------
-// INITIALISE PAGE
-// ---------------------------------------------------------
-document.addEventListener("DOMContentLoaded", () => {
-    loadPlayers();
-
-    const form = document.getElementById("add-pick-form");
-    if (form) {
-        form.addEventListener("submit", submitPick);
-    }
-});
-
 /* ============================================================
-   CURRENT PICKS
+   CURRENT PICKS PAGE
    ============================================================ */
 
-// ---------------------------------------------------------
-// LOAD CURRENT PENDING PICKS
-// ---------------------------------------------------------
 async function loadCurrentPicks() {
     try {
         const res = await fetch("/picks/current");
         const picks = await res.json();
-
         renderCurrentPicks(picks);
     } catch (err) {
         console.error("Error loading current picks:", err);
     }
 }
 
-
-// ---------------------------------------------------------
-// RENDER CURRENT PICKS TABLE
-// ---------------------------------------------------------
 function renderCurrentPicks(picks) {
     const tbody = document.getElementById("current-picks-body");
+    if (!tbody) return;
+
     tbody.innerHTML = "";
 
     if (!picks || picks.length === 0) {
@@ -318,29 +282,6 @@ function renderCurrentPicks(picks) {
     });
 }
 
-
-// ---------------------------------------------------------
-// ADD PICK TO ACCA
-// ---------------------------------------------------------
-async function addAccaPick(id) {
-    try {
-        await fetch(`/picks/${id}/acca/add`, {
-            method: "PATCH"
-        });
-
-        // Refresh the table after adding
-        loadCurrentPicks();
-    } catch (err) {
-        console.error("Error adding pick to acca:", err);
-    }
-}
-
-
-// ---------------------------------------------------------
-// INITIAL LOAD
-// ---------------------------------------------------------
-document.addEventListener("DOMContentLoaded", loadCurrentPicks);
-
 /* ============================================================
    STATS PAGE
    ============================================================ */
@@ -348,57 +289,67 @@ document.addEventListener("DOMContentLoaded", loadCurrentPicks);
 function setupStatsForm() {
     const form = document.getElementById("statsForm");
     const summaryBox = document.getElementById("statsSummary");
+    const grid = document.getElementById("statsGrid");
+    if (!form) return;
 
     const now = new Date();
     form.month.value = now.getMonth() + 1;
     form.year.value = now.getFullYear();
 
-    form.onsubmit = async (e) => {
+    form.onsubmit = async e => {
         e.preventDefault();
 
         const month = form.month.value;
         const year = form.year.value;
 
-        const res = await fetch(`${API}/stats/month/${month}?year=${year}`);
-        const stats = await res.json();
+        try {
+            const res = await fetch(`${API}/stats/month/${month}?year=${year}`);
+            const stats = await res.json();
 
-        if (!stats.length) {
+            if (!stats.length) {
+                summaryBox.style.display = "block";
+                summaryBox.innerHTML = "No stats available for this month.";
+                grid.innerHTML = "";
+                return;
+            }
+
+            stats.sort((a, b) => b.wins - a.wins);
+
+            const top = stats[0];
             summaryBox.style.display = "block";
-            summaryBox.innerHTML = "No stats available for this month.";
-            return;
+            summaryBox.innerHTML = `
+                <strong>Player of the Month:</strong> ${top.player}<br>
+                <strong>Total Wins:</strong> ${top.wins}
+            `;
+
+            grid.innerHTML = stats
+                .map(
+                    s => `
+                <div class="stats-card">
+                    <div class="player-name">${s.player}</div>
+
+                    <div class="stat-row"><span>Month Wins:</span> <span>${s.wins}</span></div>
+                    <div class="stat-row"><span>Wins:</span> <span>${s.wins}</span></div>
+                    <div class="stat-row"><span>Places:</span> <span>${s.places}</span></div>
+                    <div class="stat-row"><span>Loses:</span> <span>${s.loses}</span></div>
+                    <div class="stat-row"><span>NR:</span> <span>${s.nr}</span></div>
+                </div>
+            `
+                )
+                .join("");
+        } catch (err) {
+            console.error("Error loading stats:", err);
         }
-
-        stats.sort((a, b) => b.wins - a.wins);
-
-        const top = stats[0];
-        summaryBox.style.display = "block";
-        summaryBox.innerHTML = `
-            <strong>Player of the Month:</strong> ${top.player}<br>
-            <strong>Total Wins:</strong> ${top.wins}
-        `;
-
-        const grid = document.getElementById("statsGrid");
-
-        grid.innerHTML = stats.map(s => `
-            <div class="stats-card">
-                <div class="player-name">${s.player}</div>
-
-                <div class="stat-row"><span>Month Wins:</span> <span>${s.wins}</span></div>
-                <div class="stat-row"><span>Wins:</span> <span>${s.wins}</span></div>
-                <div class="stat-row"><span>Places:</span> <span>${s.places}</span></div>
-                <div class="stat-row"><span>Loses:</span> <span>${s.loses}</span></div>
-                <div class="stat-row"><span>NR:</span> <span>${s.nr}</span></div>
-            </div>
-        `).join("");
     };
 }
 
 function renderGroupBalance() {
+    const box = document.getElementById("groupBalance");
+    if (!box) return;
+
     const totalSpent = ALL_BETS.reduce((sum, b) => sum + parseFloat(b.amount_bet || 0), 0);
     const totalWon = ALL_BETS.reduce((sum, b) => sum + calculateWinnings(b), 0);
     const profit = totalWon - totalSpent;
-
-    const box = document.getElementById("groupBalance");
 
     box.innerHTML = `
         <div class="summary-row">
@@ -413,27 +364,27 @@ function renderGroupBalance() {
 
         <div class="summary-row" style="border-top:1px solid #333;padding-top:8px;margin-top:8px;">
             <span style="font-weight:bold;">Net Profit:</span>
-            <strong style="color:${profit >= 0 ? '#0f7a0f' : '#7a0f0f'};">
+            <strong style="color:${profit >= 0 ? "#0f7a0f" : "#7a0f0f"};">
                 £${profit.toFixed(2)}
             </strong>
         </div>
     `;
 }
 
-//summary section//
 function renderTodaySummary() {
-    const today = new Date().toISOString().split("T")[0];
+    const box = document.getElementById("todaySummary");
+    if (!box) return;
 
+    const today = new Date().toISOString().split("T")[0];
     const todaysBets = ALL_BETS.filter(b => b.date === today);
     const total = todaysBets.length;
     const wins = todaysBets.filter(b => b.result === "Win").length;
 
     const profit = todaysBets.reduce((sum, b) => {
-        const p = parseFloat(b.winnings || 0) - parseFloat(b.amount_bet || 0);
-        return sum + p;
+        const winnings = calculateWinnings(b);
+        const stake = parseFloat(b.amount_bet || 0);
+        return sum + (winnings - stake);
     }, 0);
-
-    const box = document.getElementById("todaySummary");
 
     box.innerHTML = `
         <strong>Total Bets Today:</strong> ${total}<br>
@@ -443,88 +394,70 @@ function renderTodaySummary() {
 }
 
 /* ============================================================
-   PLAYER DETAILS
+   PLAYER DETAILS PAGE
    ============================================================ */
 
 function setupPlayerDetailsForm() {
     const form = document.getElementById("playerForm");
     const profile = document.getElementById("playerProfile");
+    if (!form) return;
 
-    form.onsubmit = async (e) => {
+    form.onsubmit = async e => {
         e.preventDefault();
 
         const name = new FormData(form).get("name");
 
-        const res = await fetch(`${API}/stats/player/${name}`);
-        const data = await res.json();
+        try {
+            const res = await fetch(`${API}/stats/player/${name}`);
+            const data = await res.json();
 
-        const profitColor =
-            data.profit > 0 ? "#0f7a0f" :
-            data.profit < 0 ? "#7a0f0f" :
-            "#555";
+            const profitColor =
+                data.profit > 0 ? "#0f7a0f" : data.profit < 0 ? "#7a0f0f" : "#555";
 
-        const formBadges = data.recent_form.map(r => {
-            const cls =
-                r === "W" ? "form-win" :
-                r === "P" ? "form-place" :
-                r === "L" ? "form-lose" :
-                "form-nr";
-            return `<span class="${cls}">${r}</span>`;
-        }).join("");
+            const formBadges = data.recent_form
+                .map(r => {
+                    const cls =
+                        r === "W"
+                            ? "form-win"
+                            : r === "P"
+                            ? "form-place"
+                            : r === "L"
+                            ? "form-lose"
+                            : "form-nr";
+                    return `<span class="${cls}">${r}</span>`;
+                })
+                .join("");
 
-        profile.innerHTML = `
-            <div class="profile-header">${data.player}</div>
+            profile.innerHTML = `
+                <div class="profile-header">${data.player}</div>
 
-            <div class="profile-section" style="border-left: 6px solid ${profitColor}">
-                <h3>Overall Performance</h3>
-                Wins: ${data.wins}<br>
-                Places: ${data.places}<br>
-                Loses: ${data.loses}<br>
-                NR: ${data.nr}<br>
-                Win Rate: ${(data.win_rate * 100).toFixed(1)}%
-            </div>
+                <div class="profile-section" style="border-left: 6px solid ${profitColor}">
+                    <h3>Overall Performance</h3>
+                    Wins: ${data.wins}<br>
+                    Places: ${data.places}<br>
+                    Loses: ${data.loses}<br>
+                    NR: ${data.nr}<br>
+                    Win Rate: ${(data.win_rate * 100).toFixed(1)}%
+                </div>
 
-            <div class="profile-section">
-                <h3>Biggest Priced Winner</h3>
-                ${data.biggest_winner ? `
-                    ${data.biggest_winner.horse_name} (${data.biggest_winner.odds_fraction})
-                ` : "No wins yet."}
-            </div>
+                <div class="profile-section">
+                    <h3>Biggest Priced Winner</h3>
+                    ${
+                        data.biggest_winner
+                            ? `${data.biggest_winner.horse_name} (${data.biggest_winner.odds_fraction})`
+                            : "No wins yet."
+                    }
+                </div>
 
-            <div class="profile-section">
-                <h3>Recent Form</h3>
-                <div class="recent-form">${formBadges}</div>
-            </div>
-        `;
+                <div class="profile-section">
+                    <h3>Recent Form</h3>
+                    <div class="recent-form">${formBadges}</div>
+                </div>
+            `;
+        } catch (err) {
+            console.error("Error loading player details:", err);
+        }
     };
-}
-
-//group balance
-function renderGroupBalance() {
-    const totalSpent = ALL_BETS.reduce((sum, b) => sum + parseFloat(b.amount_bet || 0), 0);
-    const totalWon = ALL_BETS.reduce((sum, b) => sum + calculateWinnings(b), 0);
-    const profit = totalWon - totalSpent;
-
-    const box = document.getElementById("groupBalance");
-
-    box.innerHTML = `
-        <div class="summary-row">
-            <span>Total Spent:</span>
-            <strong>£${totalSpent.toFixed(2)}</strong>
-        </div>
-
-        <div class="summary-row">
-            <span>Total Won:</span>
-            <strong style="color:#f7c600;">£${totalWon.toFixed(2)}</strong>
-        </div>
-
-        <div class="summary-row" style="border-top:1px solid #333;padding-top:8px;margin-top:8px;">
-            <span style="font-weight:bold;">Net Profit:</span>
-            <strong style="color:${profit >= 0 ? '#0f7a0f' : '#7a0f0f'};">
-                £${profit.toFixed(2)}
-            </strong>
-        </div>
-    `;
 }
 
 /* ============================================================
@@ -535,24 +468,29 @@ async function setupRaceForm() {
     const form = document.getElementById("raceForm");
     const resultBox = document.getElementById("raceResult");
     const playerSelect = document.getElementById("playerSelect");
+    if (!form) return;
 
-    const res = await fetch(`${API}/players/`);
-    const players = await res.json();
+    try {
+        const res = await fetch(`${API}/players/`);
+        const players = await res.json();
 
-    playerSelect.innerHTML = '<option value="">Select Player</option>';
-    players.forEach(p => {
-        PLAYER_MAP[p.id] = p.name;
-        playerSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
-    });
+        playerSelect.innerHTML = '<option value="">Select Player</option>';
+        players.forEach(p => {
+            PLAYER_MAP[p.id] = p.name;
+            playerSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+        });
+    } catch (err) {
+        console.error("Error loading race day players:", err);
+    }
 
-    form.onsubmit = async (e) => {
+    form.onsubmit = async e => {
         e.preventDefault();
 
         const body = Object.fromEntries(new FormData(form).entries());
 
         const submitRes = await fetch(`${API}/api/raceday/`, {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body)
         });
 
@@ -562,7 +500,9 @@ async function setupRaceForm() {
             const data = await submitRes.json();
             const playerName = PLAYER_MAP[data.player_id] || "Player";
             message = `${playerName}'s bet has been added!`;
-        } catch {}
+        } catch {
+            // ignore JSON parse errors
+        }
 
         resultBox.style.display = "block";
         resultBox.innerText = message;
@@ -571,100 +511,127 @@ async function setupRaceForm() {
         loadRaceStats();
     };
 }
+
 /* ============================================================
    RACE DAY — UPDATE RESULT
    ============================================================ */
 
 async function updateRaceResult(id, result) {
-    await fetch(`${API}/api/raceday/${id}/result`, {
-        method: "PATCH",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ result })
-    });
+    try {
+        await fetch(`${API}/api/raceday/${id}/result`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ result })
+        });
 
-    loadRaceStats();
+        loadRaceStats();
+    } catch (err) {
+        console.error("Error updating race result:", err);
+    }
 }
+
 /* ============================================================
    RACE DAY — LOAD STATS + CARDS
    ============================================================ */
 
 async function loadRaceStats() {
-    const listRes = await fetch(`${API}/api/raceday/`);
-    ALL_BETS = await listRes.json();
-    let bets = [...ALL_BETS];
-
     const list = document.getElementById("raceList");
+    const statsBox = document.getElementById("raceStats");
+    if (!list || !statsBox) return;
 
-    const grouped = groupBets(bets);
-    const icons = getIcons();
+    try {
+        const listRes = await fetch(`${API}/api/raceday/`);
+        ALL_BETS = await listRes.json();
+        const bets = [...ALL_BETS];
 
-   const accaDecimal = calculateAccaOdds(ALL_BETS);
-   const ew = ewReturns(accaDecimal);
-  
-   /* UPDATE HEADER VALUES */
-document.querySelector(".header-stat:nth-child(1) .stat-value").innerText =
-    `${(accaDecimal - 1).toFixed(2)}/1`;
+        const grouped = groupBets(bets);
+        const icons = getIcons();
 
-document.querySelector(".header-stat:nth-child(2) .stat-value").innerText =
-    `£${ew.toFixed(2)}`;
+        const accaDecimal = calculateAccaOdds(ALL_BETS);
+        const ew = ewReturns(accaDecimal);
 
-    list.innerHTML = `
-        <div class="race-list-wrapper">
-            ${Object.keys(grouped).map(course => `
-                <div class="race-course-header">${course}</div>
+        const headerOdds = document.querySelector(
+            ".header-stat:nth-child(1) .stat-value"
+        );
+        const headerReturn = document.querySelector(
+            ".header-stat:nth-child(2) .stat-value"
+        );
 
-                ${Object.keys(grouped[course]).sort().map(time => `
-                    <div class="race-time-header">${time}</div>
+        if (headerOdds)
+            headerOdds.innerText = `${(accaDecimal - 1).toFixed(2)}/1`;
+        if (headerReturn) headerReturn.innerText = `£${ew.toFixed(2)}`;
 
-                    ${grouped[course][time].map(b => renderRaceCard(b, icons)).join("")}
+        list.innerHTML = `
+            <div class="race-list-wrapper">
+                ${Object.keys(grouped)
+                    .map(
+                        course => `
+                    <div class="race-course-header">${course}</div>
 
-                `).join("")}
+                    ${Object.keys(grouped[course])
+                        .sort()
+                        .map(
+                            time => `
+                        <div class="race-time-header">${time}</div>
 
-            `).join("")}
-        </div>
-    `;
+                        ${grouped[course][time]
+                            .map(b => renderRaceCard(b, icons))
+                            .join("")}
+                    `
+                        )
+                        .join("")}
+                `
+                    )
+                    .join("")}
+            </div>
+        `;
 
-    /* GROUP STATS */
-    const statsRes = await fetch(`${API}/api/raceday/stats`);
-    const stats = await statsRes.json();
+        const statsRes = await fetch(`${API}/api/raceday/stats`);
+        const stats = await statsRes.json();
 
-    const box = document.getElementById("raceStats");
+        const totalBets = bets.length;
+        const wins = bets.filter(b => b.result === "Win").length;
+        const strikeRate = totalBets
+            ? ((wins / totalBets) * 100).toFixed(1)
+            : 0;
 
-    const totalBets = bets.length;
-    const wins = bets.filter(b => b.result === "Win").length;
-    const strikeRate = totalBets ? (wins / totalBets * 100).toFixed(1) : 0;
+        statsBox.innerHTML = `
+            <h3>Group Summary</h3>
+            Total Bets: ${totalBets}<br>
+            Strike Rate: ${strikeRate}%<br>
+            Total Stake: £${stats.group.total_stake.toFixed(2)}<br>
+            Total Return: £${stats.group.total_return.toFixed(2)}<br>
+            Profit: £${stats.group.profit.toFixed(2)}<br><br>
 
-    box.innerHTML = `
-        <h3>Group Summary</h3>
-        Total Bets: ${totalBets}<br>
-        Strike Rate: ${strikeRate}%<br>
-        Total Stake: £${stats.group.total_stake.toFixed(2)}<br>
-        Total Return: £${stats.group.total_return.toFixed(2)}<br>
-        Profit: £${stats.group.profit.toFixed(2)}<br><br>
+            <h3>Players</h3>
+            ${stats.players
+                .map(p => {
+                    const profitColor =
+                        p.profit > 0
+                            ? "#0f7a0f"
+                            : p.profit < 0
+                            ? "#7a0f0f"
+                            : "#555";
 
-        <h3>Players</h3>
-        ${stats.players.map(p => {
-            const profitColor =
-                p.profit > 0 ? "#0f7a0f" :
-                p.profit < 0 ? "#7a0f0f" :
-                "#555";
+                    return `
+                    <div class="profile-section" style="border-left: 6px solid ${profitColor}; padding-left: 10px;">
+                        <strong>${p.player.name}</strong><br>
+                        Stake: £${p.total_stake.toFixed(2)}<br>
+                        Return: £${p.total_return.toFixed(2)}<br>
+                        Profit: £${p.profit.toFixed(2)}
+                    </div>
+                `;
+                })
+                .join("")}
+        `;
 
-            return `
-                <div class="profile-section" style="border-left: 6px solid ${profitColor}; padding-left: 10px;">
-                    <strong>${p.player.name}</strong><br>
-                    Stake: £${p.total_stake.toFixed(2)}<br>
-                    Return: £${p.total_return.toFixed(2)}<br>
-                    Profit: £${p.profit.toFixed(2)}
-                </div>
-            `;
-        }).join("")}
-    `;
-
-   renderFilteredBets();
-   loadRecentActivity();
-   renderTodaySummary();
-   renderGroupBalance();
-
+        renderFilteredBets();
+        loadRecentActivity();
+        renderTodaySummary();
+        renderGroupBalance();
+    } catch (err) {
+        console.error("Error loading race stats:", err);
+    }
 }
 
 /* ============================================================
@@ -672,57 +639,74 @@ document.querySelector(".header-stat:nth-child(2) .stat-value").innerText =
    ============================================================ */
 
 async function loadRecentActivity() {
-    const res = await fetch(`${API}/api/raceday/recent`);
-    const items = await res.json();
-
     const box = document.getElementById("recentActivity");
+    if (!box) return;
 
-    if (!items.length) {
-        box.innerHTML = "No race day bets recorded yet.";
-        return;
+    try {
+        const res = await fetch(`${API}/api/raceday/recent`);
+        const items = await res.json();
+
+        if (!items.length) {
+            box.innerHTML = "No race day bets recorded yet.";
+            return;
+        }
+
+        const icons = getIcons();
+
+        box.innerHTML = items
+            .map(a => {
+                const winnings = calculateWinnings(a);
+                const stake = parseFloat(a.amount_bet || 0);
+                const profit = winnings - stake;
+
+                return `
+                <div class="activity-card-modern">
+                    <div class="activity-left">
+                        <div class="stake-box">
+                            <span class="stake-label">Stake</span>
+                            <span class="stake-value">£${stake.toFixed(2)}</span>
+                        </div>
+                    </div>
+
+                    <div class="activity-middle">
+                        <div class="horse-line">
+                            ${
+                                a.horse_number
+                                    ? `<span class="horse-number">(${a.horse_number})</span>`
+                                    : ""
+                            }
+                            <span class="horse-name">${a.horse_name}</span>
+                            <span class="horse-odds">@${a.odds_fraction}</span>
+                        </div>
+
+                        <div class="meta-line">
+                            <span class="meta-player">${
+                                PLAYER_MAP[a.player_id]
+                            }</span>
+                            <span>${a.course}</span>
+                            <span>${a.race_time}</span>
+                        </div>
+                    </div>
+
+                    <div class="activity-right">
+                        <div class="winnings-label">Winnings</div>
+                        <div class="winnings-value ${
+                            profit > 0
+                                ? "profit-pos"
+                                : profit < 0
+                                ? "profit-neg"
+                                : ""
+                        }">
+                            £${winnings.toFixed(2)}
+                        </div>
+                    </div>
+                </div>
+            `;
+            })
+            .join("");
+    } catch (err) {
+        console.error("Error loading recent activity:", err);
     }
-
-    const icons = getIcons();
-
-   box.innerHTML = items.map(a => {
-    const winnings = calculateWinnings(a);
-    const stake = parseFloat(a.amount_bet || 0);
-    const profit = winnings - stake;
-
-    return `
-        <div class="activity-card-modern">
-
-            <div class="activity-left">
-                <div class="stake-box">
-                    <span class="stake-label">Stake</span>
-                    <span class="stake-value">£${stake.toFixed(2)}</span>
-                </div>
-            </div>
-
-            <div class="activity-middle">
-                <div class="horse-line">
-                    ${a.horse_number ? `<span class="horse-number">(${a.horse_number})</span>` : ""}
-                    <span class="horse-name">${a.horse_name}</span>
-                    <span class="horse-odds">@${a.odds_fraction}</span>
-                </div>
-
-                <div class="meta-line">
-                    <span class="meta-player">${PLAYER_MAP[a.player_id]}</span>
-                    <span>${a.course}</span>
-                    <span>${a.race_time}</span>
-                </div>
-            </div>
-
-            <div class="activity-right">
-                <div class="winnings-label">Winnings</div>
-                <div class="winnings-value ${profit > 0 ? "profit-pos" : profit < 0 ? "profit-neg" : ""}">
-                    £${winnings.toFixed(2)}
-                </div>
-            </div>
-
-        </div>
-    `;
-}).join("");
 }
 
 /* ============================================================
@@ -732,8 +716,11 @@ async function loadRecentActivity() {
 function filterToday() {
     FILTER_MODE = "today";
 
-    document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
-    document.querySelector(".filter-btn:nth-child(1)").classList.add("active");
+    document
+        .querySelectorAll(".filter-btn")
+        .forEach(btn => btn.classList.remove("active"));
+    const btn = document.querySelector(".filter-btn:nth-child(1)");
+    if (btn) btn.classList.add("active");
 
     renderFilteredBets();
 }
@@ -741,13 +728,19 @@ function filterToday() {
 function filterAll() {
     FILTER_MODE = "all";
 
-    document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
-    document.querySelector(".filter-btn:nth-child(2)").classList.add("active");
+    document
+        .querySelectorAll(".filter-btn")
+        .forEach(btn => btn.classList.remove("active"));
+    const btn = document.querySelector(".filter-btn:nth-child(2)");
+    if (btn) btn.classList.add("active");
 
     renderFilteredBets();
 }
 
 function renderFilteredBets() {
+    const list = document.getElementById("raceList");
+    if (!list) return;
+
     let bets = [...ALL_BETS];
 
     if (FILTER_MODE === "today") {
@@ -758,40 +751,58 @@ function renderFilteredBets() {
     const grouped = groupBets(bets);
     const icons = getIcons();
 
-    const list = document.getElementById("raceList");
-
     list.innerHTML = `
         <div class="race-list-wrapper">
-            ${Object.keys(grouped).map(course => `
+            ${Object.keys(grouped)
+                .map(
+                    course => `
                 <div class="race-course-header">${course}</div>
 
-                ${Object.keys(grouped[course]).sort().map(time => `
+                ${Object.keys(grouped[course])
+                    .sort()
+                    .map(
+                        time => `
                     <div class="race-time-header">${time}</div>
 
-                    ${grouped[course][time].map(b => renderRaceCard(b, icons)).join("")}
-
-                `).join("")}
-
-            `).join("")}
+                    ${grouped[course][time]
+                        .map(b => renderRaceCard(b, icons))
+                        .join("")}
+                `
+                    )
+                    .join("")}
+            `
+                )
+                .join("")}
         </div>
     `;
 }
 
-//delete button
 async function deleteRaceBet(id) {
     if (!confirm("Delete this bet?")) return;
 
-    await fetch(`${API}/api/raceday/${id}`, {
-        method: "DELETE"
-    });
+    try {
+        await fetch(`${API}/api/raceday/${id}`, {
+            method: "DELETE"
+        });
 
-    loadRaceStats();
+        loadRaceStats();
+    } catch (err) {
+        console.error("Error deleting race bet:", err);
+    }
 }
 
-// ---------------------------------------------------------
-// LOAD ACCUMULATOR PICKS + SUMMARY
-// ---------------------------------------------------------
+/* ============================================================
+   ACCUMULATOR PAGE
+   ============================================================ */
+
 async function loadAccumulator() {
+    const statusEl = document.getElementById("acca-status");
+    const oddsEl = document.getElementById("acca-odds");
+    const ewEl = document.getElementById("acca-ew-return");
+    const tbody = document.getElementById("acca-picks-body");
+
+    if (!statusEl || !oddsEl || !ewEl || !tbody) return;
+
     try {
         const res = await fetch("/accumulator");
         const data = await res.json();
@@ -803,12 +814,10 @@ async function loadAccumulator() {
     }
 }
 
-
-// ---------------------------------------------------------
-// RENDER ACCA PICKS TABLE
-// ---------------------------------------------------------
 function renderAccaPicks(picks) {
     const tbody = document.getElementById("acca-picks-body");
+    if (!tbody) return;
+
     tbody.innerHTML = "";
 
     if (!picks || picks.length === 0) {
@@ -840,27 +849,24 @@ function renderAccaPicks(picks) {
     });
 }
 
-
-// ---------------------------------------------------------
-// RENDER ACCA SUMMARY (ODDS + RETURNS + STATUS)
-// ---------------------------------------------------------
 function renderAccaSummary(data) {
-    document.getElementById("acca-status").innerText = data.status;
+    const statusEl = document.getElementById("acca-status");
+    const oddsEl = document.getElementById("acca-odds");
+    const ewEl = document.getElementById("acca-ew-return");
+    if (!statusEl || !oddsEl || !ewEl) return;
+
+    statusEl.innerText = data.status;
 
     if (!data.combined_decimal_odds) {
-        document.getElementById("acca-odds").innerText = "-";
-        document.getElementById("acca-ew-return").innerText = "-";
+        oddsEl.innerText = "-";
+        ewEl.innerText = "-";
         return;
     }
 
-    document.getElementById("acca-odds").innerText = data.combined_decimal_odds.toFixed(2);
-    document.getElementById("acca-ew-return").innerText = data.ew_250_potential_return.toFixed(2);
+    oddsEl.innerText = data.combined_decimal_odds.toFixed(2);
+    ewEl.innerText = data.ew_250_potential_return.toFixed(2);
 }
 
-
-// ---------------------------------------------------------
-// REMOVE PICK FROM ACCA
-// ---------------------------------------------------------
 async function removeAccaPick(id) {
     try {
         await fetch(`/picks/${id}/acca/remove`, {
@@ -868,29 +874,63 @@ async function removeAccaPick(id) {
         });
 
         loadAccumulator();
+        if (document.getElementById("current-picks-body")) {
+            loadCurrentPicks();
+        }
     } catch (err) {
         console.error("Error removing acca pick:", err);
     }
 }
 
-
-// ---------------------------------------------------------
-// ADD PICK TO ACCA (used on current picks page)
-// ---------------------------------------------------------
 async function addAccaPick(id) {
     try {
         await fetch(`/picks/${id}/acca/add`, {
             method: "PATCH"
         });
 
-        loadAccumulator();
+        if (document.getElementById("acca-picks-body")) {
+            loadAccumulator();
+        }
+        if (document.getElementById("current-picks-body")) {
+            loadCurrentPicks();
+        }
     } catch (err) {
         console.error("Error adding acca pick:", err);
     }
 }
 
+/* ============================================================
+   GLOBAL PAGE INITIALISER
+   ============================================================ */
 
-// ---------------------------------------------------------
-// INITIAL LOAD
-// ---------------------------------------------------------
-document.addEventListener("DOMContentLoaded", loadAccumulator);
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("add-pick-form")) {
+        loadPlayersForAddPick();
+        setupAddPickForm();
+    }
+
+    if (document.getElementById("current-picks-body")) {
+        loadCurrentPicks();
+    }
+
+    if (document.getElementById("acca-picks-body")) {
+        loadAccumulator();
+    }
+
+    if (document.getElementById("statsForm")) {
+        setupStatsForm();
+    }
+
+    if (document.getElementById("playerForm")) {
+        setupPlayerDetailsForm();
+    }
+
+    if (document.getElementById("raceForm")) {
+        setupRaceForm();
+        loadRaceStats();
+    }
+
+    if (document.getElementById("firstPlayer")) {
+        loadPodium();
+    }
+});
