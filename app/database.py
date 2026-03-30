@@ -15,8 +15,9 @@ if not DATABASE_URL:
 # ---------------------------------------------------------
 engine = create_engine(
     DATABASE_URL,
-    pool_pre_ping=True,      # avoids stale connections
-    pool_recycle=1800        # refresh connections every 30 mins
+    connect_args={"sslmode": "require"},
+    pool_pre_ping=True,
+    pool_recycle=1800
 )
 
 SessionLocal = sessionmaker(
