@@ -1,25 +1,19 @@
 <div class="navbar">
-    <a href="/" class="{% if request.path == '/' %}active{% endif %}">
-        Home
-    </a>
 
-    <a href="/accumulator" class="{% if '/accumulator' in request.path %}active{% endif %}">
+    <a href="/acca" class="{% if '/acca' in request.path %}active{% endif %}">
         Accumulator
-    </a>
-
-    <a href="/raceday" class="{% if '/raceday' in request.path %}active{% endif %}">
-        Race Day
     </a>
 
     <a href="/add-pick" class="{% if '/add-pick' in request.path %}active{% endif %}">
         New Pick
     </a>
 
+    <a href="/raceday" class="{% if '/raceday' in request.path %}active{% endif %}">
+        Race Day
+    </a>
+
     <a href="/stats" class="{% if '/stats' in request.path %}active{% endif %}">
         Stats
     </a>
 
-    <a href="/player-details" class="{% if '/player-details' in request.path %}active{% endif %}">
-        Player Details
-    </a>
 </div>
