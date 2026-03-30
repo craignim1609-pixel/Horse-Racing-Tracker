@@ -32,4 +32,5 @@ def run_startup_tasks():
     Called from main.py on startup.
     Add more startup tasks here later.
     """
+    Base.metadata.create_all(bind=engine)
     seed_players()
