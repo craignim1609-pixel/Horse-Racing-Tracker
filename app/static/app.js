@@ -162,7 +162,7 @@ async function loadCurrentPicks() {
    ============================================================ */
 
 async function loadRaceDay() {
-    const data = await api("/api/raceday");
+    const data = await api("/api/raceday/");
 
     renderRaceCards(data.races);
     renderRecentActivity(data.activity);
