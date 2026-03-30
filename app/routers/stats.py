@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from datetime import date, datetime
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session, joinedload
 from app.database import get_db
 from app import models
 
@@ -8,76 +7,124 @@ router = APIRouter(prefix="/stats", tags=["Stats"])
 
 
 # ---------------------------------------------------------
-# OVERVIEW: Performance Center
+# INTERNAL: BUILD PLAYER STATS DICTIONARY
 # ---------------------------------------------------------
-@router.get("/overview")
-def get_stats_overview(db: Session = Depends(get_db)):
-    today = date.today()
-    start_of_month = today.replace(day=1)
-
-    players = db.query(models.Player).all()
-    results = []
-
-    for player in players:
-        picks = (
-            db.query(models.Pick)
-            .filter(models.Pick.player_id == player.id)
-            .all()
-        )
-
-        month_picks = (
-            db.query(models.Pick)
-            .filter(models.Pick.player_id == player.id)
-            .filter(models.Pick.created_at >= start_of_month)
-            .all()
-        )
-
-        results.append({
-            "player_id": player.id,
-            "player_name": player.name,
-            "month_wins": len([p for p in month_picks if p.status == "Win"]),
-            "wins": len([p for p in picks if p.status == "Win"]),
-            "places": len([p for p in picks if p.status == "Place"]),
-            "losses": len([p for p in picks if p.status == "Lose"]),
-            "nr": len([p for p in picks if p.status == "NR"]),
-        })
-
-    return results
-
-
-# ---------------------------------------------------------
-# PLAYER DETAIL VIEW
-# ---------------------------------------------------------
-@router.get("/player/{player_id}")
-def get_player_detail(player_id: int, db: Session = Depends(get_db)):
-    player = db.query(models.Player).filter(models.Player.id == player_id).first()
-    if not player:
-        return {"error": "Player not found"}
+def build_stats(db: Session):
+    stats = {}
 
     picks = (
         db.query(models.Pick)
-        .filter(models.Pick.player_id == player_id)
+        .options(joinedload(models.Pick.player))
         .all()
     )
 
-    # Group by racetrack
-    track_map = {}
     for p in picks:
-        if p.course not in track_map:
-            track_map[p.course] = {
-                "track": p.course,
-                "bets": 0,
-                "horses": []
+        name = p.player.name
+
+        if name not in stats:
+            stats[name] = {
+                "name": name,
+                "wins": 0,
+                "places": 0,
+                "loses": 0,
+                "nr": 0,
+                "total": 0,
+                "courses": {},
+                "profit": 0,   # placeholder for future logic
             }
-        track_map[p.course]["bets"] += 1
-        track_map[p.course]["horses"].append(p.horse_name)
+
+        s = stats[name]
+        s["total"] += 1
+
+        # status counts
+        status = p.status.lower()
+        if status == "win":
+            s["wins"] += 1
+        elif status == "place":
+            s["places"] += 1
+        elif status == "lose":
+            s["loses"] += 1
+        elif status == "nr":
+            s["nr"] += 1
+
+        # course breakdown
+        course = p.course
+        if course not in s["courses"]:
+            s["courses"][course] = {"runs": 0, "wins": 0, "places": 0}
+
+        s["courses"][course]["runs"] += 1
+        if status == "win":
+            s["courses"][course]["wins"] += 1
+        if status == "place":
+            s["courses"][course]["places"] += 1
+
+    return stats
+
+
+# ---------------------------------------------------------
+# GET ALL PLAYER STATS (for stats cards)
+# Matches JS: GET /api/stats
+# ---------------------------------------------------------
+@router.get("/")
+def get_all_stats(db: Session = Depends(get_db)):
+    stats = build_stats(db)
+
+    # Convert to list for JSON
+    return [
+        {
+            "name": s["name"],
+            "wins": s["wins"],
+            "places": s["places"],
+            "loses": s["loses"],
+            "nr": s["nr"],
+            "total": s["total"],
+        }
+        for s in stats.values()
+    ]
+
+
+# ---------------------------------------------------------
+# GET SINGLE PLAYER STATS (for modal)
+# Matches JS: GET /api/stats/{name}
+# ---------------------------------------------------------
+@router.get("/{player_name}")
+def get_player_stats(player_name: str, db: Session = Depends(get_db)):
+    stats = build_stats(db)
+
+    if player_name not in stats:
+        raise HTTPException(status_code=404, detail="Player not found")
+
+    s = stats[player_name]
+
+    # Win rate
+    win_rate = (s["wins"] / s["total"] * 100) if s["total"] else 0
+
+    # Convert course dict → list
+    course_list = [
+        {
+            "course": c,
+            "runs": d["runs"],
+            "wins": d["wins"],
+            "places": d["places"],
+        }
+        for c, d in s["courses"].items()
+    ]
+
+    # Profit breakdown placeholder (can be expanded later)
+    profit_chart = [
+        {"label": "Wins", "value": s["wins"] * 5},     # example placeholder
+        {"label": "Places", "value": s["places"] * 2}, # example placeholder
+        {"label": "Loses", "value": -s["loses"] * 5},  # example placeholder
+    ]
 
     return {
-        "player_id": player.id,
-        "player_name": player.name,
-        "wins": len([p for p in picks if p.status == "Win"]),
-        "places": len([p for p in picks if p.status == "Place"]),
-        "losses": len([p for p in picks if p.status == "Lose"]),
-        "nr": len([p for p in picks if p.status == "NR"]),
-        "tracks": list(track_map.values())
+        "name": s["name"],
+        "wins": s["wins"],
+        "places": s["places"],
+        "loses": s["loses"],
+        "nr": s["nr"],
+        "total": s["total"],
+        "win_rate": round(win_rate, 1),
+        "courses": course_list,
+        "profit": profit_chart,
     }
