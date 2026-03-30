@@ -106,7 +106,7 @@ function renderAccaStandings(standings) {
    ============================================================ */
 
 async function loadPlayersForAddPick() {
-    const players = await api("/api/players");
+    const players = await api("/api/players/");
     const select = document.getElementById("player");
 
     players.forEach(p => {
