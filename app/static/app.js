@@ -15,7 +15,7 @@ async function api(url, options = {}) {
    ============================================================ */
 
 async function loadAccumulator() {
-    const data = await api("/api/acca");
+    const data = await api("/api/acca/");
 
     updateAccaHero(data);
     renderAccaPicks(data.picks);
@@ -246,7 +246,7 @@ function setupRaceFilters() {
    ============================================================ */
 
 async function loadStatsPage() {
-    const players = await api("/api/stats");
+    const players = await api("/api/stats/");
     const container = document.getElementById("stats-cards");
 
     container.innerHTML = "";
