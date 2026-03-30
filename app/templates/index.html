@@ -1,17 +1,32 @@
 {% extends "base.html" %}
-
 {% block content %}
 
-<h1>Welcome to Elite Racing Group</h1>
-<p style="color:red; font-weight:bold;">TEMPLATE VERSION 10001</p>
+<h1>Elite Racing Group</h1>
 
-<div class="home-container">
-    <p>Select an option from the menu to begin.</p>
+<div class="section-title">Player of the Month</div>
+
+<div class="podium-container">
+
+    <div class="podium-item">
+        <div class="podium-rank gold">1st</div>
+        <div id="firstPlayer" class="podium-name">-</div>
+    </div>
+
+    <div class="podium-item">
+        <div class="podium-rank silver">2nd</div>
+        <div id="secondPlayer" class="podium-name">-</div>
+    </div>
+
+    <div class="podium-item">
+        <div class="podium-rank bronze">3rd</div>
+        <div id="thirdPlayer" class="podium-name">-</div>
+    </div>
+
 </div>
 
 <script src="/static/app_v10001.js"></script>
 <script>
-    console.log("Home loaded");
+    loadPodium();
 </script>
 
 {% endblock %}
