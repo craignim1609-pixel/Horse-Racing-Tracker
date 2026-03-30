@@ -11,7 +11,7 @@ from app.routers.export import router as export_router
 
 
 # Startup logic (optional)
-from startup import run_startup_tasks
+from app.startup import run_startup_tasks
 
 
 def create_app():
