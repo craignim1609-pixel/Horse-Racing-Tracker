@@ -1,9 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi import Request
-
 
 from app.routers.picks import router as picks_router
 from app.routers.accumulator import router as acca_router
@@ -27,6 +25,29 @@ def create_app():
         allow_headers=["*"],
     )
 
+    # Serve static files
+    app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+    # Templates
+    templates = Jinja2Templates(directory="app/templates")
+
+    # Frontend pages
+    @app.get("/raceday")
+    def raceday_page(request: Request):
+        return templates.TemplateResponse("raceday.html", {"request": request})
+
+    @app.get("/acca")
+    def acca_page(request: Request):
+        return templates.TemplateResponse("acca.html", {"request": request})
+
+    @app.get("/stats")
+    def stats_page(request: Request):
+        return templates.TemplateResponse("stats.html", {"request": request})
+
+    @app.get("/player/{name}")
+    def player_page(name: str, request: Request):
+        return templates.TemplateResponse("player.html", {"request": request, "name": name})
+
     # Routers
     app.include_router(picks_router, prefix="/api")
     app.include_router(acca_router, prefix="/api")
@@ -35,7 +56,7 @@ def create_app():
     app.include_router(players_router, prefix="/api")
     app.include_router(export_router, prefix="/api")
 
-    # Root route — MUST be inside create_app()
+    # Root route
     @app.get("/")
     def root():
         return {"status": "ok", "message": "Racing API is running"}
