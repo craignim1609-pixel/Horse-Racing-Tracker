@@ -50,8 +50,9 @@ def create_app():
         return templates.TemplateResponse("stats.html", {"request": request})
 
     @app.get("/add-pick")
-def add_pick_page(request: Request):
-    return templates.TemplateResponse("add-pick.html", {"request": request})
+    def add_pick_page(request: Request):
+        return templates.TemplateResponse("add-pick.html", {"request": request})
+
 
 
     # API Routers
