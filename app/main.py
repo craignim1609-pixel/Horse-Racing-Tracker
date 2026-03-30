@@ -49,6 +49,11 @@ def create_app():
     def stats_page(request: Request):
         return templates.TemplateResponse("stats.html", {"request": request})
 
+    @app.get("/add-pick")
+def add_pick_page(request: Request):
+    return templates.TemplateResponse("add-pick.html", {"request": request})
+
+
     # API Routers
     app.include_router(picks_router, prefix="/api")
     app.include_router(acca_router, prefix="/api")
