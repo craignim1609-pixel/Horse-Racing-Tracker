@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
-from datetime import date, datetime
+from datetime import date
 from app import models
 
 
 # ---------------------------------------------------------
-# PLAYER STATS
+# PLAYER STATS (used by modal + stats page)
 # ---------------------------------------------------------
 def update_player_stats(db: Session, player_id: int):
     picks = (
@@ -14,23 +14,24 @@ def update_player_stats(db: Session, player_id: int):
     )
 
     total = len(picks)
-    wins = len([p for p in picks if p.status == "Win"])
-    places = len([p for p in picks if p.status == "Place"])
-    losses = len([p for p in picks if p.status == "Lose"])
-    nrs = len([p for p in picks if p.status == "NR"])
+
+    wins = len([p for p in picks if p.status == "win"])
+    places = len([p for p in picks if p.status == "place"])
+    losses = len([p for p in picks if p.status == "lose"])
+    nrs = len([p for p in picks if p.status == "nr"])
 
     return {
         "total": total,
         "wins": wins,
         "places": places,
-        "losses": losses,
+        "loses": losses,
         "nr": nrs,
-        "win_rate": (wins / total) * 100 if total else 0,
+        "win_rate": round((wins / total) * 100, 1) if total else 0,
     }
 
 
 # ---------------------------------------------------------
-# GROUP STANDINGS (for Performance Center)
+# GROUP STANDINGS (used by stats page)
 # ---------------------------------------------------------
 def update_group_standings(db: Session):
     players = db.query(models.Player).all()
@@ -43,16 +44,16 @@ def update_group_standings(db: Session):
             .all()
         )
 
-        wins = len([p for p in picks if p.status == "Win"])
-        places = len([p for p in picks if p.status == "Place"])
-        losses = len([p for p in picks if p.status == "Lose"])
+        wins = len([p for p in picks if p.status == "win"])
+        places = len([p for p in picks if p.status == "place"])
+        losses = len([p for p in picks if p.status == "lose"])
 
         standings.append({
             "player": player.name,
             "wins": wins,
             "places": places,
-            "losses": losses,
-            "score": wins * 3 + places * 1
+            "loses": losses,
+            "score": wins * 3 + places * 1,  # simple scoring system
         })
 
     standings.sort(key=lambda x: x["score"], reverse=True)
@@ -60,9 +61,9 @@ def update_group_standings(db: Session):
 
 
 # ---------------------------------------------------------
-# MONTHLY STATS
+# MONTHLY STATS (used by export + dashboard)
 # ---------------------------------------------------------
-def update_monthly_stats(db: Session, pick: models.Pick):
+def update_monthly_stats(db: Session):
     today = date.today()
     start_of_month = today.replace(day=1)
 
@@ -72,25 +73,25 @@ def update_monthly_stats(db: Session, pick: models.Pick):
         .all()
     )
 
-    wins = len([p for p in picks if p.status == "Win"])
-    places = len([p for p in picks if p.status == "Place"])
-    losses = len([p for p in picks if p.status == "Lose"])
+    wins = len([p for p in picks if p.status == "win"])
+    places = len([p for p in picks if p.status == "place"])
+    losses = len([p for p in picks if p.status == "lose"])
 
     return {
         "month": today.strftime("%B %Y"),
         "wins": wins,
         "places": places,
-        "losses": losses,
+        "loses": losses,
         "total": len(picks),
     }
 
 
 # ---------------------------------------------------------
-# MASTER FUNCTION
+# MASTER FUNCTION (optional)
 # ---------------------------------------------------------
-def update_all_stats(db: Session, pick: models.Pick):
+def update_all_stats(db: Session, player_id: int):
     return {
-        "player_stats": update_player_stats(db, pick.player_id),
+        "player_stats": update_player_stats(db, player_id),
         "group_stats": update_group_standings(db),
-        "monthly_stats": update_monthly_stats(db, pick),
+        "monthly_stats": update_monthly_stats(db),
     }
