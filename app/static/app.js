@@ -106,13 +106,13 @@ function renderAccaStandings(standings) {
    ============================================================ */
 
 async function loadPlayersForAddPick() {
-    const players = await api("/api/players/");   // already correct ✔
+    const players = await api("/api/players/");
     const select = document.getElementById("player");
 
     players.forEach(p => {
         const opt = document.createElement("option");
-        opt.value = p;
-        opt.textContent = p;
+        opt.value = p.id;          // FIXED ✔
+        opt.textContent = p.name;  // FIXED ✔
         select.appendChild(opt);
     });
 }
@@ -122,22 +122,23 @@ function setupAddPickForm() {
         e.preventDefault();
 
         const payload = {
-            player: document.getElementById("player").value,
+            player_id: parseInt(document.getElementById("player").value),   // FIXED ✔
             course: document.getElementById("course").value,
-            horse_number: document.getElementById("horse_number").value,
+            horse_number: parseInt(document.getElementById("horse_number").value), // FIXED ✔
             horse_name: document.getElementById("horse_name").value,
             race_time: document.getElementById("race_time").value,
-            odds: document.getElementById("odds_fraction").value
+            odds_fraction: document.getElementById("odds_fraction").value   // FIXED ✔
         };
 
-        await api("/api/picks/", {              // FIXED ✔
+        await api("/api/picks/", {
             method: "POST",
             body: JSON.stringify(payload)
         });
 
-        window.location.href = "/acca";         // FIXED ✔
+        window.location.href = "/acca";
     });
 }
+
 
 /* ============================================================
    CURRENT PICKS PAGE
