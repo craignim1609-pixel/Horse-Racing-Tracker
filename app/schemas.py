@@ -3,9 +3,9 @@ from typing import Optional, List
 from datetime import datetime
 
 
-# -----------------------------
-# PLAYER
-# -----------------------------
+# ---------------------------------------------------------
+# PLAYER SCHEMAS
+# ---------------------------------------------------------
 class PlayerBase(BaseModel):
     name: str
 
@@ -17,139 +17,107 @@ class PlayerOut(PlayerBase):
         orm_mode = True
 
 
-# -----------------------------
-# PICK (Accumulator + Current Picks)
-# -----------------------------
+# ---------------------------------------------------------
+# PICK SCHEMAS
+# ---------------------------------------------------------
 class PickBase(BaseModel):
+    player_id: int
     course: str
     horse_name: str
-    horse_number: Optional[int]
+    horse_number: Optional[int] = None
     odds_fraction: str
     race_time: str
 
 
 class PickCreate(PickBase):
-    player_id: int
+    pass
 
 
 class PickUpdateStatus(BaseModel):
-    status: str
+    status: str  # "win", "place", "lose", "nr", "pending"
 
 
-class PickOut(PickBase):
+class PickOut(BaseModel):
     id: int
-    status: str
     player: PlayerOut
-    is_acca: bool            # ← REQUIRED
-    created_at: datetime     # ← Your DB returns this
-
-    class Config:
-        orm_mode = True
-
-
-# -----------------------------
-# ACCUMULATOR OUTPUT
-# -----------------------------
-class AccaPickOut(BaseModel):
-    id: int
-    status: str
+    course: str
     horse_name: str
     horse_number: Optional[int]
     odds_fraction: str
-    course: str
     race_time: str
-    player: PlayerOut
-    is_acca: bool            # ← REQUIRED
-
-    class Config:
-        orm_mode = True
-
-
-class AccumulatorOut(BaseModel):
-    picks: List[AccaPickOut]
-    combined_decimal_odds: Optional[float]
-    ew_250_potential_return: Optional[float]
     status: str
+    is_acca: bool
+    created_at: datetime
 
     class Config:
         orm_mode = True
 
 
-# -----------------------------
-# RACE DAY BETS
-# -----------------------------
+# ---------------------------------------------------------
+# RACE DAY SCHEMAS
+# ---------------------------------------------------------
 class RaceDayBase(BaseModel):
     player_id: int
     course: str
     horse_name: str
-    horse_number: Optional[int]
+    horse_number: Optional[int] = None
     odds_fraction: str
     race_time: str
-    amount_bet: float
-
-
-class RaceDayOut(RaceDayBase):
-    id: int
-    result: str
-    player: PlayerOut
-
-    class Config:
-        orm_mode = True
-
-
-# -----------------------------
-# RACE DAY STATS
-# -----------------------------
-class RaceDayPlayerStats(BaseModel):
-    player: str
-    total_stake: float
-    total_return: float
-    profit: float
+    amount_bet: float = 1.0
 
 
 class RaceDayCreate(RaceDayBase):
     pass
 
 
-class RaceDayResultUpdate(BaseModel):
+class RaceDayUpdate(BaseModel):
+    result: str  # "win", "place", "lose", "nr", "pending"
+
+
+class RaceDayOut(BaseModel):
+    id: int
+    player: PlayerOut
+    course: str
+    horse_name: str
+    horse_number: Optional[int]
+    odds_fraction: str
+    race_time: str
+    amount_bet: float
     result: str
-
-
-class RaceDayGroupStats(BaseModel):
-    total_stake: float
-    total_return: float
-    profit: float
-
-
-class RaceDayStatsOut(BaseModel):
-    group: RaceDayGroupStats
-    players: List[RaceDayPlayerStats]
-
-
-# -----------------------------
-# MONTHLY STATS
-# -----------------------------
-class MonthlyStats(BaseModel):
-    player: str
-    wins: int
-    places: int
-    loses: int
-    nr: int
-
-
-# -----------------------------
-# PLAYER PROFILE
-# -----------------------------
-class PlayerProfileOut(BaseModel):
-    player: str
-    wins: int
-    places: int
-    loses: int
-    nr: int
-    win_rate: float
-    profit: float
-    recent_form: List[str]
-    biggest_winner: Optional[PickOut]
+    created_at: datetime
 
     class Config:
         orm_mode = True
+
+
+# ---------------------------------------------------------
+# STATS SCHEMAS
+# ---------------------------------------------------------
+class PlayerStats(BaseModel):
+    name: str
+    wins: int
+    places: int
+    loses: int
+    nr: int
+    total: int
+
+
+class PlayerStatsDetail(PlayerStats):
+    win_rate: float
+    courses: List[dict]
+    profit: List[dict]
+
+
+# ---------------------------------------------------------
+# EXPORT SCHEMAS (optional)
+# ---------------------------------------------------------
+class ExportPick(BaseModel):
+    player: str
+    course: str
+    horse_name: str
+    horse_number: Optional[int]
+    odds_fraction: str
+    race_time: str
+    status: str
+    month: Optional[int] = None
+    year: Optional[int] = None
