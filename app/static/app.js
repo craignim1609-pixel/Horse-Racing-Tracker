@@ -135,7 +135,8 @@ function setupAddPickForm() {
             body: JSON.stringify(payload)
         });
 
-        window.location.href = "/accumulator";
+        window.location.href = "/acca";
+
     });
 }
 
