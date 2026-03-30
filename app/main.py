@@ -14,7 +14,11 @@ from app.startup import run_startup_tasks
 
 
 def create_app():
-    app = FastAPI(title="Racing App API", version="1.0.0")
+   app = FastAPI(
+    title="Racing App API",
+    version="1.0.0",
+    redirect_slashes=False
+)
 
     # CORS
     app.add_middleware(
