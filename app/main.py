@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse
 
 from app.routers.picks import router as picks_router
 from app.routers.accumulator import router as acca_router
@@ -48,10 +49,6 @@ def create_app():
     def stats_page(request: Request):
         return templates.TemplateResponse("stats.html", {"request": request})
 
-    @app.get("/player/{name}")
-    def player_page(name: str, request: Request):
-        return templates.TemplateResponse("player.html", {"request": request, "name": name})
-
     # API Routers
     app.include_router(picks_router, prefix="/api")
     app.include_router(acca_router, prefix="/api")
@@ -60,10 +57,10 @@ def create_app():
     app.include_router(players_router, prefix="/api")
     app.include_router(export_router, prefix="/api")
 
-    # Root route
+    # Root route → redirect to Accumulator
     @app.get("/")
     def root():
-        return {"status": "ok", "message": "Racing API is running"}
+        return RedirectResponse(url="/acca")
 
     # Startup tasks
     @app.on_event("startup")
