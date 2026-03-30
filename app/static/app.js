@@ -15,7 +15,7 @@ async function api(url, options = {}) {
    ============================================================ */
 
 async function loadAccumulator() {
-    const data = await api("/api/acca/");
+    const data = await api("/api/acca/");   // FIXED ✔
 
     updateAccaHero(data);
     renderAccaPicks(data.picks);
@@ -74,12 +74,12 @@ function buildAccaCard(pick) {
 }
 
 async function deletePick(id) {
-    await api(`/api/picks/${id}`, { method: "DELETE" });
+    await api(`/api/picks/${id}/`, { method: "DELETE" });   // FIXED ✔
     loadAccumulator();
 }
 
 async function updatePickStatus(id, status) {
-    await api(`/api/picks/${id}/status`, {
+    await api(`/api/picks/${id}/status/`, {                 // FIXED ✔
         method: "POST",
         body: JSON.stringify({ status })
     });
@@ -106,7 +106,7 @@ function renderAccaStandings(standings) {
    ============================================================ */
 
 async function loadPlayersForAddPick() {
-    const players = await api("/api/players/");
+    const players = await api("/api/players/");   // already correct ✔
     const select = document.getElementById("player");
 
     players.forEach(p => {
@@ -130,13 +130,12 @@ function setupAddPickForm() {
             odds: document.getElementById("odds_fraction").value
         };
 
-        await api("/api/picks", {
+        await api("/api/picks/", {              // FIXED ✔
             method: "POST",
             body: JSON.stringify(payload)
         });
 
-        window.location.href = "/acca";
-
+        window.location.href = "/acca";         // FIXED ✔
     });
 }
 
@@ -145,7 +144,7 @@ function setupAddPickForm() {
    ============================================================ */
 
 async function loadCurrentPicks() {
-    const picks = await api("/api/picks");
+    const picks = await api("/api/picks/");     // FIXED ✔
     const container = document.getElementById("current-picks-body");
 
     container.innerHTML = "";
@@ -158,12 +157,13 @@ async function loadCurrentPicks() {
     picks.forEach(pick => container.appendChild(buildAccaCard(pick)));
 }
 
+
 /* ============================================================
    RACE DAY PAGE
    ============================================================ */
 
 async function loadRaceDay() {
-    const data = await api("/api/raceday/");
+    const data = await api("/api/raceday/");   // already correct ✔
 
     renderRaceCards(data.races);
     renderRecentActivity(data.activity);
@@ -197,7 +197,7 @@ function renderRaceCards(races) {
 }
 
 async function updateRaceStatus(id, status) {
-    await api(`/api/raceday/${id}/status`, {
+    await api(`/api/raceday/${id}/status/`, {   // FIXED ✔
         method: "POST",
         body: JSON.stringify({ status })
     });
@@ -247,7 +247,7 @@ function setupRaceFilters() {
    ============================================================ */
 
 async function loadStatsPage() {
-    const players = await api("/api/stats/");
+    const players = await api("/api/stats/");   // already correct ✔
     const container = document.getElementById("stats-cards");
 
     container.innerHTML = "";
@@ -268,7 +268,7 @@ async function loadStatsPage() {
 }
 
 async function openStatsModal(name) {
-    const data = await api(`/api/stats/${name}`);
+    const data = await api(`/api/stats/${name}/`);   // FIXED ✔
 
     document.getElementById("modalPlayerName").textContent = name;
     document.getElementById("modalWins").textContent = data.wins;
@@ -333,7 +333,7 @@ function setupPlayerDetailsForm() {
         e.preventDefault();
 
         const name = e.target.name.value;
-        const data = await api(`/api/stats/${name}`);
+        const data = await api(`/api/stats/${name}/`);   // FIXED ✔
 
         const container = document.getElementById("playerProfile");
         container.innerHTML = `
