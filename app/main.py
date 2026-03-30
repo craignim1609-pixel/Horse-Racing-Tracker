@@ -15,6 +15,11 @@ from app.startup import run_startup_tasks
 
 def create_app():
     app = FastAPI(title="Racing App API", version="1.0.0")
+# Serve static files
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+# Templates
+templates = Jinja2Templates(directory="app/templates")
 
     # CORS
     app.add_middleware(
