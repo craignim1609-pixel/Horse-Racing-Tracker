@@ -13,6 +13,9 @@ from app.routers.export import router as export_router
 # Startup logic (optional)
 from app.startup import run_startup_tasks
 
+@app.get("/")
+def root():
+    return {"status": "ok", "message": "Racing API is running"}
 
 def create_app():
     app = FastAPI(
