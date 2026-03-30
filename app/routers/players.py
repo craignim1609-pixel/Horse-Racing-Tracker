@@ -1,16 +1,12 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from typing import List
 from app.database import get_db
-from app import models
+from app import models, schemas
 
 router = APIRouter(prefix="/players", tags=["Players"])
 
 
-# ---------------------------------------------------------
-# GET ALL PLAYER NAMES
-# Matches JS: GET /api/players
-# ---------------------------------------------------------
-@router.get("/")
+@router.get("/", response_model=List[schemas.PlayerOut])
 def get_players(db: Session = Depends(get_db)):
-    players = db.query(models.Player).order_by(models.Player.name.asc()).all()
-    return [p.name for p in players]
+    return db.query(models.Player).order_by(models.Player.name.asc()).all()
