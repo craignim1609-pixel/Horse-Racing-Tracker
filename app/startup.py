@@ -1,12 +1,8 @@
-from app.database import SessionLocal
+from app.database import Base, engine, SessionLocal
 from app import models
 
 
 def seed_players():
-    """
-    Seeds the database with default players if they do not exist.
-    Safe to run multiple times.
-    """
     db = SessionLocal()
 
     try:
@@ -28,9 +24,8 @@ def seed_players():
 
 
 def run_startup_tasks():
-    """
-    Called from main.py on startup.
-    Add more startup tasks here later.
-    """
+    # Create all tables if they don't exist
     Base.metadata.create_all(bind=engine)
+
+    # Seed default players
     seed_players()
