@@ -158,18 +158,6 @@ async function loadCurrentPicks() {
 }
 
 /* ============================================================
-   PODIUM (HOME PAGE)
-   ============================================================ */
-
-async function loadPodium() {
-    const data = await api("/api/podium");
-
-    document.getElementById("firstPlayer").textContent = data.first || "-";
-    document.getElementById("secondPlayer").textContent = data.second || "-";
-    document.getElementById("thirdPlayer").textContent = data.third || "-";
-}
-
-/* ============================================================
    RACE DAY PAGE
    ============================================================ */
 
