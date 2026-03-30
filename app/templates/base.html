@@ -2,24 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ title if title else "Elite Racing Group" }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Racing Group</title>
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-    <!-- Global Styles -->
+    <!-- GLOBAL STYLES -->
     <link rel="stylesheet" href="/static/style.css">
-</head>
 
+    <!-- GOOGLE FONTS (Playfair Display for premium headings) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+</head>
 <body>
 
-    <!-- GLOBAL HEADER -->
-    {% include 'header.html' %}
+    <!-- HEADER / NAVBAR -->
+    {% include "header.html" %}
 
-    <!-- PAGE CONTENT -->
-    <main class="page-content">
-        {% block content %}{% endblock %}
-    </main>
+    <!-- PAGE CONTENT WRAPPER -->
+    <div class="page-content">
+        {% block content %}
+        {% endblock %}
+    </div>
 
 </body>
 </html>
+
