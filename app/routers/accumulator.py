@@ -122,15 +122,19 @@ def delete_acca_pick(pick_id: int, db: Session = Depends(get_db)):
 # -----------------------------
 @router.get("/standings")
 def get_standings(db: Session = Depends(get_db)):
-    standings = (
-        db.query(
-            models.Player.name.label("player"),
-            models.Pick.status.label("status")
-        )
-        .join(models.Player, models.Player.id == models.Pick.player_id)
-        .filter(models.Pick.status.in_(["Pending", "Win", "Place", "Lose", "NR"]))
+    picks = (
+        db.query(models.Pick)
+        .options(joinedload(models.Pick.player))
         .all()
     )
+
+    standings = [
+        {
+            "player": p.player.name if p.player else "Unknown",
+            "status": p.status
+        }
+        for p in picks
+    ]
 
     return standings
 
