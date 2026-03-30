@@ -37,21 +37,22 @@ templates = Jinja2Templates(directory="app/templates")
     templates = Jinja2Templates(directory="app/templates")
 
     # Frontend pages
-    @app.get("/raceday")
-    def raceday_page(request: Request):
-        return templates.TemplateResponse("raceday.html", {"request": request})
+@app.get("/raceday")
+def raceday_page(request: Request):
+    return templates.TemplateResponse("raceday.html", {"request": request})
 
-    @app.get("/acca")
-    def acca_page(request: Request):
-        return templates.TemplateResponse("acca.html", {"request": request})
+@app.get("/acca")
+def acca_page(request: Request):
+    return templates.TemplateResponse("acca.html", {"request": request})
 
-    @app.get("/stats")
-    def stats_page(request: Request):
-        return templates.TemplateResponse("stats.html", {"request": request})
+@app.get("/stats")
+def stats_page(request: Request):
+    return templates.TemplateResponse("stats.html", {"request": request})
 
-    @app.get("/player/{name}")
-    def player_page(name: str, request: Request):
-        return templates.TemplateResponse("player.html", {"request": request, "name": name})
+@app.get("/player/{name}")
+def player_page(name: str, request: Request):
+    return templates.TemplateResponse("player.html", {"request": request, "name": name})
+
 
     # Routers
     app.include_router(picks_router, prefix="/api")
