@@ -2,11 +2,13 @@
 {% block content %}
 
 <div class="acca-header">
+
     <div class="acca-header-left">
         <h1 class="page-title">Premium Shared Accumulator Tracker</h1>
     </div>
 
     <div class="acca-header-right">
+
         <div class="header-stat">
             <div class="stat-label">SHARED ACCA ODDS</div>
             <div id="acca-odds" class="stat-value">-</div>
@@ -18,31 +20,34 @@
         </div>
 
         <button id="acca-status" class="acca-status-btn">No Picks</button>
+
     </div>
 </div>
 
-<div class="acca-container">
 
-    <!-- LEFT SIDE: CURRENT PICKS -->
-    <div class="acca-left">
+<!-- MAIN TWO-COLUMN LAYOUT -->
+<div class="acca-main">
+
+    <!-- LEFT COLUMN: CURRENT PICKS -->
+    <div class="acca-column acca-left">
         <h2 class="section-title">Current Picks</h2>
 
-        <div id="acca-current-picks" class="acca-picks-box">
-            <!-- JS will inject pick cards here -->
+        <div id="acca-current-picks" class="acca-box">
             <div class="empty-message">No picks entered yet. Start by adding one.</div>
         </div>
     </div>
 
-    <!-- RIGHT SIDE: GROUP STANDINGS -->
-    <div class="acca-right">
+    <!-- RIGHT COLUMN: GROUP STANDINGS -->
+    <div class="acca-column acca-right">
         <h2 class="section-title">Group Standings</h2>
 
-        <div id="acca-standings" class="standings-box">
-            <!-- JS will inject standings here -->
+        <div id="acca-standings" class="acca-box">
+            <!-- JS will populate standings -->
         </div>
     </div>
 
 </div>
+
 
 <script src="/static/app_v10001.js"></script>
 <script>
