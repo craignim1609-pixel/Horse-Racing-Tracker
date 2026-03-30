@@ -1,14 +1,33 @@
 {% extends "base.html" %}
-
 {% block content %}
 
 <h1>Player Details</h1>
 
-<div id="playerDetailsContainer"></div>
+<div class="section-title">Lookup Player Performance</div>
+
+<form id="playerForm" class="add-pick-form">
+
+    <label class="form-label">Player Name</label>
+    <input 
+        type="text" 
+        name="name" 
+        class="form-input" 
+        placeholder="Enter player name..."
+    />
+
+    <button type="submit" class="submit-btn">
+        Search
+    </button>
+</form>
+
+<!-- RESULTS PANEL -->
+<div id="playerProfile" class="left-panel" style="margin-top: 20px;">
+    <!-- JS will populate -->
+</div>
 
 <script src="/static/app_v10001.js"></script>
 <script>
-    loadPlayerDetails();
+    setupPlayerDetailsForm();
 </script>
 
 {% endblock %}
