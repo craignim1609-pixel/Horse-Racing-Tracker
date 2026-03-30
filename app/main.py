@@ -1,78 +1,54 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from app.database import Base, engine
-from app.routers.players import seed_players
-from app.routers import picks, accumulator, stats, raceday, export, players
+# Routers
+from routers.picks import router as picks_router
+from routers.accumulator import router as acca_router
+from routers.stats import router as stats_router
+from routers.raceday import router as raceday_router
+from routers.players import router as players_router
+from routers.export import router as export_router
 
-
-# ---------------------------------------------------------
-# APP INITIALISATION
-# ---------------------------------------------------------
-app = FastAPI()
-
-# Create database tables
-Base.metadata.create_all(bind=engine)
-
-# Seed players on startup
-@app.on_event("startup")
-def startup_event():
-    seed_players()
+# Startup logic (optional)
+from startup import run_startup_tasks
 
 
-# ---------------------------------------------------------
-# STATIC FILES & TEMPLATES
-# ---------------------------------------------------------
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-templates = Jinja2Templates(directory="app/templates")
+def create_app():
+    app = FastAPI(
+        title="Racing App API",
+        version="1.0.0",
+        description="Backend API for the Racing Tracker App"
+    )
+
+    # -----------------------------------------------------
+    # CORS (allow frontend templates to call API)
+    # -----------------------------------------------------
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],       # tighten for production
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # -----------------------------------------------------
+    # REGISTER ROUTERS
+    # -----------------------------------------------------
+    app.include_router(picks_router, prefix="/api")
+    app.include_router(acca_router, prefix="/api")
+    app.include_router(stats_router, prefix="/api")
+    app.include_router(raceday_router, prefix="/api")
+    app.include_router(players_router, prefix="/api")
+    app.include_router(export_router, prefix="/api")
+
+    # -----------------------------------------------------
+    # STARTUP TASKS (optional)
+    # -----------------------------------------------------
+    @app.on_event("startup")
+    async def startup_event():
+        run_startup_tasks()
+
+    return app
 
 
-# ---------------------------------------------------------
-# API ROUTERS
-# ---------------------------------------------------------
-app.include_router(picks.router)
-app.include_router(accumulator.router)
-app.include_router(stats.router)
-app.include_router(raceday.router)
-app.include_router(export.router)
-app.include_router(players.router)
-
-
-# ---------------------------------------------------------
-# PAGE ROUTES
-# ---------------------------------------------------------
-@app.get("/", response_class=HTMLResponse)
-def home_page(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
-
-@app.get("/raceday", response_class=HTMLResponse)
-def raceday_page(request: Request):
-    return templates.TemplateResponse("raceday.html", {"request": request})
-
-
-@app.get("/current-picks", response_class=HTMLResponse)
-def current_picks_page(request: Request):
-    return templates.TemplateResponse("current-picks.html", {"request": request})
-
-
-@app.get("/add-pick", response_class=HTMLResponse)
-def add_pick_page(request: Request):
-    return templates.TemplateResponse("add-pick.html", {"request": request})
-
-
-@app.get("/player-details", response_class=HTMLResponse)
-def player_details_page(request: Request):
-    return templates.TemplateResponse("player-details.html", {"request": request})
-
-
-@app.get("/stats", response_class=HTMLResponse)
-def stats_page(request: Request):
-    return templates.TemplateResponse("stats.html", {"request": request})
-
-
-@app.get("/acca", response_class=HTMLResponse)
-def acca_page(request: Request):
-    return templates.TemplateResponse("acca.html", {"request": request})
+app = create_app()
