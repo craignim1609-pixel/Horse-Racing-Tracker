@@ -1,179 +1,118 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
-from typing import List
-
 from app.database import get_db
-from app import models, schemas
+from app import models
 
-router = APIRouter(prefix="/api/raceday", tags=["Race Day"])
-
-
-# ------------------------------------------------------------
-# Helper: Convert fractional odds to decimal
-# ------------------------------------------------------------
-def fractional_to_decimal(frac: str) -> float:
-    if not frac:
-        return 1.0
-
-    if "/" not in frac:
-        try:
-            return float(frac)
-        except:
-            return 1.0
-
-    a, b = frac.split("/")
-    try:
-        return (float(a) / float(b)) + 1
-    except:
-        return 1.0
+router = APIRouter(prefix="/raceday", tags=["Race Day"])
 
 
-# ------------------------------------------------------------
-# Helper: Calculate winnings
-# ------------------------------------------------------------
-def calculate_winnings(bet: models.RaceDay) -> float:
-    dec = fractional_to_decimal(bet.odds_fraction)
-    stake = float(bet.amount_bet)
-
-    if bet.result == "Win":
-        return stake * dec
-
-    if bet.result == "Place":
-        place_dec = ((dec - 1) / 4) + 1
-        return stake * place_dec
-
-    if bet.result == "NR":
-        return stake  # stake returned
-
-    return 0.0
-
-
-# ------------------------------------------------------------
-# CREATE RACE DAY BET
-# ------------------------------------------------------------
-@router.post("/", response_model=schemas.RaceDayOut)
-def add_race_day_bet(data: schemas.RaceDayCreate, db: Session = Depends(get_db)):
-    player = db.query(models.Player).filter(models.Player.id == data.player_id).first()
-    if not player:
-        raise HTTPException(status_code=400, detail="Player not found")
-
-    bet = models.RaceDay(**data.dict())
-    db.add(bet)
-    db.commit()
-    db.refresh(bet)
-
-    # Reload with player relationship
-    bet = (
-        db.query(models.RaceDay)
-        .options(joinedload(models.RaceDay.player))
-        .filter(models.RaceDay.id == bet.id)
-        .first()
-    )
-
-    return bet
-
-
-# ------------------------------------------------------------
-# LIST ALL RACE DAY BETS
-# ------------------------------------------------------------
-@router.get("/", response_model=List[schemas.RaceDayOut])
-def list_race_day_bets(db: Session = Depends(get_db)):
-    bets = (
-        db.query(models.RaceDay)
-        .options(joinedload(models.RaceDay.player))
+# ---------------------------------------------------------
+# GET RACE DAY DATA
+# Matches JS: GET /api/raceday
+# ---------------------------------------------------------
+@router.get("/")
+def get_raceday(db: Session = Depends(get_db)):
+    # Load all picks that are still pending
+    races = (
+        db.query(models.Pick)
+        .options(joinedload(models.Pick.player))
+        .filter(models.Pick.status == "pending")
+        .order_by(models.Pick.race_time.asc())
         .all()
     )
-    return bets
 
-
-# ------------------------------------------------------------
-# RECENT ACTIVITY (last 10 bets)
-# ------------------------------------------------------------
-@router.get("/recent", response_model=List[schemas.RaceDayOut])
-def get_recent_activity(db: Session = Depends(get_db)):
-    recent = (
-        db.query(models.RaceDay)
-        .options(joinedload(models.RaceDay.player))
-        .order_by(models.RaceDay.id.desc())
-        .limit(10)
+    # Load recent activity (last 20 results)
+    activity = (
+        db.query(models.Pick)
+        .options(joinedload(models.Pick.player))
+        .filter(models.Pick.status != "pending")
+        .order_by(models.Pick.id.desc())
+        .limit(20)
         .all()
     )
-    return recent
 
+    # Format races for front‑end
+    race_cards = [
+        {
+            "id": r.id,
+            "horse_number": r.horse_number,
+            "horse_name": r.horse_name,
+            "course": r.course,
+            "time": r.race_time,
+            "odds": r.odds_fraction,
+            "stake": 1,  # placeholder — add real stake logic later
+            "status": r.status.lower(),
+            "player": r.player.name,
+        }
+        for r in races
+    ]
 
-# ------------------------------------------------------------
-# UPDATE RESULT (Win / Place / Lose / NR)
-# ------------------------------------------------------------
-@router.patch("/{bet_id}/result", response_model=schemas.RaceDayOut)
-def update_race_result(
-    bet_id: int,
-    data: schemas.RaceDayResultUpdate,
-    db: Session = Depends(get_db)
-):
-    bet = db.query(models.RaceDay).filter(models.RaceDay.id == bet_id).first()
-    if not bet:
-        raise HTTPException(status_code=404, detail="Bet not found")
-
-    bet.result = data.result
-    db.commit()
-
-    # Reload with player relationship
-    bet = (
-        db.query(models.RaceDay)
-        .options(joinedload(models.RaceDay.player))
-        .filter(models.RaceDay.id == bet_id)
-        .first()
-    )
-
-    return bet
-
-
-# ------------------------------------------------------------
-# GROUP + PLAYER STATS
-# ------------------------------------------------------------
-@router.get("/stats")
-def race_day_stats(db: Session = Depends(get_db)):
-    players = db.query(models.Player).all()
-    player_stats = []
-
-    for p in players:
-        bets = db.query(models.RaceDay).filter(models.RaceDay.player_id == p.id).all()
-
-        total_stake = sum(float(b.amount_bet) for b in bets)
-        total_return = sum(calculate_winnings(b) for b in bets)
-        profit = total_return - total_stake
-
-        player_stats.append({
-            "player": {"name": p.name},
-            "total_stake": total_stake,
-            "total_return": total_return,
-            "profit": profit,
-        })
-
-    group_stake = sum(p["total_stake"] for p in player_stats)
-    group_return = sum(p["total_return"] for p in player_stats)
-    group_profit = group_return - group_stake
+    # Format activity feed
+    activity_cards = [
+        {
+            "horse_number": a.horse_number,
+            "horse_name": a.horse_name,
+            "odds": a.odds_fraction,
+            "course": a.course,
+            "time": a.race_time,
+            "player": a.player.name,
+            "profit": calculate_profit(a),  # helper below
+        }
+        for a in activity
+    ]
 
     return {
-        "players": player_stats,
-        "group": {
-            "total_stake": group_stake,
-            "total_return": group_return,
-            "profit": group_profit,
-        }
+        "races": race_cards,
+        "activity": activity_cards,
     }
 
 
-# ------------------------------------------------------------
-# DELETE RACE DAY BET
-# ------------------------------------------------------------
-@router.delete("/{bet_id}")
-def delete_race_day_bet(bet_id: int, db: Session = Depends(get_db)):
-    bet = db.query(models.RaceDay).filter(models.RaceDay.id == bet_id).first()
-    if not bet:
-        raise HTTPException(status_code=404, detail="Bet not found")
+# ---------------------------------------------------------
+# UPDATE RACE STATUS
+# Matches JS: POST /api/raceday/{id}/status
+# ---------------------------------------------------------
+@router.post("/{pick_id}/status")
+def update_race_status(
+    pick_id: int,
+    data: dict,
+    db: Session = Depends(get_db)
+):
+    status = data.get("status")
+    if status not in ["win", "place", "lose", "nr"]:
+        raise HTTPException(status_code=400, detail="Invalid status")
 
-    db.delete(bet)
+    pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
+    if not pick:
+        raise HTTPException(status_code=404, detail="Pick not found")
+
+    pick.status = status
     db.commit()
+    db.refresh(pick)
 
-    return {"message": "Bet deleted"}
+    return {"message": "Status updated", "status": status}
+
+
+# ---------------------------------------------------------
+# HELPER: SIMPLE PROFIT CALCULATION
+# ---------------------------------------------------------
+def calculate_profit(pick: models.Pick):
+    """
+    Placeholder profit logic.
+    You can replace this with your real staking rules.
+    """
+    try:
+        num, den = pick.odds_fraction.split("/")
+        odds = int(num) / int(den)
+    except Exception:
+        odds = 0
+
+    if pick.status == "win":
+        return round(odds * 1, 2)  # stake = 1
+    if pick.status == "place":
+        return round((odds / 4) * 1, 2)  # simple EW placeholder
+    if pick.status == "lose":
+        return -1
+    if pick.status == "nr":
+        return 0
+
+    return 0
