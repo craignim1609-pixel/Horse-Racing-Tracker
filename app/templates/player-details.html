@@ -1,33 +1,48 @@
-{% extends "base.html" %}
-{% block content %}
+<div class="acca-card" data-pick-id="{{ pick.id }}">
 
-<h1>Player Details</h1>
+    <!-- HEADER: PLAYER + DELETE -->
+    <div class="acca-card-header">
+        <div class="acca-player">{{ pick.player }}</div>
+        <button class="acca-delete-btn" onclick="deletePick('{{ pick.id }}')">×</button>
+    </div>
 
-<div class="section-title">Lookup Player Performance</div>
+    <!-- HORSE LINE -->
+    <div class="acca-horse-line">
+        <span class="acca-horse-number">{{ pick.horse_number }}</span>
+        <span class="acca-horse-name">{{ pick.horse_name }}</span>
+        <span class="acca-horse-odds">{{ pick.odds }}</span>
+    </div>
 
-<form id="playerForm" class="add-pick-form">
+    <!-- META -->
+    <div class="acca-meta">
+        {{ pick.course }} — {{ pick.race_time }}
+    </div>
 
-    <label class="form-label">Player Name</label>
-    <input 
-        type="text" 
-        name="name" 
-        class="form-input" 
-        placeholder="Enter player name..."
-    />
+    <!-- STATUS BUTTONS -->
+    <div class="acca-status-buttons">
+        <button 
+            class="acca-status-btn {% if pick.status == 'win' %}active{% endif %}" 
+            onclick="updatePickStatus('{{ pick.id }}', 'win')">
+            Win
+        </button>
 
-    <button type="submit" class="submit-btn">
-        Search
-    </button>
-</form>
+        <button 
+            class="acca-status-btn {% if pick.status == 'place' %}active{% endif %}" 
+            onclick="updatePickStatus('{{ pick.id }}', 'place')">
+            Place
+        </button>
 
-<!-- RESULTS PANEL -->
-<div id="playerProfile" class="left-panel" style="margin-top: 20px;">
-    <!-- JS will populate -->
+        <button 
+            class="acca-status-btn {% if pick.status == 'lose' %}active{% endif %}" 
+            onclick="updatePickStatus('{{ pick.id }}', 'lose')">
+            Lose
+        </button>
+
+        <button 
+            class="acca-status-btn {% if pick.status == 'nr' %}active{% endif %}" 
+            onclick="updatePickStatus('{{ pick.id }}', 'nr')">
+            NR
+        </button>
+    </div>
+
 </div>
-
-<script src="/static/app_v10001.js"></script>
-<script>
-    setupPlayerDetailsForm();
-</script>
-
-{% endblock %}
