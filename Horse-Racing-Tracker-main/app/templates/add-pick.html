@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Add New Pick</h1>
+
+<form id="pickForm" class="race-form">
+
+    <div class="form-row">
+        <label for="playerSelect">Player</label>
+        <select id="playerSelect" name="player_id" required></select>
+    </div>
+
+    <div class="form-row">
+        <label for="courseSelect">Course</label>
+        <input id="courseSelect" name="course" type="text" placeholder="e.g. Ascot" required>
+    </div>
+
+    <div class="horse-group">
+        <div>
+            <label for="horseNumber">#</label>
+            <input id="horseNumber" name="horse_number" placeholder="3" required>
+        </div>
+        <div>
+            <label for="horseName">Horse Name</label>
+            <input id="horseName" name="horse_name" placeholder="e.g. Frankel" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <label for="raceTime">Race Time</label>
+        <input id="raceTime" name="race_time" type="time" required>
+    </div>
+
+    <div class="form-row">
+        <label for="odds">Odds</label>
+        <input id="odds" name="odds_fraction" placeholder="e.g. 4/1" required>
+    </div>
+
+    <button type="submit" class="submit-btn">Submit Pick</button>
+
+</form>
+
+<div id="resultBox" class="result-box"></div>
+
+<script src="/static/app_v10001.js"></script>
+<script>
+    setupAddPickForm();
+    loadPlayersForAddPick();
+</script>
+
+{% endblock %}
