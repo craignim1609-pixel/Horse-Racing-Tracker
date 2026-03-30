@@ -2,12 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Routers
-from routers.picks import router as picks_router
-from routers.accumulator import router as acca_router
-from routers.stats import router as stats_router
-from routers.raceday import router as raceday_router
-from routers.players import router as players_router
-from routers.export import router as export_router
+from app.routers.picks import router as picks_router
+from app.routers.accumulator import router as acca_router
+from app.routers.stats import router as stats_router
+from app.routers.raceday import router as raceday_router
+from app.routers.players import router as players_router
+from app.routers.export import router as export_router
+
 
 # Startup logic (optional)
 from startup import run_startup_tasks
