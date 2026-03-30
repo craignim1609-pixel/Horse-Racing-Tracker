@@ -14,8 +14,8 @@ class Player(Base):
     name = Column(String, unique=True, index=True)
 
     # Relationships
-    picks = relationship("Pick", back_populates="player")
-    racedays = relationship("RaceDay", back_populates="player")
+    picks = relationship("Pick", back_populates="player", cascade="all, delete-orphan")
+    racedays = relationship("RaceDay", back_populates="player", cascade="all, delete-orphan")
 
 
 # ---------------------------------------------------------
@@ -26,18 +26,20 @@ class Pick(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    player_id = Column(Integer, ForeignKey("players.id"))
-    course = Column(String)
-    horse_name = Column(String)
+    player_id = Column(Integer, ForeignKey("players.id"), nullable=False)
+    course = Column(String, nullable=False)
+    horse_name = Column(String, nullable=False)
     horse_number = Column(Integer, nullable=True)
-    odds_fraction = Column(String)
-    race_time = Column(String)
-    status = Column(String, default="Pending")  # Pending / Win / Place / Lose / NR
+    odds_fraction = Column(String, nullable=False)
+    race_time = Column(String, nullable=False)
 
-    # Timestamp for daily filtering
+    # Status values used by your new JS:
+    # "pending", "win", "place", "lose", "nr"
+    status = Column(String, default="pending", index=True)
+
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # NEW — accumulator flag
+    # Accumulator flag
     is_acca = Column(Boolean, default=False, nullable=False)
 
     # Relationship
@@ -45,23 +47,26 @@ class Pick(Base):
 
 
 # ---------------------------------------------------------
-# RACE DAY BETS
+# RACE DAY (Activity Feed + Live Bets)
 # ---------------------------------------------------------
 class RaceDay(Base):
     __tablename__ = "raceday"
 
     id = Column(Integer, primary_key=True, index=True)
 
-    player_id = Column(Integer, ForeignKey("players.id"))
-    course = Column(String)
-    horse_name = Column(String)
+    player_id = Column(Integer, ForeignKey("players.id"), nullable=False)
+    course = Column(String, nullable=False)
+    horse_name = Column(String, nullable=False)
     horse_number = Column(Integer, nullable=True)
-    odds_fraction = Column(String)
-    race_time = Column(String)
-    amount_bet = Column(Float)
-    result = Column(String, default="Pending")  # Win / Place / Lose / NR / Pending
+    odds_fraction = Column(String, nullable=False)
+    race_time = Column(String, nullable=False)
 
-    # Timestamp for stats/history
+    amount_bet = Column(Float, default=1.0)
+
+    # Status values:
+    # "pending", "win", "place", "lose", "nr"
+    result = Column(String, default="pending", index=True)
+
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationship
