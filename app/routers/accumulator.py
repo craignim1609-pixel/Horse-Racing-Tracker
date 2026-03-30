@@ -116,3 +116,21 @@ def delete_acca_pick(pick_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Pick deleted"}
+
+# -----------------------------
+# GROUP STANDINGS
+# -----------------------------
+@router.get("/standings")
+def get_standings(db: Session = Depends(get_db)):
+    standings = (
+        db.query(
+            models.Player.name.label("player"),
+            models.Pick.status.label("status")
+        )
+        .join(models.Player, models.Player.id == models.Pick.player_id)
+        .filter(models.Pick.status.in_(["Pending", "Win", "Place", "Lose", "NR"]))
+        .all()
+    )
+
+    return standings
+
