@@ -879,6 +879,8 @@ async function loadAccaHistory() {
     const box = document.getElementById("accaHistory");
     if (!box) return;
 
+    box.innerHTML = "";  // IMPORTANT FIX
+
     try {
         const res = await fetch(`${API}/accumulator/history`);
         const history = await res.json();
@@ -902,7 +904,6 @@ async function loadAccaHistory() {
         console.error("Failed to load acca history", err);
     }
 }
-
 
 /* ============================================================
    RESET ACCA
