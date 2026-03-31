@@ -89,10 +89,12 @@
 
 .acca-history-item {
     background: #f4f4f4;
+    color: #222; /* <-- FIX: ensures text is visible */
     padding: 10px;
     border-radius: 6px;
     margin-bottom: 8px;
 }
+
 
 .acca-history-item.win { border-left: 5px solid #0a7a0a; }
 .acca-history-item.place { border-left: 5px solid #cc8800; }
