@@ -508,9 +508,7 @@ async function loadRaceStats() {
    renderFilteredBets();
    loadRecentActivity();
 
-   renderGroupBalance();
-
-}
+   }
 
 /* ============================================================
    RECENT ACTIVITY
