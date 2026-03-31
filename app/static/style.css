@@ -27,6 +27,11 @@
     color: #d4af37;
 }
 
+.acca-status-place {
+    background: #cc8800;
+    color: white;
+}
+
 /* STATUS BADGE */
 .acca-hero-status {
     padding: 10px 18px;
