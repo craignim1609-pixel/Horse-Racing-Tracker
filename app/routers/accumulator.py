@@ -39,7 +39,6 @@ def place_decimal(decimal_odds: float) -> float:
 # ------------------------------------------------------------
 @router.get("/", response_model=schemas.AccumulatorOut)
 def get_accumulator(db: Session = Depends(get_db)):
-    # Load all picks
     picks = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
@@ -57,7 +56,6 @@ def get_accumulator(db: Session = Depends(get_db)):
             status="no picks",
         )
 
-    # Remove NR legs (treated as odds = 1.0)
     active = [p for p in picks if p.status != "NR"]
 
     if not active:
@@ -117,11 +115,24 @@ def get_accumulator(db: Session = Depends(get_db)):
     ew_total = win_return + place_return
 
     # --------------------------------------------------------
+    # SAVE FINISHED ACCA TO HISTORY
+    # --------------------------------------------------------
+    if status in ["win", "place", "lose"]:
+        record = models.AccaHistory(
+            status=status,
+            win_acca_odds=win_acca,
+            place_acca_odds=place_acca,
+            ew_return=ew_total,
+        )
+        db.add(record)
+        db.commit()
+
+    # --------------------------------------------------------
     # RETURN ACCA RESULT
     # --------------------------------------------------------
     return schemas.AccumulatorOut(
         picks=picks,
-        combined_decimal_odds=win_acca,  # legacy field
+        combined_decimal_odds=win_acca,
         ew_250_potential_return=ew_total,
         win_acca_odds=win_acca,
         place_acca_odds=place_acca,
@@ -190,3 +201,27 @@ def get_standings(db: Session = Depends(get_db)):
     ]
 
     return standings
+
+
+# ------------------------------------------------------------
+# ACCA HISTORY
+# ------------------------------------------------------------
+@router.get("/history", response_model=List[schemas.AccaHistoryOut])
+def get_acca_history(db: Session = Depends(get_db)):
+    history = (
+        db.query(models.AccaHistory)
+        .order_by(models.AccaHistory.id.desc())
+        .limit(50)
+        .all()
+    )
+    return history
+
+
+# ------------------------------------------------------------
+# RESET ACCA
+# ------------------------------------------------------------
+@router.delete("/reset")
+def reset_acca(db: Session = Depends(get_db)):
+    db.query(models.Pick).delete()
+    db.commit()
+    return {"message": "Acca reset"}
