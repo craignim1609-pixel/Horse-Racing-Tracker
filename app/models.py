@@ -52,6 +52,9 @@ class RaceDay(Base):
     odds_fraction = Column(String)
     race_time = Column(String)
     amount_bet = Column(Float)
+
+    each_way = Column(Boolean, default=False)
+    
     result = Column(String, default="Pending")  # Win / Place / Lose / NR / Pending
 
     # Relationship
