@@ -1,10 +1,22 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+
 from app.database import get_db
 from app import models
 
 router = APIRouter(prefix="/stats", tags=["Stats"])
+templates = Jinja2Templates(directory="app/templates")
+
+
+# ============================================================
+# SERVE THE STATS PAGE (NEW)
+# ============================================================
+
+@router.get("")
+def stats_home(request: Request):
+    return templates.TemplateResponse("stats.html", {"request": request})
 
 
 # ============================================================
@@ -85,7 +97,7 @@ def player_details(name: str, db: Session = Depends(get_db)):
             "horse_name": biggest.horse_name,
             "odds_fraction": biggest.odds_fraction
         } if biggest else None,
-            "recent_form": recent
+        "recent_form": recent
     }
 
 
