@@ -507,7 +507,7 @@ async function loadRaceStats() {
 
    renderFilteredBets();
    loadRecentActivity();
-   renderTodaySummary();
+
    renderGroupBalance();
 
 }
