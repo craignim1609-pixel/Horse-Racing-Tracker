@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List
+from datetime import datetime
 
 
 # -----------------------------
@@ -151,6 +152,20 @@ class PlayerProfileOut(BaseModel):
     profit: float
     recent_form: List[str]
     biggest_winner: Optional[PickOut]
+
+    class Config:
+        orm_mode = True
+
+# -----------------------------
+# acca history
+# -----------------------------
+class AccaHistoryOut(BaseModel):
+    id: int
+    status: str
+    win_acca_odds: float
+    place_acca_odds: float
+    ew_return: float
+    timestamp: datetime
 
     class Config:
         orm_mode = True
