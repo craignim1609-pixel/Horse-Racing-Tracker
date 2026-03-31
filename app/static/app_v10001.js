@@ -641,40 +641,47 @@ async function loadAccaHero() {
         const returnsEl = document.getElementById("accaReturns");
         const statusEl = document.getElementById("accaStatus");
 
-        // If ANY of the required elements are missing, skip this function
         if (!oddsEl || !returnsEl || !statusEl) return;
 
         const res = await fetch(`${API}/accumulator/`);
         const data = await res.json();
 
-// If backend says no picks, then show empty state
-if (data.status === "no picks" || data.status === "all non runners") {
-    oddsEl.textContent = "0.00/1";
-    returnsEl.textContent = "£0.00";
-    statusEl.textContent = "No Picks";
-    statusEl.className = "acca-hero-status acca-status-empty";
-    return;
-}
+        // If backend says no picks
+        if (data.status === "no picks" || data.status === "all non runners") {
+            oddsEl.textContent = "0.00/1";
+            returnsEl.textContent = "£0.00";
+            statusEl.textContent = "No Picks";
+            statusEl.className = "acca-hero-status acca-status-empty";
+            return;
+        }
 
-  const dec = data.combined_decimal_odds;
-oddsEl.textContent = dec > 0 ? `${(dec - 1).toFixed(2)}/1` : "E/W Only";
+        // If win acca is alive
+        if (data.win_acca_odds > 0) {
+            oddsEl.textContent = `${(data.win_acca_odds - 1).toFixed(2)}/1`;
+        }
+        // If win acca dead but place acca alive
+        else if (data.place_acca_odds > 0) {
+            oddsEl.textContent = `${(data.place_acca_odds - 1).toFixed(2)}/1 (Place)`;
+        }
+        // If both dead
+        else {
+            oddsEl.textContent = "0.00/1";
+        }
 
-
-        // Display E/W returns
+        // E/W returns
         returnsEl.textContent = `£${data.ew_250_potential_return.toFixed(2)}`;
 
-        // Normalise status to lowercase
+        // Status
         const status = data.status.toLowerCase();
 
         statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
         statusEl.className = "acca-hero-status";
 
-if (status === "live") statusEl.classList.add("acca-status-live");
-else if (status === "win") statusEl.classList.add("acca-status-won");
-else if (status === "place") statusEl.classList.add("acca-status-place");
-else if (status === "lose") statusEl.classList.add("acca-status-busted");
-else statusEl.classList.add("acca-status-empty");
-
+        if (status === "live") statusEl.classList.add("acca-status-live");
+        else if (status === "win") statusEl.classList.add("acca-status-won");
+        else if (status === "place") statusEl.classList.add("acca-status-place");
+        else if (status === "lose") statusEl.classList.add("acca-status-busted");
+        else statusEl.classList.add("acca-status-empty");
 
     } catch (err) {
         console.error("Failed to load acca hero", err);
