@@ -115,12 +115,14 @@ def get_accumulator(db: Session = Depends(get_db)):
     # --------------------------------------------------------
     # RETURN ACCA RESULT
     # --------------------------------------------------------
-    return schemas.AccumulatorOut(
-        picks=picks,
-        combined_decimal_odds=win_acca,  # legacy field
-        ew_250_potential_return=ew_total,
-        status=status,
-    )
+return schemas.AccumulatorOut(
+    picks=picks,
+    combined_decimal_odds=win_acca,  # legacy field
+    ew_250_potential_return=ew_total,
+    win_acca_odds=win_acca,
+    place_acca_odds=place_acca,
+    status=status,
+)
 
 
 # ------------------------------------------------------------
