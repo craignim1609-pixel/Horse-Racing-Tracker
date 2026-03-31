@@ -647,14 +647,14 @@ async function loadAccaHero() {
         const res = await fetch(`${API}/accumulator/`);
         const data = await res.json();
 
-        // Handle incomplete accumulator (less than 5 picks)
-        if (!data.combined_decimal_odds || !data.ew_250_potential_return) {
-            oddsEl.textContent = "0.00/1";
-            returnsEl.textContent = "£0.00";
-            statusEl.textContent = "No Picks";
-            statusEl.className = "acca-hero-status acca-status-empty";
-            return;
-        }
+// If backend says no picks, then show empty state
+if (data.status === "no picks" || data.status === "all non runners") {
+    oddsEl.textContent = "0.00/1";
+    returnsEl.textContent = "£0.00";
+    statusEl.textContent = "No Picks";
+    statusEl.className = "acca-hero-status acca-status-empty";
+    return;
+}
 
         // Display odds (decimal - 1 = fractional equivalent)
         oddsEl.textContent = `${(data.combined_decimal_odds - 1).toFixed(2)}/1`;
@@ -668,10 +668,12 @@ async function loadAccaHero() {
         statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
         statusEl.className = "acca-hero-status";
 
-        if (status === "live") statusEl.classList.add("acca-status-live");
-        else if (status === "won") statusEl.classList.add("acca-status-won");
-        else if (status === "busted") statusEl.classList.add("acca-status-busted");
-        else statusEl.classList.add("acca-status-empty");
+if (status === "live") statusEl.classList.add("acca-status-live");
+else if (status === "win") statusEl.classList.add("acca-status-won");
+else if (status === "place") statusEl.classList.add("acca-status-place");
+else if (status === "lose") statusEl.classList.add("acca-status-busted");
+else statusEl.classList.add("acca-status-empty");
+
 
     } catch (err) {
         console.error("Failed to load acca hero", err);
