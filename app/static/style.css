@@ -135,6 +135,85 @@
     flex-direction: column;
     gap: 15px;
 }
+/* stats */
+.stats-acca-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stats-card {
+    background: #111827; /* match your dark cards */
+    color: #f9fafb;
+    padding: 16px 18px;
+    border-radius: 10px;
+}
+
+.stats-card h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.stats-acca-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px 18px;
+}
+
+.stats-acca-grid label {
+    display: block;
+    font-size: 12px;
+    color: #9ca3af;
+    margin-bottom: 2px;
+}
+
+.stats-acca-grid div div {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.acca-recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.acca-recent-item {
+    background: #020617;
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+.acca-recent-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 13px;
+}
+
+.acca-recent-status {
+    font-weight: 700;
+}
+
+.acca-recent-item.win .acca-recent-status { color: #22c55e; }
+.acca-recent-item.place .acca-recent-status { color: #eab308; }
+.acca-recent-item.lose .acca-recent-status { color: #ef4444; }
+
+.acca-recent-body {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    font-size: 13px;
+}
+
+.acca-recent-body label {
+    display: block;
+    font-size: 11px;
+    color: #9ca3af;
+    margin-bottom: 1px;
+}
 
 /* PICK CARD */
 .acca-card {
