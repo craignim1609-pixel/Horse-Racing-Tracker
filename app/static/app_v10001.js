@@ -936,9 +936,75 @@ document.addEventListener("DOMContentLoaded", () => {
         loadAccaPicks();
         loadAccaStandings();
         loadAccaHistory();
+         loadAccaStats();
     }
 });
 
+/* ============================================================
+   ACCA STATS (STATS PAGE)
+   ============================================================ */
+
+async function loadAccaStats() {
+    const totalEl = document.getElementById("accaTotalAccas");
+    if (!totalEl) return; // not on stats page
+
+    const winsEl = document.getElementById("accaWins");
+    const placesEl = document.getElementById("accaPlaces");
+    const losesEl = document.getElementById("accaLoses");
+    const profitEl = document.getElementById("accaTotalProfit");
+    const biggestEl = document.getElementById("accaBiggestReturn");
+    const recentBox = document.getElementById("accaRecentList");
+
+    try {
+        const res = await fetch(`${API}/stats/acca`);
+        const data = await res.json();
+
+        totalEl.textContent = data.total_accas;
+        winsEl.textContent = data.wins;
+        placesEl.textContent = data.places;
+        losesEl.textContent = data.loses;
+        profitEl.textContent = `£${Number(data.total_profit).toFixed(2)}`;
+        biggestEl.textContent = `£${Number(data.biggest_return).toFixed(2)}`;
+
+        if (!data.recent || !data.recent.length) {
+            recentBox.innerHTML = "<p>No accas yet.</p>";
+            return;
+        }
+
+        recentBox.innerHTML = data.recent.map(r => {
+            const d = r.timestamp ? new Date(r.timestamp) : null;
+            const dateStr = d ? d.toLocaleDateString() : "-";
+            const timeStr = d ? d.toLocaleTimeString() : "";
+
+            const winOdds =
+                r.win_acca_odds && r.win_acca_odds > 0
+                    ? `${(r.win_acca_odds - 1).toFixed(2)}/1`
+                    : "-";
+
+            const placeOdds =
+                r.place_acca_odds && r.place_acca_odds > 0
+                    ? `${(r.place_acca_odds - 1).toFixed(2)}/1`
+                    : "-";
+
+            return `
+                <div class="acca-recent-item ${r.status}">
+                    <div class="acca-recent-header">
+                        <span class="acca-recent-status">${r.status.toUpperCase()}</span>
+                        <span class="acca-recent-date">${dateStr} ${timeStr}</span>
+                    </div>
+                    <div class="acca-recent-body">
+                        <div><label>Return</label> £${Number(r.ew_return).toFixed(2)}</div>
+                        <div><label>Win Odds</label> ${winOdds}</div>
+                        <div><label>Place Odds</label> ${placeOdds}</div>
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+    } catch (err) {
+        console.error("Failed to load acca stats", err);
+    }
+}
 
 
 
