@@ -1006,6 +1006,61 @@ async function loadAccaStats() {
     }
 }
 
+/* ============================================================
+   PLAYER STATS (STATS PAGE)
+   ============================================================ */
+
+async function loadPlayerStats() {
+    const container = document.getElementById("playerStatsContainer");
+    if (!container) return;
+
+    // Default to current month + year
+    const now = new Date();
+    const month = now.getMonth() + 1; // JS months are 0–11
+    const year = now.getFullYear();
+
+    try {
+        const res = await fetch(`${API}/stats/month/${month}?year=${year}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+            container.innerHTML = "<p>No stats available.</p>";
+            return;
+        }
+
+        container.innerHTML = data.map(p => `
+            <div class="stats-card">
+                <h3>${p.player}</h3>
+
+                <div class="stats-acca-grid">
+                    <div>
+                        <label>Wins</label>
+                        <div>${p.wins}</div>
+                    </div>
+
+                    <div>
+                        <label>Places</label>
+                        <div>${p.places}</div>
+                    </div>
+
+                    <div>
+                        <label>Loses</label>
+                        <div>${p.loses}</div>
+                    </div>
+
+                    <div>
+                        <label>NR</label>
+                        <div>${p.nr}</div>
+                    </div>
+                </div>
+            </div>
+        `).join("");
+
+    } catch (err) {
+        console.error("Failed to load player stats", err);
+        container.innerHTML = "<p>Error loading stats.</p>";
+    }
+}
 
 
 
