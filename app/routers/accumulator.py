@@ -81,7 +81,7 @@ def get_accumulator(db: Session = Depends(get_db)):
             place_acca *= place_dec
 
         elif p.status == "Place":
-            win_acca = 0  # win acca dies
+            win_acca = 0
             place_acca *= place_dec
 
         elif p.status == "Lose":
@@ -90,11 +90,12 @@ def get_accumulator(db: Session = Depends(get_db)):
             break
 
         elif p.status == "Pending":
-            # Pending legs keep both accas alive
             win_acca *= dec
             place_acca *= place_dec
 
-    # Determine status
+    # --------------------------------------------------------
+    # DETERMINE ACCA STATUS
+    # --------------------------------------------------------
     if win_acca == 0 and place_acca == 0:
         status = "lose"
     elif all(p.status == "Win" for p in active):
@@ -111,9 +112,12 @@ def get_accumulator(db: Session = Depends(get_db)):
     place_return = 2.5 * place_acca
     ew_total = win_return + place_return
 
+    # --------------------------------------------------------
+    # RETURN ACCA RESULT
+    # --------------------------------------------------------
     return schemas.AccumulatorOut(
         picks=picks,
-        combined_decimal_odds=win_acca,  # legacy field, still returned
+        combined_decimal_odds=win_acca,  # legacy field
         ew_250_potential_return=ew_total,
         status=status,
     )
