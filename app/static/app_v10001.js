@@ -656,8 +656,9 @@ if (data.status === "no picks" || data.status === "all non runners") {
     return;
 }
 
-        // Display odds (decimal - 1 = fractional equivalent)
-        oddsEl.textContent = `${(data.combined_decimal_odds - 1).toFixed(2)}/1`;
+  const dec = data.combined_decimal_odds;
+oddsEl.textContent = dec > 0 ? `${(dec - 1).toFixed(2)}/1` : "E/W Only";
+
 
         // Display E/W returns
         returnsEl.textContent = `£${data.ew_250_potential_return.toFixed(2)}`;
