@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Performance Center</h1>
+
+<!-- ACCA PERFORMANCE CENTER -->
+<div class="stats-acca-wrapper">
+
+    <!-- ACCA SUMMARY CARD -->
+    <div class="stats-card stats-acca-summary">
+        <h2>Acca Performance</h2>
+
+        <div class="stats-acca-grid">
+            <div>
+                <label>Total Accas</label>
+                <div id="accaTotalAccas">0</div>
+            </div>
+
+            <div>
+                <label>Wins</label>
+                <div id="accaWins">0</div>
+            </div>
+
+            <div>
+                <label>Places</label>
+                <div id="accaPlaces">0</div>
+            </div>
+
+            <div>
+                <label>Loses</label>
+                <div id="accaLoses">0</div>
+            </div>
+
+            <div>
+                <label>Total Profit</label>
+                <div id="accaTotalProfit">£0.00</div>
+            </div>
+
+            <div>
+                <label>Biggest Return</label>
+                <div id="accaBiggestReturn">£0.00</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT ACCAS -->
+    <div class="stats-card stats-acca-recent">
+        <h2>Recent Accas</h2>
+        <div id="accaRecentList" class="acca-recent-list">
+            <p>No accas yet.</p>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- PLAYER PERFORMANCE CARDS -->
+<h2>Player Performance</h2>
+
+<div id="playerStatsContainer" class="player-stats-grid">
+    <!-- JS will fill this -->
+</div>
+
+
+<script src="/static/app_v10001.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    loadAccaStats();       // NEW
+    loadPlayerStats();     // Your existing stats loader
+});
+</script>
+
+{% endblock %}
