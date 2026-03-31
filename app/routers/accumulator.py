@@ -4,13 +4,12 @@ from typing import List
 from app.database import get_db
 from app import models, schemas
 
-
 router = APIRouter(prefix="/accumulator", tags=["Accumulator"])
 
 
-# -----------------------------
+# ------------------------------------------------------------
 # Helper: Convert fractional odds to decimal
-# -----------------------------
+# ------------------------------------------------------------
 def fractional_to_decimal(frac: str) -> float:
     if not frac:
         return 1.0
@@ -28,19 +27,19 @@ def fractional_to_decimal(frac: str) -> float:
         return 1.0
 
 
-# -----------------------------
-# Helper: Calculate place odds (1/4 rule)
-# -----------------------------
+# ------------------------------------------------------------
+# Helper: Place odds (¼ rule)
+# ------------------------------------------------------------
 def place_decimal(decimal_odds: float) -> float:
     return ((decimal_odds - 1) / 4) + 1
 
 
-# -----------------------------
+# ------------------------------------------------------------
 # GET ACCUMULATOR STATUS + ODDS
-# -----------------------------
+# ------------------------------------------------------------
 @router.get("/", response_model=schemas.AccumulatorOut)
 def get_accumulator(db: Session = Depends(get_db)):
-    # Load all picks regardless of status
+    # Load all picks
     picks = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
@@ -56,11 +55,10 @@ def get_accumulator(db: Session = Depends(get_db)):
             status="no picks",
         )
 
-    # Remove NR horses
-    active_picks = [p for p in picks if p.status != "NR"]
+    # Remove NR legs (treated as odds = 1.0)
+    active = [p for p in picks if p.status != "NR"]
 
-    # If all NR → no acca
-    if not active_picks:
+    if not active:
         return schemas.AccumulatorOut(
             picks=picks,
             combined_decimal_odds=None,
@@ -68,47 +66,62 @@ def get_accumulator(db: Session = Depends(get_db)):
             status="all non runners",
         )
 
-    statuses = [p.status for p in active_picks]
+    # --------------------------------------------------------
+    # REAL EACH-WAY ACCA LOGIC
+    # --------------------------------------------------------
+    win_acca = 1.0
+    place_acca = 1.0
 
-    # If any lose → bust
-    if "Lose" in statuses:
-        return schemas.AccumulatorOut(
-            picks=picks,
-            combined_decimal_odds=0,
-            ew_250_potential_return=0,
-            status="lose",
-        )
+    for p in active:
+        dec = fractional_to_decimal(p.odds_fraction)
+        place_dec = place_decimal(dec)
 
-    # Calculate base combined odds
-    combined = 1.0
-    for p in active_picks:
-        combined *= fractional_to_decimal(p.odds_fraction)
+        if p.status == "Win":
+            win_acca *= dec
+            place_acca *= place_dec
 
-    # If any place → reduce odds to 1/3
-    if "Place" in statuses:
-        combined = combined / 3
-        status = "place"
-    # If all win
-    elif all(s == "Win" for s in statuses):
+        elif p.status == "Place":
+            win_acca = 0  # win acca dies
+            place_acca *= place_dec
+
+        elif p.status == "Lose":
+            win_acca = 0
+            place_acca = 0
+            break
+
+        elif p.status == "Pending":
+            # Pending legs keep both accas alive
+            win_acca *= dec
+            place_acca *= place_dec
+
+    # Determine status
+    if win_acca == 0 and place_acca == 0:
+        status = "lose"
+    elif all(p.status == "Win" for p in active):
         status = "win"
+    elif any(p.status == "Place" for p in active):
+        status = "place"
     else:
         status = "live"
 
-    # EW return (£2.50 win + £2.50 place)
-    win_return = 2.5 * combined
-    place_return = 2.5 * place_decimal(combined)
+    # --------------------------------------------------------
+    # £2.50 E/W stake = £2.50 win + £2.50 place
+    # --------------------------------------------------------
+    win_return = 2.5 * win_acca
+    place_return = 2.5 * place_acca
     ew_total = win_return + place_return
 
     return schemas.AccumulatorOut(
         picks=picks,
-        combined_decimal_odds=combined,
+        combined_decimal_odds=win_acca,  # legacy field, still returned
         ew_250_potential_return=ew_total,
         status=status,
     )
 
-# -----------------------------
-# UPDATE PICK STATUS (Win/Place/Lose/NR)
-# -----------------------------
+
+# ------------------------------------------------------------
+# UPDATE PICK STATUS
+# ------------------------------------------------------------
 @router.patch("/{pick_id}/status", response_model=schemas.PickOut)
 def update_acca_pick_status(
     pick_id: int,
@@ -122,7 +135,6 @@ def update_acca_pick_status(
     pick.status = data.status
     db.commit()
 
-    # Reload with player relationship
     pick = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
@@ -133,9 +145,9 @@ def update_acca_pick_status(
     return pick
 
 
-# -----------------------------
+# ------------------------------------------------------------
 # DELETE PICK
-# -----------------------------
+# ------------------------------------------------------------
 @router.delete("/{pick_id}")
 def delete_acca_pick(pick_id: int, db: Session = Depends(get_db)):
     pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
@@ -147,9 +159,10 @@ def delete_acca_pick(pick_id: int, db: Session = Depends(get_db)):
 
     return {"message": "Pick deleted"}
 
-# -----------------------------
+
+# ------------------------------------------------------------
 # GROUP STANDINGS
-# -----------------------------
+# ------------------------------------------------------------
 @router.get("/standings")
 def get_standings(db: Session = Depends(get_db)):
     picks = (
@@ -167,4 +180,3 @@ def get_standings(db: Session = Depends(get_db)):
     ]
 
     return standings
-
