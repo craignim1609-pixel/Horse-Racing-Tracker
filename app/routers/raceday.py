@@ -35,18 +35,36 @@ def calculate_winnings(bet: models.RaceDay) -> float:
     dec = fractional_to_decimal(bet.odds_fraction)
     stake = float(bet.amount_bet)
 
+    # If not each-way, use normal logic
+    if not bet.each_way:
+        if bet.result == "Win":
+            return stake * dec
+        if bet.result == "Place":
+            place_dec = ((dec - 1) / 4) + 1
+            return stake * place_dec
+        if bet.result == "NR":
+            return stake
+        return 0.0
+
+    # EACH-WAY LOGIC
+    win_stake = stake
+    place_stake = stake
+
+    # Place odds = 1/4
+    place_dec = ((dec - 1) / 4) + 1
+
     if bet.result == "Win":
-        return stake * dec
+        win_return = win_stake * dec
+        place_return = place_stake * place_dec
+        return win_return + place_return
 
     if bet.result == "Place":
-        place_dec = ((dec - 1) / 4) + 1
-        return stake * place_dec
+        return place_stake * place_dec
 
     if bet.result == "NR":
-        return stake  # stake returned
+        return stake * 2  # both stakes refunded
 
     return 0.0
-
 
 # ------------------------------------------------------------
 # CREATE RACE DAY BET
