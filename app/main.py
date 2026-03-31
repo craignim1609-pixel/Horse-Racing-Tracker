@@ -22,7 +22,7 @@ app.include_router(accumulator.router)
 #app.include_router(stats.router)
 app.include_router(raceday.router)
 #app.include_router(export.router)
-#app.include_router(players.router)
+app.include_router(players.router)
 
 import os
 
