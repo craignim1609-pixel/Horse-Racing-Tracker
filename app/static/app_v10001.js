@@ -392,7 +392,9 @@ async function setupRaceForm() {
         e.preventDefault();
 
         const body = Object.fromEntries(new FormData(form).entries());
-
+        
+       body.each_way = document.getElementById("eachWay").checked;
+       
         const submitRes = await fetch(`${API}/api/raceday/`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
