@@ -447,11 +447,11 @@ async function loadRaceStats() {
    const ew = ewReturns(accaDecimal);
   
    /* UPDATE HEADER VALUES */
-#document.querySelector(".header-stat:nth-child(1) .stat-value").innerText =
-    `#${(accaDecimal - 1).toFixed(2)}/1`;
+//document.querySelector(".header-stat:nth-child(1) .stat-value").innerText =
+    //`#${(accaDecimal - 1).toFixed(2)}/1`;
 
-#document.querySelector(".header-stat:nth-child(2) .stat-value").innerText =
-    `#£${ew.toFixed(2)}`;
+//document.querySelector(".header-stat:nth-child(2) .stat-value").innerText =
+    //`#£${ew.toFixed(2)}`;
 
     list.innerHTML = `
         <div class="race-list-wrapper">
