@@ -40,30 +40,61 @@ def place_decimal(decimal_odds: float) -> float:
 # -----------------------------
 @router.get("/", response_model=schemas.AccumulatorOut)
 def get_accumulator(db: Session = Depends(get_db)):
-    # Load all pending picks with player relationship
+    # Load all picks regardless of status
     picks = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
-        .filter(models.Pick.status == "Pending")
+        .filter(models.Pick.status.in_(["Pending", "Win", "Place", "Lose", "NR"]))
         .all()
     )
 
-    # Must have 5 unique players
-    unique_players = {p.player_id for p in picks}
-    if len(unique_players) < 5:
+    if not picks:
+        return schemas.AccumulatorOut(
+            picks=[],
+            combined_decimal_odds=None,
+            ew_250_potential_return=None,
+            status="no picks",
+        )
+
+    # Remove NR horses
+    active_picks = [p for p in picks if p.status != "NR"]
+
+    # If all NR → no acca
+    if not active_picks:
         return schemas.AccumulatorOut(
             picks=picks,
             combined_decimal_odds=None,
             ew_250_potential_return=None,
-            status="incomplete",
+            status="all non runners",
         )
 
-    # Calculate combined decimal odds
+    statuses = [p.status for p in active_picks]
+
+    # If any lose → bust
+    if "Lose" in statuses:
+        return schemas.AccumulatorOut(
+            picks=picks,
+            combined_decimal_odds=0,
+            ew_250_potential_return=0,
+            status="lose",
+        )
+
+    # Calculate base combined odds
     combined = 1.0
-    for p in picks:
+    for p in active_picks:
         combined *= fractional_to_decimal(p.odds_fraction)
 
-    # Calculate EW returns (£2.50 win + £2.50 place)
+    # If any place → reduce odds to 1/3
+    if "Place" in statuses:
+        combined = combined / 3
+        status = "place"
+    # If all win
+    elif all(s == "Win" for s in statuses):
+        status = "win"
+    else:
+        status = "live"
+
+    # EW return (£2.50 win + £2.50 place)
     win_return = 2.5 * combined
     place_return = 2.5 * place_decimal(combined)
     ew_total = win_return + place_return
@@ -72,9 +103,8 @@ def get_accumulator(db: Session = Depends(get_db)):
         picks=picks,
         combined_decimal_odds=combined,
         ew_250_potential_return=ew_total,
-        status="live",
+        status=status,
     )
-
 
 # -----------------------------
 # UPDATE PICK STATUS (Win/Place/Lose/NR)
