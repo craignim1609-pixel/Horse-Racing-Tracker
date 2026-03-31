@@ -935,7 +935,6 @@ document.addEventListener("DOMContentLoaded", () => {
         loadAccaHero();
         loadAccaPicks();
         loadAccaStandings();
-        loadAccaHistory();
          loadAccaStats();
     }
 });
