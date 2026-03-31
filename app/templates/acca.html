@@ -7,6 +7,11 @@
     <span class="ew-badge">E/W</span>
 </h1>
 
+<!-- ACCA STILL ALIVE BANNER -->
+<div id="accaAliveBanner" class="acca-alive-banner" style="display:none;">
+    ACCA STILL ALIVE
+</div>
+
 <!-- ACCA HERO BOX -->
 <div class="acca-hero">
 
@@ -25,6 +30,16 @@
     </div>
 </div>
 
+<!-- ACCA SUMMARY CARD -->
+<div class="acca-summary-card">
+    <div>Win Acca Odds: <span id="winAccaSummary">0.00/1</span></div>
+    <div>Place Acca Odds: <span id="placeAccaSummary">0.00/1</span></div>
+    <div>Total E/W Return: <span id="ewSummary">£0.00</span></div>
+</div>
+
+<!-- RESET BUTTON -->
+<button id="resetAccaBtn" class="reset-acca-btn">Reset Acca</button>
+
 <!-- PAGE LAYOUT -->
 <div class="acca-layout">
 
@@ -42,6 +57,12 @@
 
 </div>
 
+<!-- ACCA HISTORY -->
+<div class="acca-history">
+    <h2>Acca History</h2>
+    <div id="accaHistory"></div>
+</div>
+
 <script src="/static/app_v10001.js"></script>
 
 <script>
@@ -49,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadAccaHero();
     loadAccaPicks();
     loadAccaStandings();
+    loadAccaHistory();
 });
 </script>
 
