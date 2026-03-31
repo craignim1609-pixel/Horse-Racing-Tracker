@@ -41,6 +41,32 @@
     letter-spacing: 1px;
     border: 1px solid #d4af37;
 }
+.ew-badge {
+    display: inline-block;
+    background: #0a7a0a;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 6px;
+}
+
+.acca-ew-box {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f4f4f4;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.acca-status-place {
+    background: #cc8800;
+    color: white;
+}
+
 
 /* STATUS COLOURS */
 .acca-status-live {
