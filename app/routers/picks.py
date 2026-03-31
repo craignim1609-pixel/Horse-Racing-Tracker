@@ -46,7 +46,7 @@ def get_current_picks(db: Session = Depends(get_db)):
     picks = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
-        .filter(models.Pick.status == "Pending")
+        .filter(models.Pick.status.in_(["Pending", "Win", "Place", "Lose", "NR"]))
         .all()
     )
     return picks
