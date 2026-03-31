@@ -65,10 +65,16 @@ class AccumulatorOut(BaseModel):
     picks: List[AccaPickOut]
     combined_decimal_odds: Optional[float]
     ew_250_potential_return: Optional[float]
+
+    # NEW FIELDS
+    win_acca_odds: Optional[float]
+    place_acca_odds: Optional[float]
+
     status: str
 
     class Config:
         orm_mode = True
+
 
 
 # -----------------------------
