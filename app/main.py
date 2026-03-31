@@ -8,6 +8,8 @@ from fastapi import Request
 from fastapi.responses import HTMLResponse
 from app.routers.players import seed_players
 from app.routers import players
+from app.routers import stats
+
 
 app = FastAPI()
 
@@ -20,7 +22,7 @@ def startup_event():
 
 app.include_router(picks.router)
 app.include_router(accumulator.router)
-#app.include_router(stats.router)
+app.include_router(stats.router)
 app.include_router(raceday.router)
 #app.include_router(export.router)
 app.include_router(players.router)
@@ -53,8 +55,8 @@ def add_pick_page(request: Request):
 #def player_details_page(request: Request):
     #return templates.TemplateResponse("player-details.html", {"request": request})
 
-#@app.get("/stats", response_class=HTMLResponse)
-#def stats_page(request: Request):
+@app.get("/stats", response_class=HTMLResponse)
+def stats_page(request: Request):
     #return templates.TemplateResponse("stats.html", {"request": request})
 
 @app.get("/acca", response_class=HTMLResponse)
