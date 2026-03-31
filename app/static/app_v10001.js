@@ -646,24 +646,27 @@ async function loadAccaHero() {
         const res = await fetch(`${API}/accumulator/`);
         const data = await res.json();
 
-        // If backend says no picks
+        // Handle no picks
         if (data.status === "no picks" || data.status === "all non runners") {
             oddsEl.textContent = "0.00/1";
             returnsEl.textContent = "£0.00";
             statusEl.textContent = "No Picks";
             statusEl.className = "acca-hero-status acca-status-empty";
+
+            updateAccaSummary(null);
+            updateAliveBanner(null);
             return;
         }
 
-        // If win acca is alive
+        // WIN ACCA ALIVE
         if (data.win_acca_odds > 0) {
             oddsEl.textContent = `${(data.win_acca_odds - 1).toFixed(2)}/1`;
         }
-        // If win acca dead but place acca alive
+        // WIN DEAD, PLACE ALIVE
         else if (data.place_acca_odds > 0) {
             oddsEl.textContent = `${(data.place_acca_odds - 1).toFixed(2)}/1 (Place)`;
         }
-        // If both dead
+        // BOTH DEAD
         else {
             oddsEl.textContent = "0.00/1";
         }
@@ -673,7 +676,6 @@ async function loadAccaHero() {
 
         // Status
         const status = data.status.toLowerCase();
-
         statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
         statusEl.className = "acca-hero-status";
 
@@ -683,14 +685,58 @@ async function loadAccaHero() {
         else if (status === "lose") statusEl.classList.add("acca-status-busted");
         else statusEl.classList.add("acca-status-empty");
 
+        // Step 4 additions
+        updateAccaSummary(data);
+        updateAliveBanner(status);
+
     } catch (err) {
         console.error("Failed to load acca hero", err);
     }
 }
 
+
+/* ============================================================
+   SUMMARY CARD + ALIVE BANNER
+   ============================================================ */
+
+function updateAccaSummary(data) {
+    const winEl = document.getElementById("winAccaSummary");
+    const placeEl = document.getElementById("placeAccaSummary");
+    const ewEl = document.getElementById("ewSummary");
+
+    if (!winEl || !placeEl || !ewEl) return;
+
+    if (!data) {
+        winEl.textContent = "0.00/1";
+        placeEl.textContent = "0.00/1";
+        ewEl.textContent = "£0.00";
+        return;
+    }
+
+    winEl.textContent = `${(data.win_acca_odds - 1).toFixed(2)}/1`;
+    placeEl.textContent = `${(data.place_acca_odds - 1).toFixed(2)}/1`;
+    ewEl.textContent = `£${data.ew_250_potential_return.toFixed(2)}`;
+}
+
+function updateAliveBanner(status) {
+    const banner = document.getElementById("accaAliveBanner");
+    if (!banner) return;
+
+    if (status === "live" || status === "place") {
+        banner.style.display = "block";
+    } else {
+        banner.style.display = "none";
+    }
+}
+
+
+/* ============================================================
+   LOAD PICKS
+   ============================================================ */
+
 async function loadAccaPicks() {
     const container = document.getElementById("accaPicks");
-    if (!container) return;  // <-- FIX: prevents crashes on pages without this element
+    if (!container) return;
 
     try {
         const res = await fetch(`${API}/picks/current`);
@@ -743,9 +789,14 @@ async function loadAccaPicks() {
     }
 }
 
+
+/* ============================================================
+   LOAD STANDINGS
+   ============================================================ */
+
 async function loadAccaStandings() {
     const container = document.getElementById("accaStandings");
-    if (!container) return;  // <-- Prevents crashes on pages without this element
+    if (!container) return;
 
     try {
         const res = await fetch(`${API}/accumulator/standings`);
@@ -776,6 +827,10 @@ async function loadAccaStandings() {
 }
 
 
+/* ============================================================
+   UPDATE PICK STATUS
+   ============================================================ */
+
 async function updateAccaStatus(id, status) {
     try {
         await fetch(`${API}/accumulator/${id}/status`, {
@@ -787,11 +842,17 @@ async function updateAccaStatus(id, status) {
         loadAccaPicks();
         loadAccaHero();
         loadAccaStandings();
+        loadAccaHistory();
 
     } catch (err) {
         console.error("Failed to update acca status", err);
     }
 }
+
+
+/* ============================================================
+   DELETE PICK
+   ============================================================ */
 
 async function deleteAccaPick(id) {
     if (!confirm("Delete this pick?")) return;
@@ -802,17 +863,76 @@ async function deleteAccaPick(id) {
         loadAccaPicks();
         loadAccaHero();
         loadAccaStandings();
+        loadAccaHistory();
 
     } catch (err) {
         console.error("Failed to delete pick", err);
     }
 }
 
+
+/* ============================================================
+   LOAD ACCA HISTORY
+   ============================================================ */
+
+async function loadAccaHistory() {
+    const box = document.getElementById("accaHistory");
+    if (!box) return;
+
+    try {
+        const res = await fetch(`${API}/accumulator/history`);
+        const history = await res.json();
+
+        if (!history.length) {
+            box.innerHTML = "<p>No history yet.</p>";
+            return;
+        }
+
+        box.innerHTML = history.map(h => `
+            <div class="acca-history-item ${h.status}">
+                <strong>${h.status.toUpperCase()}</strong><br>
+                Win Odds: ${(h.win_acca_odds - 1).toFixed(2)}/1<br>
+                Place Odds: ${(h.place_acca_odds - 1).toFixed(2)}/1<br>
+                E/W Return: £${h.ew_return.toFixed(2)}<br>
+                <small>${new Date(h.timestamp).toLocaleString()}</small>
+            </div>
+        `).join("");
+
+    } catch (err) {
+        console.error("Failed to load acca history", err);
+    }
+}
+
+
+/* ============================================================
+   RESET ACCA
+   ============================================================ */
+
+const resetBtn = document.getElementById("resetAccaBtn");
+if (resetBtn) {
+    resetBtn.onclick = async () => {
+        if (!confirm("Reset the entire acca?")) return;
+
+        await fetch(`${API}/accumulator/reset`, { method: "DELETE" });
+
+        loadAccaHero();
+        loadAccaPicks();
+        loadAccaStandings();
+        loadAccaHistory();
+    };
+}
+
+
+/* ============================================================
+   PAGE INIT
+   ============================================================ */
+
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("accaOdds")) {
         loadAccaHero();
         loadAccaPicks();
         loadAccaStandings();
+        loadAccaHistory();
     }
 });
 
