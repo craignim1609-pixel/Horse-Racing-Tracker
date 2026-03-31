@@ -82,11 +82,13 @@ class RaceDayBase(BaseModel):
     odds_fraction: str
     race_time: str
     amount_bet: float
+    each_way: bool = False 
 
 
 class RaceDayOut(RaceDayBase):
     id: int
     result: str
+    each_way: bool = False 
     player: PlayerOut
 
     class Config:
