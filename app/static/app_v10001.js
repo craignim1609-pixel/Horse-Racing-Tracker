@@ -674,7 +674,9 @@ async function loadAccaHero() {
         }
 
         // E/W returns
-        returnsEl.textContent = `£${data.ew_250_potential_return.toFixed(2)}`;
+       const ew = Number(data.ew_250_potential_return) || 0;
+         returnsEl.textContent = `£${ew.toFixed(2)}`;
+
 
         // Status
         const status = data.status.toLowerCase();
