@@ -655,7 +655,7 @@ async function loadAccaHero() {
             statusEl.textContent = "No Picks";
             statusEl.className = "acca-hero-status acca-status-empty";
 
-            updateAccaSummary(null);
+          
             updateAliveBanner(null);
             return;
         }
