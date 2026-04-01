@@ -1,6 +1,404 @@
-/* ================================
+/* ============================================================
+   GLOBAL THEME — DARK GREEN + GOLD (THEME A)
+   ============================================================ */
+
+body {
+    background: #0b1d0b;
+    color: #f5f5f5;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 20px;
+
+    /* Smooth text */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Page wrapper */
+.page-content {
+    padding: 30px;
+}
+
+/* Headings */
+h1 {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    margin-bottom: 12px;
+    color: gold;
+    text-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+
+h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+    color: gold;
+    text-shadow: 0 0 4px rgba(0,0,0,0.35);
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: gold;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid rgba(247,198,0,0.35);
+    padding-bottom: 6px;
+}
+
+/* Small labels */
+.label-small {
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+.meta-text {
+    color: #ccc;
+    font-size: 0.9rem;
+    line-height: 1.35rem;
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+/* ============================================================
+   NAVBAR — PREMIUM BOOKMAKER STYLE
+   ============================================================ */
+
+.navbar {
+    background: #0f2a0f;
+    padding: 12px 20px;
+    display: flex;
+    gap: 20px;
+    border-bottom: 2px solid gold;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.navbar a {
+    color: gold;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.navbar a:hover,
+.navbar a.active {
+    color: white;
+    text-decoration: underline;
+}
+
+
+/* ============================================================
+   HEADER BAR (TOP OF SITE)
+   ============================================================ */
+
+.main-header {
+    background-color: #0b1915;
+    border-bottom: 2px solid #d4af37;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.site-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: #d4af37;
+    margin: 0;
+}
+
+.header-nav {
+    display: flex;
+    gap: 15px;
+}
+
+.nav-btn {
+    padding: 8px 16px;
+    border: 1px solid #d4af37;
+    border-radius: 6px;
+    color: #d4af37;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.2s ease;
+}
+
+.nav-btn:hover {
+    background-color: #d4af37;
+    color: #0d1f1a;
+}
+
+
+/* ============================================================
+   BUTTONS — GLOBAL
+   ============================================================ */
+
+button,
+.submit-btn {
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    background: gold;
+    color: black;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+button:hover,
+.submit-btn:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+button:active,
+.submit-btn:active {
+    transform: scale(0.95);
+}
+
+/* Status buttons */
+.status-btn {
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    opacity: 0.5;
+    transition: 0.15s ease;
+}
+
+.status-btn.active {
+    opacity: 1;
+    color: #000;
+}
+
+.status-win.active { background: #0f7a0f; }
+.status-place.active { background: #0077cc; }
+.status-lose.active { background: #7a0f0f; }
+.status-nr.active { background: #777; }
+
+
+/* ============================================================
+   GLOBAL LAYOUT HELPERS
+   ============================================================ */
+
+.race-container {
+    display: flex;
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.left-panel {
+    width: 260px;
+}
+
+.right-panel {
+    flex: 1;
+}
+
+/* Generic card fade-in */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* ============================================================
+   ACCA HERO (TOP SUMMARY BOX)
+   ============================================================ */
+
+.acca-hero {
+    background-color: #0b1915;
+    border: 2px solid #d4af37;
+    border-radius: 10px;
+    padding: 20px 25px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.acca-hero-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.acca-hero-section label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.acca-hero-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: #d4af37;
+}
+
+.acca-hero-status {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 1px solid #d4af37;
+}
+
+.acca-status-place {
+    background: #cc8800;
+    color: white;
+}
+
+.acca-alive-banner {
+    background: #0a7a0a;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-weight: 700;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+
+/* ============================================================
+   ACCA PICK CARDS (GREEN/GOLD VERSION ONLY)
+   ============================================================ */
+
+.acca-card {
+    background-color: #0b1915;
+    border: 1px solid #d4af37;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: fadeIn 0.35s ease forwards;
+}
+
+.acca-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.acca-player {
+    font-weight: bold;
+    color: #d4af37;
+}
+
+.acca-delete-btn {
+    background: none;
+    border: none;
+    color: #d4af37;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.acca-delete-btn:hover {
+    opacity: 1;
+}
+
+/* Horse line */
+.acca-horse-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.acca-horse-number {
+    opacity: 0.7;
+}
+
+.acca-horse-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+}
+
+.acca-horse-odds {
+    color: #d4af37;
+    font-weight: bold;
+}
+
+/* Meta */
+.acca-meta {
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+/* Status buttons */
+.acca-status-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.acca-status-btn {
+    flex: 1;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #d4af37;
+    background: none;
+    color: #d4af37;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: 0.2s;
+}
+
+.acca-status-btn.active,
+.acca-status-btn:hover {
+    background-color: #d4af37;
+    color: #0d1f1a;
+}
+
+
+/* ============================================================
+   ACCA STANDINGS (RIGHT SIDE)
+   ============================================================ */
+
+.acca-standings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.acca-standing-item {
+    background-color: #0b1915;
+    border: 1px solid #d4af37;
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.acca-standing-player {
+    font-weight: bold;
+}
+
+.acca-standing-status {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    border: 1px solid #d4af37;
+}
+
+
+/* ============================================================
    STATS PAGE — PLAYER TILES
-   ================================ */
+   ============================================================ */
+
 .player-stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -36,9 +434,10 @@
 }
 
 
-/* ================================
+/* ============================================================
    STATS PAGE — FILTER BAR
-   ================================ */
+   ============================================================ */
+
 .stats-filter-bar {
     display: flex;
     align-items: center;
@@ -63,9 +462,10 @@
 }
 
 
-/* ================================
-   COMPLETED ACCAS — DATE HEADERS
-   ================================ */
+/* ============================================================
+   COMPLETED ACCAS — STATS PAGE
+   ============================================================ */
+
 .acca-date {
     margin-top: 30px;
     margin-bottom: 10px;
@@ -74,11 +474,13 @@
     color: #ddd;
 }
 
+.acca-history-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
 
-/* ================================
-   COMPLETED ACCAS — CARD
-   ================================ */
-.acca-card {
+.acca-card-summary {
     background: #1a1a1a;
     padding: 16px;
     border-radius: 10px;
@@ -106,10 +508,7 @@
     color: #fff;
 }
 
-
-/* ================================
-   STATUS BADGES
-   ================================ */
+/* Status badges */
 .status-badge {
     padding: 6px 14px;
     border-radius: 6px;
@@ -119,856 +518,93 @@
     color: #fff;
 }
 
-.status-win {
-    background: #0a7a0a;
-}
+.status-win { background: #0a7a0a; }
+.status-place { background: #0a3a7a; }
+.status-lose { background: #7a0a0a; }
 
-.status-place {
-    background: #0a3a7a;
-}
 
-.status-lose {
-    background: #7a0a0a;
-}
+/* ============================================================
+   MODERN ACTIVITY CARDS (KEEPING ONLY NEW VERSION)
+   ============================================================ */
 
-/* ACCA HERO BOX */
-.acca-hero {
-    background-color: #0b1915;
-    border: 2px solid #d4af37;
-    border-radius: 10px;
-    padding: 20px 25px;
-    margin-bottom: 30px;
+.activity-card-modern {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    animation: fadeIn 0.35s ease forwards;
 }
 
-.acca-hero-section {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.acca-hero-section label {
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-.acca-hero-value {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
-    color: #d4af37;
-}
-
-.acca-status-place {
-    background: #cc8800;
-    color: white;
-}
-
-/* STATUS BADGE */
-.acca-hero-status {
-    padding: 10px 18px;
+.activity-left .stake-box {
+    background: rgba(255,255,255,0.08);
+    padding: 6px 10px;
     border-radius: 6px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: 1px solid #d4af37;
+    text-align: center;
+    min-width: 60px;
 }
-.ew-badge {
-    display: inline-block;
-    background: #0a7a0a;
-    color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 11px;
+
+.stake-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.stake-value {
+    font-weight: bold;
+}
+
+.horse-line {
+    font-size: 15px;
     font-weight: 600;
+}
+
+.horse-number {
+    color: #aaa;
+    margin-right: 4px;
+}
+
+.horse-odds {
+    color: #f7c600;
+    font-weight: bold;
     margin-left: 6px;
 }
 
-.acca-status-place {
-    background: #cc8800;
-    color: white;
-}
-
-.acca-alive-banner {
-    background: #0a7a0a;
-    color: white;
-    padding: 10px;
-    text-align: center;
-    font-weight: 700;
-    border-radius: 6px;
-    margin-bottom: 10px;
-}
-
-.acca-summary-card {
-    background: #fafafa;
-    padding: 12px;
-    border-radius: 6px;
-    margin-top: 10px;
-    font-size: 15px;
-    line-height: 1.6;
-}
-
-.reset-acca-btn {
-    background: #b30000;
-    color: white;
-    padding: 10px 14px;
-    border-radius: 6px;
-    border: none;
-    font-weight: 700;
-    margin-top: 15px;
-    cursor: pointer;
-}
-
-.acca-history-item {
-    background: #f4f4f4;
-    color: #222; /* <-- FIX: ensures text is visible */
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-}
-
-
-.acca-history-item.win { border-left: 5px solid #0a7a0a; }
-.acca-history-item.place { border-left: 5px solid #cc8800; }
-.acca-history-item.lose { border-left: 5px solid #b30000; }
-
-
-/* STATUS COLOURS */
-.acca-status-live {
-    background-color: #1b4d2b;
-    color: #d4af37;
-}
-
-.acca-status-won {
-    background-color: #2e7d32;
-    color: white;
-}
-
-.acca-status-busted {
-    background-color: #7d1f1f;
-    color: white;
-}
-
-.acca-status-empty {
-    background-color: #333;
-    color: #bbb;
-}
-
-/* ACCA PAGE LAYOUT */
-.acca-layout {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 25px;
-}
-
-/* LEFT SIDE: PICKS */
-.acca-picks-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-/* stats */
-.stats-acca-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.stats-card {
-    background: #111827; /* match your dark cards */
-    color: #f9fafb;
-    padding: 16px 18px;
-    border-radius: 10px;
-}
-
-.stats-card h2 {
-    margin: 0 0 10px;
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.stats-acca-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px 18px;
-}
-
-.stats-acca-grid label {
-    display: block;
+.meta-line {
     font-size: 12px;
-    color: #9ca3af;
-    margin-bottom: 2px;
-}
-
-.stats-acca-grid div div {
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.acca-recent-list {
+    opacity: 0.7;
+    margin-top: 2px;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.acca-recent-item {
-    background: #020617;
-    border-radius: 8px;
-    padding: 10px 12px;
-}
-
-.acca-recent-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: 13px;
-}
-
-.acca-recent-status {
-    font-weight: 700;
-}
-
-.acca-recent-item.win .acca-recent-status { color: #22c55e; }
-.acca-recent-item.place .acca-recent-status { color: #eab308; }
-.acca-recent-item.lose .acca-recent-status { color: #ef4444; }
-
-.acca-recent-body {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    font-size: 13px;
-}
-
-.acca-recent-body label {
-    display: block;
-    font-size: 11px;
-    color: #9ca3af;
-    margin-bottom: 1px;
-}
-
-/* PICK CARD */
-.acca-card {
-    background-color: #0b1915;
-    border: 1px solid #d4af37;
-    border-radius: 8px;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
     gap: 10px;
 }
 
-.acca-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.acca-player {
-    font-weight: bold;
-    color: #d4af37;
-}
-
-.acca-delete-btn {
-    background: none;
-    border: none;
-    color: #d4af37;
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0.7;
-}
-
-.acca-delete-btn:hover {
-    opacity: 1;
-}
-
-/* HORSE LINE */
-.acca-horse-line {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.acca-horse-number {
-    opacity: 0.7;
-}
-
-.acca-horse-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.2rem;
-}
-
-.acca-horse-odds {
-    color: #d4af37;
+.meta-player {
+    color: #f7c600;
     font-weight: bold;
 }
 
-/* META */
-.acca-meta {
-    opacity: 0.7;
-    font-size: 0.9rem;
+.activity-right {
+    text-align: right;
 }
 
-/* STATUS BUTTONS */
-.acca-status-buttons {
-    display: flex;
-    gap: 8px;
-}
-
-.acca-status-btn {
-    flex: 1;
-    padding: 6px 8px;
-    border-radius: 6px;
-    border: 1px solid #d4af37;
-    background: none;
-    color: #d4af37;
-    cursor: pointer;
-    font-size: 0.8rem;
-    transition: 0.2s;
-}
-
-.acca-status-btn.active,
-.acca-status-btn:hover {
-    background-color: #d4af37;
-    color: #0d1f1a;
-}
-
-/* RIGHT SIDE: STANDINGS */
-.acca-standings-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.acca-standing-item {
-    background-color: #0b1915;
-    border: 1px solid #d4af37;
-    border-radius: 6px;
-    padding: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.acca-standing-player {
-    font-weight: bold;
-}
-
-.acca-standing-status {
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.8rem;
+.winnings-label {
+    font-size: 10px;
     text-transform: uppercase;
-    border: 1px solid #d4af37;
+    opacity: 0.7;
 }
 
-/* RESPONSIVE */
-@media (max-width: 900px) {
-    .acca-layout {
-        grid-template-columns: 1fr;
-    }
-}
-
-
-/* GLOBAL THEME */
-body {
-    background-color: #0d1f1a;
-    color: #f5f1e8;
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-}
-
-/* HEADER */
-.main-header {
-    background-color: #0b1915;
-    border-bottom: 2px solid #d4af37;
-    padding: 15px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.site-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    color: #d4af37;
-    margin: 0;
-}
-
-/* NAV BUTTONS */
-.header-nav {
-    display: flex;
-    gap: 15px;
-}
-
-.nav-btn {
-    padding: 8px 16px;
-    border: 1px solid #d4af37;
-    border-radius: 6px;
-    color: #d4af37;
-    text-decoration: none;
-    font-weight: 500;
-    transition: 0.2s ease;
-}
-
-.nav-btn:hover {
-    background-color: #d4af37;
-    color: #0d1f1a;
-}
-
-/* PAGE CONTENT WRAPPER */
-.page-content {
-    padding: 30px;
-}
-
-/* ============================================================
-   GLOBAL THEME — GREEN/GOLD SITE-WIDE
-   ============================================================ */
-
-body {
-    background: #0b1d0b;
-    color: #f5f5f5;
-    font-family: Arial, sans-serif;
-    padding: 20px;
-}
-
-h1, h2 {
-    color: gold;
-    margin-top: 25px;
-    margin-bottom: 10px;
-    letter-spacing: 0.5px;
-}
-
-/* Fade-in animation */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Buttons */
-button,
-.submit-btn {
-    padding: 10px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    background: gold;
-    color: black;
-    transition: transform 0.15s ease, opacity 0.15s ease;
-}
-
-button:hover,
-.submit-btn:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
-}
-
-button:active,
-.submit-btn:active {
-    transform: scale(0.95);
-}
-
-.status-btn {
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: bold;
-    cursor: pointer;
-    border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.05);
-    color: #fff;
-    opacity: 0.5;
-    transition: 0.15s ease;
-}
-
-.status-btn.active {
-    opacity: 1;
-    color: #000;
-}
-
-.status-win.active { background: #0f7a0f; }
-.status-place.active { background: #0077cc; }
-.status-lose.active { background: #7a0f0f; }
-.status-nr.active { background: #777; }
-
-/* ============================================================
-   TYPOGRAPHY — PREMIUM BOOKMAKER STYLE
-   ============================================================ */
-
-/* Global text smoothing */
-body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-/* Headings */
-h1 {
-    font-size: 32px;
-    font-weight: 800;
-    letter-spacing: 0.6px;
-    margin-bottom: 12px;
-    text-shadow: 0 0 6px rgba(0,0,0,0.4);
-}
-
-h2 {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    margin-bottom: 14px;
-    text-shadow: 0 0 4px rgba(0,0,0,0.35);
-}
-
-/* Section labels (like “Recent Activity”, “Today’s Bets”) */
-.section-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: gold;
-    margin-top: 25px;
-    margin-bottom: 10px;
-    border-bottom: 2px solid rgba(247,198,0,0.35);
-    padding-bottom: 6px;
-}
-
-/* Small labels (form labels, meta text) */
-.label-small {
-    font-size: 0.85rem;
-    opacity: 0.85;
-}
-
-/* Improve readability of all meta text */
-.meta-text {
-    color: #ccc;
-    font-size: 0.9rem;
-    line-height: 1.35rem;
-}
-
-/* Improve spacing between stacked text blocks */
-.stack {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-/* ============================================================
-   NAVBAR — GREEN/GOLD
-   ============================================================ */
-
-.navbar {
-    background: #0f2a0f;
-    padding: 12px 20px;
-    display: flex;
-    gap: 20px;
-    border-bottom: 2px solid gold;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    overflow-x: auto;
-    white-space: nowrap;
-}
-
-.navbar a {
-    color: gold;
-    text-decoration: none;
-    font-weight: bold;
+.winnings-value {
     font-size: 16px;
+    font-weight: bold;
 }
 
-.navbar a:hover,
-.navbar a.active {
-    color: white;
-    text-decoration: underline;
-}
-
+.profit-pos { color: #00c853; }
+.profit-neg { color: #d32f2f; }
 /* ============================================================
-   PANELS — LEFT + RIGHT
-   ============================================================ */
-
-.left-panel,
-.right-panel {
-    background: #123412;
-    border: 3px solid #1a4d1a;
-    border-radius: 12px;
-    padding: 20px;
-    color: gold;
-    box-shadow:
-        inset 0 0 8px rgba(0,0,0,0.35),
-        0 0 10px rgba(255, 215, 0, 0.18);
-}
-
-.left-panel h2,
-.right-panel h2 {
-    margin-top: 0;
-    margin-bottom: 16px;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 0.6px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid rgba(247, 198, 0, 0.35);
-    text-shadow: 0 0 4px rgba(0,0,0,0.4);
-}
-
-/* ============================================================
-   FORMS — GLOBAL
-   ============================================================ */
-
-form:not(.race-form) {
-    display: flex;
-    flex-direction: column;
-    max-width: 350px;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-input, select {
-    padding: 8px;
-    border-radius: 4px;
-    border: none;
-}
-
-.form-row {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.race-form input:focus,
-.race-form select:focus {
-    outline: 2px solid gold;
-    box-shadow: 0 0 6px rgba(247,198,0,0.4);
-}
-
-/* ============================================================
-   RACE DAY FORM — PREMIUM BOOKMAKER LAYOUT
-   ============================================================ */
-
-.race-form {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-bottom: 20px;
-}
-
-.race-form label {
-    font-weight: bold;
-    color: gold;
-    margin-bottom: 4px;
-    display: block;
-    font-size: 0.9rem;
-}
-
-.race-form input,
-.race-form select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    border: none;
-    background: #1a1a1a;
-    color: #fff;
-    font-size: 0.95rem;
-    box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
-}
-
-.race-form input::placeholder {
-    color: #888;
-}
-
-.horse-group {
-    display: flex;
-    gap: 12px;
-}
-
-.horse-group div {
-    flex: 1;
-}
-
-.race-form .submit-btn {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    background: gold;
-    color: black;
-    border-radius: 6px;
-    font-weight: bold;
-    margin-top: 6px;
-    box-shadow: 0 0 10px rgba(247,198,0,0.25);
-}
-
-/* ============================================================
-   RACE DAY — HEADERS
-   ============================================================ */
-
-.race-course-header {
-    font-size: 22px;
-    font-weight: 700;
-    margin-top: 25px;
-    margin-bottom: 8px;
-    color: #f7c600;
-    border-bottom: 2px solid #f7c600;
-    padding-bottom: 4px;
-}
-
-.race-time-header {
-    font-size: 18px;
-    font-weight: 600;
-    margin-top: 12px;
-    margin-bottom: 6px;
-    color: #ffffff;
-    opacity: 0.8;
-}
-
-/* ============================================================
-   RACE DAY — PREMIUM BOOKMAKER CARD STYLE
-   ============================================================ */
-
-.race-card {
-    background: #0d0d0d;
-    border-left: 6px solid #f7c600;
-    padding: 14px 16px;
-    margin: 10px 0;
-    border-radius: 6px;
-    color: #fff;
-    box-shadow: 0 0 10px rgba(247,198,0,0.15);
-    font-size: 0.95rem;
-}
-
-.race-horse {
-    font-size: 1.05rem;
-    font-weight: bold;
-    margin-bottom: 6px;
-}
-
-.race-meta {
-    color: #ccc;
-    line-height: 1.35rem;
-    margin-bottom: 8px;
-}
-
-.race-stake {
-    font-weight: bold;
-    color: #f7c600;
-    margin-bottom: 4px;
-}
-
-.race-status {
-    margin-top: 6px;
-}
-
-.race-buttons {
-    display: flex;
-    gap: 6px;
-    margin-top: 10px;
-}
-
-.race-buttons button {
-    flex: 1;
-    padding: 6px;
-    font-size: 0.8rem;
-}
-
-/* ============================================================
-   RESULT BADGES
-   ============================================================ */
-
-.result-win {
-    background: #0f7a0f;
-    color: #fff;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-.result-place {
-    background: #0077cc;
-    color: #fff;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-.result-lose {
-    background: #7a0f0f;
-    color: #fff;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-.result-nr {
-    background: #777;
-    color: #fff;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-/* ============================================================
-   RECENT ACTIVITY — PREMIUM BOOKMAKER CARD STYLE
-   ============================================================ */
-
-.activity-list {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.activity-card {
-    background: #0d0d0d;
-    border-left: 5px solid #f7c600;
-    padding: 12px 14px;
-    border-radius: 6px;
-    color: #e6e6e6;
-    font-size: 0.9rem;
-    box-shadow: 0 0 10px rgba(247,198,0,0.15);
-    margin-bottom: 10px;
-}
-
-.activity-top {
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 4px;
-}
-
-.activity-meta {
-    color: #ccc;
-    line-height: 1.35rem;
-    margin-bottom: 6px;
-}
-
-.activity-status {
-    margin-top: 6px;
-}
-
-.activity-status span {
-    padding: 3px 6px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: bold;
-}
-
-/* ============================================================
-   GLOBAL LAYOUT — PANEL ALIGNMENT + SPACING
-   ============================================================ */
-
-.race-container {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    margin-bottom: 30px;
-}
-
-.left-panel,
-.right-panel {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-/* ============================================================
-   PREMIUM HEADER BAR — EXACT IMAGE ONE STYLE
+   RACE DAY — PREMIUM BOOKMAKER HEADER
    ============================================================ */
 
 .race-header {
@@ -1039,229 +675,119 @@ input, select {
 .status-lost { background: #7a0f0f; color: #fff; }
 .status-pending { background: #777; color: #fff; }
 
+
 /* ============================================================
-   ANIMATIONS — FADE-IN FOR CARDS + HEADERS
+   RACE DAY — PREMIUM BOOKMAKER CARD STYLE
    ============================================================ */
 
-.race-card,
-.activity-card,
-.race-course-header,
-.race-time-header {
+.race-card {
+    background: #0d0d0d;
+    border-left: 6px solid #f7c600;
+    padding: 14px 16px;
+    margin: 10px 0;
+    border-radius: 6px;
+    color: #fff;
+    box-shadow: 0 0 10px rgba(247,198,0,0.15);
+    font-size: 0.95rem;
     animation: fadeIn 0.35s ease forwards;
 }
 
-/* ============================================================
-   FILTER BAR — TODAY ONLY / ALL BETS
-   ============================================================ */
-
-.filter-bar {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.filter-btn {
-    padding: 8px 14px;
-    border-radius: 6px;
-    background: #123412;
-    border: 2px solid #1a4d1a;
-    color: gold;
+.race-horse {
+    font-size: 1.05rem;
     font-weight: bold;
-    cursor: pointer;
-    transition: 0.15s ease;
+    margin-bottom: 6px;
 }
 
-.filter-btn:hover {
-    background: #1a4d1a;
+.race-meta {
+    color: #ccc;
+    line-height: 1.35rem;
+    margin-bottom: 8px;
 }
 
-.filter-btn.active {
-    background: gold;
-    color: black;
-    border-color: gold;
-    box-shadow: 0 0 10px rgba(247,198,0,0.35);
-}
-
-.activity-card-modern {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
-
-.activity-left .stake-box {
-    background: rgba(255,255,255,0.08);
-    padding: 6px 10px;
-    border-radius: 6px;
-    text-align: center;
-    min-width: 60px;
-}
-
-.stake-label {
-    font-size: 10px;
-    text-transform: uppercase;
-    opacity: 0.7;
-}
-
-.stake-value {
+.race-stake {
     font-weight: bold;
-}
-
-.horse-line {
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.horse-number {
-    color: #aaa;
-    margin-right: 4px;
-}
-
-.horse-odds {
     color: #f7c600;
-    font-weight: bold;
-    margin-left: 6px;
+    margin-bottom: 4px;
 }
 
-.meta-line {
-    font-size: 12px;
-    opacity: 0.7;
-    margin-top: 2px;
+.race-status {
+    margin-top: 6px;
+}
+
+.race-buttons {
     display: flex;
-    gap: 10px;
-}
-
-.meta-player {
-    color: #f7c600;
-    font-weight: bold;
-}
-
-.activity-right {
-    text-align: right;
-}
-
-.winnings-label {
-    font-size: 10px;
-    text-transform: uppercase;
-    opacity: 0.7;
-}
-
-.winnings-value {
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.profit-pos {
-    color: #00c853;
-}
-
-.profit-neg {
-    color: #d32f2f;
-}
-
-/* -----------------------------------
-   GENERAL LAYOUT
------------------------------------ */
-.race-container {
-    display: flex;
-    gap: 24px;
-    margin-top: 20px;
-}
-
-.left-panel {
-    width: 260px;
-}
-
-.right-panel {
-    flex: 1;
-}
-
-/* -----------------------------------
-   PLAYER CARDS
------------------------------------ */
-.stats-card {
-    border-left: 4px solid #2ecc71;
-    padding: 14px;
-    background: #1a1f1a;
-    border: 1px solid #2f3b2f;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.stats-card:hover {
-    border-left-color: #f1c40f;
-    background: #222922;
-}
-
-.stats-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.player-name {
-    font-size: 18px;
-    font-weight: bold;
-    color: #f1c40f;
-}
-
-.trophy-icon {
-    font-size: 20px;
-}
-
-.trophy-icon.gold {
-    color: #f1c40f;
-}
-
-.trophy-icon.grey {
-    color: #555;
-}
-
-.stats-card-body {
+    gap: 6px;
     margin-top: 10px;
 }
 
-.stat-line {
+.race-buttons button {
+    flex: 1;
+    padding: 6px;
+    font-size: 0.8rem;
+}
+
+
+/* ============================================================
+   RACE DAY FORM — PREMIUM BOOKMAKER LAYOUT
+   ============================================================ */
+
+.race-form {
     display: flex;
-    justify-content: space-between;
-    padding: 4px 0;
-    font-size: 14px;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 20px;
 }
 
-.stat-line label {
-    color: #aaa;
-}
-
-/* -----------------------------------
-   BADGES
------------------------------------ */
-.badge {
-    display: inline-block;
-    padding: 2px 6px;
-    font-size: 11px;
-    border-radius: 4px;
-    margin-left: 6px;
+.race-form label {
     font-weight: bold;
+    color: gold;
+    margin-bottom: 4px;
+    display: block;
+    font-size: 0.9rem;
 }
 
-.badge-gold {
-    background: #f1c40f;
-    color: #000;
-}
-
-.badge-blue {
-    background: #3498db;
+.race-form input,
+.race-form select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    background: #1a1a1a;
     color: #fff;
+    font-size: 0.95rem;
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
 }
 
-/* -----------------------------------
-   MODAL
------------------------------------ */
+.race-form input::placeholder {
+    color: #888;
+}
+
+.horse-group {
+    display: flex;
+    gap: 12px;
+}
+
+.horse-group div {
+    flex: 1;
+}
+
+.race-form .submit-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    background: gold;
+    color: black;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-top: 6px;
+    box-shadow: 0 0 10px rgba(247,198,0,0.25);
+}
+
+
+/* ============================================================
+   MODALS — GLOBAL
+   ============================================================ */
+
 .modal {
     position: fixed;
     top: 0;
@@ -1305,9 +831,11 @@ input, select {
     margin-bottom: 16px;
 }
 
-/* -----------------------------------
+
+/* ============================================================
    MODAL STATS GRID
------------------------------------ */
+   ============================================================ */
+
 .modal-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1340,9 +868,11 @@ input, select {
 .lose-box { border-left: 4px solid #e74c3c; }
 .nr-box { border-left: 4px solid #7f8c8d; }
 
-/* -----------------------------------
+
+/* ============================================================
    COURSE TABLE + HEATMAP
------------------------------------ */
+   ============================================================ */
+
 .modal-table {
     width: 100%;
     border-collapse: collapse;
@@ -1368,9 +898,11 @@ input, select {
     transition: background 0.2s;
 }
 
-/* -----------------------------------
+
+/* ============================================================
    BAR CHART (Profit)
------------------------------------ */
+   ============================================================ */
+
 .bar-chart {
     margin-top: 10px;
 }
@@ -1413,9 +945,11 @@ input, select {
     text-align: right;
 }
 
-/* -----------------------------------
+
+/* ============================================================
    LINE CHART (SVG)
------------------------------------ */
+   ============================================================ */
+
 .line-chart {
     background: #222922;
     border: 1px solid #2f3b2f;
@@ -1423,9 +957,11 @@ input, select {
     border-radius: 6px;
 }
 
-/* -----------------------------------
+
+/* ============================================================
    COMPARISON MODE
------------------------------------ */
+   ============================================================ */
+
 .comparison-box {
     background: #1a1f1a;
     border: 1px solid #2f3b2f;
@@ -1452,9 +988,11 @@ input, select {
     margin-bottom: 8px;
 }
 
-/* -----------------------------------
+
+/* ============================================================
    FORM SELECT
------------------------------------ */
+   ============================================================ */
+
 .form-select {
     width: 100%;
     padding: 8px;
@@ -1464,21 +1002,21 @@ input, select {
     border-radius: 4px;
 }
 
-/* -----------------------------------
-   BUTTONS
------------------------------------ */
-.submit-btn {
-    width: 100%;
-    padding: 10px;
-    background: #2ecc71;
-    color: #000;
-    font-weight: bold;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
 
-.submit-btn:hover {
-    background: #27ae60;
-}
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 
+@media (max-width: 900px) {
+    .acca-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .race-container {
+        flex-direction: column;
+    }
+
+    .modal-content {
+        width: 90%;
+    }
+}
