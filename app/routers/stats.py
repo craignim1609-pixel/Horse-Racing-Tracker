@@ -28,22 +28,19 @@ def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
     players = db.query(models.Player).all()
     results = []
 
+    # Build date prefix like "2026-04"
+    prefix = f"{year}-{month:02d}"
+
     for p in players:
-        wins = db.query(models.Pick).filter_by(
-            player_id=p.id, month=month, year=year, result="Win"
-        ).count()
+        picks = db.query(models.Pick).filter(
+            models.Pick.player_id == p.id,
+            models.Pick.date.like(f"{prefix}%")
+        ).all()
 
-        places = db.query(models.Pick).filter_by(
-            player_id=p.id, month=month, year=year, result="Place"
-        ).count()
-
-        loses = db.query(models.Pick).filter_by(
-            player_id=p.id, month=month, year=year, result="Lose"
-        ).count()
-
-        nr = db.query(models.Pick).filter_by(
-            player_id=p.id, month=month, year=year, result="NR"
-        ).count()
+        wins = sum(1 for x in picks if x.result == "Win")
+        places = sum(1 for x in picks if x.result == "Place")
+        loses = sum(1 for x in picks if x.result == "Lose")
+        nr = sum(1 for x in picks if x.result == "NR")
 
         results.append({
             "player": p.name,
@@ -54,6 +51,7 @@ def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
         })
 
     return results
+
 
 
 # ============================================================
