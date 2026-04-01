@@ -698,27 +698,8 @@ async function loadAccaHero() {
 
 
 /* ============================================================
-   SUMMARY CARD + ALIVE BANNER
+   ALIVE BANNER
    ============================================================ */
-
-function updateAccaSummary(data) {
-    const winEl = document.getElementById("winAccaSummary");
-    const placeEl = document.getElementById("placeAccaSummary");
-    const ewEl = document.getElementById("ewSummary");
-
-    if (!winEl || !placeEl || !ewEl) return;
-
-    if (!data) {
-        winEl.textContent = "0.00/1";
-        placeEl.textContent = "0.00/1";
-        ewEl.textContent = "£0.00";
-        return;
-    }
-
-    winEl.textContent = `${(data.win_acca_odds - 1).toFixed(2)}/1`;
-    placeEl.textContent = `${(data.place_acca_odds - 1).toFixed(2)}/1`;
-    ewEl.textContent = `£${data.ew_250_potential_return.toFixed(2)}`;
-}
 
 function updateAliveBanner(status) {
     const banner = document.getElementById("accaAliveBanner");
