@@ -95,7 +95,7 @@ def player_details(name: str, db: Session = Depends(get_db)):
             "horse_name": biggest.horse_name,
             "odds_fraction": biggest.odds_fraction
         } if biggest else None,
-            "recent_form": recent
+        "recent_form": recent
     }
 
 
