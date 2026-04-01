@@ -688,7 +688,6 @@ async function loadAccaHero() {
         else statusEl.classList.add("acca-status-empty");
 
         // Step 4 additions
-        updateAccaSummary(data);
         updateAliveBanner(status);
 
     } catch (err) {
