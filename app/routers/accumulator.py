@@ -206,7 +206,100 @@ def get_acca_history(db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------------------
-# RESET ACCA (TEMPORARY UNTIL STEP 2)
+# COMPLETE & ARCHIVE ACCA (STEP 2)
+# ------------------------------------------------------------
+@router.post("/complete")
+def complete_acca(db: Session = Depends(get_db)):
+    picks = (
+        db.query(models.Pick)
+        .options(joinedload(models.Pick.player))
+        .filter(models.Pick.status.in_(["Pending", "Win", "Place", "Lose", "NR"]))
+        .all()
+    )
+
+    if not picks:
+        raise HTTPException(status_code=400, detail="No acca to complete")
+
+    active = [p for p in picks if p.status != "NR"]
+
+    if not active:
+        raise HTTPException(status_code=400, detail="All selections are NR")
+
+    # --------------------------------------------------------
+    # REAL EACH-WAY ACCA LOGIC
+    # --------------------------------------------------------
+    win_acca = 1.0
+    place_acca = 1.0
+
+    for p in active:
+        dec = fractional_to_decimal(p.odds_fraction)
+        place_dec = place_decimal(dec)
+
+        if p.status == "Win":
+            win_acca *= dec
+            place_acca *= place_dec
+
+        elif p.status == "Place":
+            win_acca = 0
+            place_acca *= place_dec
+
+        elif p.status == "Lose":
+            win_acca = 0
+            place_acca = 0
+            break
+
+        elif p.status == "Pending":
+            win_acca *= dec
+            place_acca *= place_dec
+
+    # --------------------------------------------------------
+    # DETERMINE FINAL STATUS
+    # --------------------------------------------------------
+    if win_acca == 0 and place_acca == 0:
+        status = "lose"
+    elif all(p.status == "Win" for p in active):
+        status = "win"
+    elif any(p.status == "Place" for p in active):
+        status = "place"
+    else:
+        status = "live"
+
+    # --------------------------------------------------------
+    # CALCULATE RETURNS
+    # --------------------------------------------------------
+    win_return = 2.5 * win_acca
+    place_return = 2.5 * place_acca
+    ew_total = win_return + place_return
+
+    # --------------------------------------------------------
+    # ARCHIVE ACCA
+    # --------------------------------------------------------
+    record = models.AccaHistory(
+        status=status,
+        win_acca_odds=win_acca,
+        place_acca_odds=place_acca,
+        ew_return=ew_total,
+    )
+    db.add(record)
+
+    # --------------------------------------------------------
+    # CLEAR PICKS
+    # --------------------------------------------------------
+    db.query(models.Pick).delete()
+
+    db.commit()
+
+    return {
+        "message": "Acca completed & archived",
+        "status": status,
+        "win_acca_odds": win_acca,
+        "place_acca_odds": place_acca,
+        "ew_return": ew_total,
+    }
+
+
+# ------------------------------------------------------------
+# RESET ACCA (OPTIONAL — you can remove later)
 # ------------------------------------------------------------
 @router.delete("/reset")
 def reset_acca(db: Session = Depends(get_db)):
