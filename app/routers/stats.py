@@ -28,11 +28,9 @@ def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
     players = db.query(models.Player).all()
     results = []
 
-    # Build date prefix like "2026-04"
     prefix = f"{year}-{month:02d}"
 
     for p in players:
-        # Filter picks by date prefix
         picks = db.query(models.Pick).filter(
             models.Pick.player_id == p.id,
             models.Pick.date.like(f"{prefix}%")
@@ -74,14 +72,12 @@ def player_details(name: str, db: Session = Depends(get_db)):
     total = wins + places + loses
     win_rate = wins / total if total > 0 else 0
 
-    # biggest winner
     biggest = None
     for p in picks:
         if p.result == "Win":
             if biggest is None or p.decimal_odds > biggest.decimal_odds:
                 biggest = p
 
-    # recent form (last 5 picks)
     recent = [p.result[0].upper() for p in picks[-5:]]
 
     return {
@@ -146,4 +142,64 @@ def acca_stats(db: Session = Depends(get_db)):
         "biggest_return": float(biggest_return or 0),
         "recent": recent_payload,
         "player_contribution": [],
+    }
+
+
+# ============================================================
+# DASHBOARD ENDPOINT (NEW FOR STEP 3)
+# ============================================================
+
+@router.get("/dashboard")
+def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
+    # -------------------------------
+    # PLAYER MONTHLY STATS
+    # -------------------------------
+    prefix = f"{year}-{month:02d}"
+    players = db.query(models.Player).all()
+    player_stats = []
+
+    for p in players:
+        picks = db.query(models.Pick).filter(
+            models.Pick.player_id == p.id,
+            models.Pick.date.like(f"{prefix}%")
+        ).all()
+
+        wins = sum(1 for x in picks if x.result == "Win")
+        places = sum(1 for x in picks if x.result == "Place")
+        loses = sum(1 for x in picks if x.result == "Lose")
+        nr = sum(1 for x in picks if x.result == "NR")
+
+        player_stats.append({
+            "player": p.name,
+            "wins": wins,
+            "places": places,
+            "loses": loses,
+            "nr": nr,
+        })
+
+    # -------------------------------
+    # COMPLETED ACCAS (GROUPED BY DATE)
+    # -------------------------------
+    history = (
+        db.query(models.AccaHistory)
+        .order_by(models.AccaHistory.timestamp.desc())
+        .all()
+    )
+
+    grouped = {}
+    for h in history:
+        date_key = h.timestamp.strftime("%A, %d %B %Y")
+        if date_key not in grouped:
+            grouped[date_key] = []
+        grouped[date_key].append({
+            "status": h.status,
+            "win_acca_odds": float(h.win_acca_odds or 0),
+            "place_acca_odds": float(h.place_acca_odds or 0),
+            "ew_return": float(h.ew_return or 0),
+            "timestamp": h.timestamp.isoformat(),
+        })
+
+    return {
+        "players": player_stats,
+        "accas": grouped
     }
