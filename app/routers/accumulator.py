@@ -35,7 +35,7 @@ def place_decimal(decimal_odds: float) -> float:
 
 
 # ------------------------------------------------------------
-# GET ACCUMULATOR STATUS + ODDS
+# GET ACCUMULATOR STATUS + ODDS (READ‑ONLY)
 # ------------------------------------------------------------
 @router.get("/", response_model=schemas.AccumulatorOut)
 def get_accumulator(db: Session = Depends(get_db)):
@@ -115,21 +115,9 @@ def get_accumulator(db: Session = Depends(get_db)):
     ew_total = win_return + place_return
 
     # --------------------------------------------------------
-    # SAVE FINISHED ACCA TO HISTORY
+    # IMPORTANT: NO AUTO‑ARCHIVING HERE ANYMORE
     # --------------------------------------------------------
-    if status in ["win", "place", "lose"]:
-        record = models.AccaHistory(
-            status=status,
-            win_acca_odds=win_acca,
-            place_acca_odds=place_acca,
-            ew_return=ew_total,
-        )
-        db.add(record)
-        db.commit()
 
-    # --------------------------------------------------------
-    # RETURN ACCA RESULT
-    # --------------------------------------------------------
     return schemas.AccumulatorOut(
         picks=picks,
         combined_decimal_odds=win_acca,
@@ -218,7 +206,7 @@ def get_acca_history(db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------------------
-# RESET ACCA
+# RESET ACCA (TEMPORARY UNTIL STEP 2)
 # ------------------------------------------------------------
 @router.delete("/reset")
 def reset_acca(db: Session = Depends(get_db)):
