@@ -11,7 +11,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 
 # ============================================================
-# SERVE THE STATS PAGE (NEW)
+# SERVE THE STATS PAGE
 # ============================================================
 
 @router.get("")
@@ -20,7 +20,7 @@ def stats_home(request: Request):
 
 
 # ============================================================
-# MONTHLY PLAYER STATS
+# MONTHLY PLAYER STATS (FIXED)
 # ============================================================
 
 @router.get("/month/{month}")
@@ -32,6 +32,7 @@ def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
     prefix = f"{year}-{month:02d}"
 
     for p in players:
+        # Filter picks by date prefix
         picks = db.query(models.Pick).filter(
             models.Pick.player_id == p.id,
             models.Pick.date.like(f"{prefix}%")
@@ -51,7 +52,6 @@ def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
         })
 
     return results
-
 
 
 # ============================================================
@@ -95,12 +95,12 @@ def player_details(name: str, db: Session = Depends(get_db)):
             "horse_name": biggest.horse_name,
             "odds_fraction": biggest.odds_fraction
         } if biggest else None,
-        "recent_form": recent
+            "recent_form": recent
     }
 
 
 # ============================================================
-# ACCA PERFORMANCE CENTER (NEW)
+# ACCA PERFORMANCE CENTER
 # ============================================================
 
 @router.get("/acca")
@@ -137,9 +137,6 @@ def acca_stats(db: Session = Depends(get_db)):
         for r in recent
     ]
 
-    # Placeholder for future per-player acca contribution
-    player_contribution = []
-
     return {
         "total_accas": total_accas,
         "wins": wins,
@@ -148,5 +145,5 @@ def acca_stats(db: Session = Depends(get_db)):
         "total_profit": float(total_profit or 0),
         "biggest_return": float(biggest_return or 0),
         "recent": recent_payload,
-        "player_contribution": player_contribution,
+        "player_contribution": [],
     }
