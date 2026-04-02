@@ -304,7 +304,7 @@ def complete_acca(db: Session = Depends(get_db)):
 # ------------------------------------------------------------
 # RESET ACCA (OPTIONAL — you can remove later)
 # ------------------------------------------------------------
-@router.delete("/reset")
+@router.delete("/reset-all")
 def reset_acca(db: Session = Depends(get_db)):
     db.query(models.Pick).delete()
     db.commit()
