@@ -127,6 +127,49 @@ def get_accumulator(db: Session = Depends(get_db)):
         place_acca_odds=place_acca,
         status=status,
     )
+
+
+# ------------------------------------------------------------
+# UPDATE PICK STATUS (PATCH)
+# ------------------------------------------------------------
+@router.patch("/{pick_id}/status", response_model=schemas.PickOut)
+def update_acca_pick_status(
+    pick_id: int,
+    data: schemas.PickUpdateStatus,
+    db: Session = Depends(get_db),
+):
+    pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
+    if not pick:
+        raise HTTPException(status_code=404, detail="Pick not found")
+
+    pick.status = data.status
+    db.commit()
+
+    pick = (
+        db.query(models.Pick)
+        .options(joinedload(models.Pick.player))
+        .filter(models.Pick.id == pick_id)
+        .first()
+    )
+
+    return pick
+
+
+# ------------------------------------------------------------
+# DELETE PICK
+# ------------------------------------------------------------
+@router.delete("/{pick_id}")
+def delete_acca_pick(pick_id: int, db: Session = Depends(get_db)):
+    pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
+    if not pick:
+        raise HTTPException(status_code=404, detail="Pick not found")
+
+    db.delete(pick)
+    db.commit()
+
+    return {"message": "Pick deleted"}
+
+
 # ------------------------------------------------------------
 # GROUP STANDINGS
 # ------------------------------------------------------------
