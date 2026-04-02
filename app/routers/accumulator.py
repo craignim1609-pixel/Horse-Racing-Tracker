@@ -67,6 +67,9 @@ def get_accumulator(db: Session = Depends(get_db)):
             place_acca_odds=None,
             status="all non runners",
         )
+@router.get("/debug")
+def debug():
+    return {"message": "LIVE accumulator router"}
 
     # --------------------------------------------------------
     # REAL EACH-WAY ACCA LOGIC
