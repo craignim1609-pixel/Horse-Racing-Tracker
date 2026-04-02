@@ -285,6 +285,120 @@ async function updateResult(id, result) {
 /* ============================================================
    STATS PAGE
    ============================================================ */
+/* ============================================================
+   DASHBOARD LOADER (month + year)
+   ============================================================ */
+async function loadStatsDashboard(month, year) {
+    try {
+        const res = await fetch(`${API}/stats/dashboard?month=${month}&year=${year}`);
+        if (!res.ok) {
+            console.error("Failed to load stats dashboard", res.status);
+            return;
+        }
+
+        const data = await res.json();
+
+        renderPlayerTiles(data.players || []);
+        renderAccaHistory(data.accas || {});
+    } catch (err) {
+        console.error("Error loading stats dashboard", err);
+    }
+}
+
+/* ============================================================
+   PLAYER TILES
+   ============================================================ */
+function renderPlayerTiles(players) {
+    const container = document.getElementById("playerStatsContainer");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (!players.length) {
+        container.innerHTML = `<p>No player stats for this month.</p>`;
+        return;
+    }
+
+    players.forEach(p => {
+        container.innerHTML += `
+            <div class="player-tile">
+                <h3>${p.player}</h3>
+                <div class="stat-row"><span>Month Wins</span><strong>${p.wins}</strong></div>
+                <div class="stat-row"><span>Places</span><strong>${p.places}</strong></div>
+                <div class="stat-row"><span>Losses</span><strong>${p.loses}</strong></div>
+                <div class="stat-row"><span>NR</span><strong>${p.nr}</strong></div>
+            </div>
+        `;
+    });
+}
+
+/* ============================================================
+   COMPLETED ACCAS — COLLAPSIBLE CARDS
+   ============================================================ */
+function renderAccaHistory(grouped) {
+    const container = document.getElementById("accaHistoryContainer");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    const dates = Object.keys(grouped);
+    if (!dates.length) {
+        container.innerHTML = `<p>No completed accumulators yet.</p>`;
+        return;
+    }
+
+    dates.forEach(date => {
+        const accas = grouped[date];
+
+        container.innerHTML += `<h3 class="acca-date">${date}</h3>`;
+
+        accas.forEach(a => {
+            const oddsFraction = a.win_acca_odds
+                ? `${(a.win_acca_odds - 1).toFixed(2)}/1`
+                : "—";
+
+            container.innerHTML += `
+                <div class="acca-card collapsible">
+                    <div class="acca-card-header collapsible-toggle">
+                        <div>Stake: £5.00 (E/W)</div>
+                        <div class="acca-arrow">▶</div>
+                    </div>
+
+                    <div class="acca-card-details">
+                        <div class="acca-detail-line">
+                            <span>Win Odds</span>
+                            <span>${oddsFraction}</span>
+                        </div>
+                        <div class="acca-detail-line">
+                            <span>Return</span>
+                            <span>£${a.ew_return.toFixed(2)}</span>
+                        </div>
+                        <div class="acca-detail-line">
+                            <span>Status</span>
+                            <span>${a.status.toUpperCase()}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    });
+
+    enableAccaCollapsibles();
+}
+
+/* ============================================================
+   COLLAPSIBLE BEHAVIOUR
+   ============================================================ */
+function enableAccaCollapsibles() {
+    document.querySelectorAll(".acca-card.collapsible").forEach(card => {
+        const toggle = card.querySelector(".collapsible-toggle");
+        if (!toggle) return;
+
+        toggle.addEventListener("click", () => {
+            card.classList.toggle("open");
+        });
+    });
+}
 
 
 /* ============================================================
