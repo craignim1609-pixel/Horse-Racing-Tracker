@@ -67,7 +67,6 @@ class AccumulatorOut(BaseModel):
     combined_decimal_odds: Optional[float]
     ew_250_potential_return: Optional[float]
 
-    # NEW FIELDS
     win_acca_odds: Optional[float]
     place_acca_odds: Optional[float]
 
@@ -75,7 +74,6 @@ class AccumulatorOut(BaseModel):
 
     class Config:
         orm_mode = True
-
 
 
 # -----------------------------
@@ -111,11 +109,14 @@ class RaceDayPlayerStats(BaseModel):
     total_return: float
     profit: float
     
+
 class RaceDayCreate(RaceDayBase):
     pass
 
+
 class RaceDayResultUpdate(BaseModel):
     result: str
+
 
 class RaceDayGroupStats(BaseModel):
     total_stake: float
@@ -156,16 +157,26 @@ class PlayerProfileOut(BaseModel):
     class Config:
         orm_mode = True
 
+
 # -----------------------------
-# acca history
+# ACCA HISTORY (Completed Accas)
 # -----------------------------
+class AccaHistoryPick(BaseModel):
+    player: str
+    course: str
+    horse: str
+    odds: str
+    result: str
+
+
 class AccaHistoryOut(BaseModel):
     id: int
+    created_at: datetime
+    stake: float
+    combined_decimal_odds: float
+    total_return: float
     status: str
-    win_acca_odds: float
-    place_acca_odds: float
-    ew_return: float
-    timestamp: datetime
+    picks: List[AccaHistoryPick]
 
     class Config:
         orm_mode = True
