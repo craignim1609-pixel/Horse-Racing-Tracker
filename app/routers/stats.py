@@ -20,7 +20,7 @@ def stats_home(request: Request):
 
 
 # ============================================================
-# MONTHLY PLAYER STATS (FIXED)
+# MONTHLY PLAYER STATS
 # ============================================================
 
 @router.get("/month/{month}")
@@ -146,15 +146,16 @@ def acca_stats(db: Session = Depends(get_db)):
 
 
 # ============================================================
-# DASHBOARD ENDPOINT (NEW FOR STEP 3)
+# DASHBOARD ENDPOINT (SAFE, CLEAN, NEVER 500)
 # ============================================================
 
 @router.get("/dashboard")
 def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
+    prefix = f"{year}-{month:02d}"
+
     # -------------------------------
     # PLAYER MONTHLY STATS
     # -------------------------------
-    prefix = f"{year}-{month:02d}"
     players = db.query(models.Player).all()
     player_stats = []
 
@@ -187,10 +188,16 @@ def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
     )
 
     grouped = {}
+
     for h in history:
+        if not h.timestamp:
+            continue  # safety
+
         date_key = h.timestamp.strftime("%A, %d %B %Y")
+
         if date_key not in grouped:
             grouped[date_key] = []
+
         grouped[date_key].append({
             "status": h.status,
             "win_acca_odds": float(h.win_acca_odds or 0),
