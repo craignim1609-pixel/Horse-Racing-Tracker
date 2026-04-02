@@ -5,6 +5,7 @@ from sqlalchemy import func
 
 from app.database import get_db
 from app import models
+from datetime import datetime
 
 router = APIRouter(prefix="/stats", tags=["Stats"])
 templates = Jinja2Templates(directory="app/templates")
@@ -20,7 +21,7 @@ def stats_home(request: Request):
 
 
 # ============================================================
-# MONTHLY PLAYER STATS
+# MONTHLY PLAYER STATS (CURRENTLY LIFETIME – NO DATE FIELD)
 # ============================================================
 
 @router.get("/month/{month}")
@@ -28,12 +29,9 @@ def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
     players = db.query(models.Player).all()
     results = []
 
-    prefix = f"{year}-{month:02d}"
-
     for p in players:
         picks = db.query(models.Pick).filter(
-            models.Pick.player_id == p.id,
-            models.Pick.date.like(f"{prefix}%")
+            models.Pick.player_id == p.id
         ).all()
 
         wins = sum(1 for x in picks if x.result == "Win")
@@ -146,23 +144,18 @@ def acca_stats(db: Session = Depends(get_db)):
 
 
 # ============================================================
-# DASHBOARD ENDPOINT (SAFE, CLEAN, NEVER 500)
+# DASHBOARD ENDPOINT (LIFETIME STATS + GROUPED ACCAS)
 # ============================================================
 
 @router.get("/dashboard")
 def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
-    prefix = f"{year}-{month:02d}"
-
-    # -------------------------------
-    # PLAYER MONTHLY STATS
-    # -------------------------------
+    # PLAYER STATS – currently lifetime, no date field on Pick
     players = db.query(models.Player).all()
     player_stats = []
 
     for p in players:
         picks = db.query(models.Pick).filter(
-            models.Pick.player_id == p.id,
-            models.Pick.date.like(f"{prefix}%")
+            models.Pick.player_id == p.id
         ).all()
 
         wins = sum(1 for x in picks if x.result == "Win")
@@ -178,9 +171,7 @@ def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
             "nr": nr,
         })
 
-    # -------------------------------
-    # COMPLETED ACCAS (GROUPED BY DATE)
-    # -------------------------------
+    # COMPLETED ACCAS – grouped by date
     history = (
         db.query(models.AccaHistory)
         .order_by(models.AccaHistory.timestamp.desc())
@@ -191,7 +182,7 @@ def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
 
     for h in history:
         if not h.timestamp:
-            continue  # safety
+            continue
 
         date_key = h.timestamp.strftime("%A, %d %B %Y")
 
