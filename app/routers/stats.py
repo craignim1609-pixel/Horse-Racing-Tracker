@@ -150,7 +150,9 @@ def acca_stats(db: Session = Depends(get_db)):
 
 @router.get("/dashboard")
 def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
-    # PLAYER STATS – currently lifetime, no date field on Pick
+    # ---------------------------------------------------------
+    # PLAYER STATS — lifetime (Pick has no date/timestamp field)
+    # ---------------------------------------------------------
     players = db.query(models.Player).all()
     player_stats = []
 
@@ -172,7 +174,9 @@ def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
             "nr": nr,
         })
 
-    # COMPLETED ACCAS – grouped by date
+    # ---------------------------------------------------------
+    # COMPLETED ACCAS — grouped by date
+    # ---------------------------------------------------------
     history = (
         db.query(models.AccaHistory)
         .order_by(models.AccaHistory.timestamp.desc())
