@@ -19,7 +19,7 @@ def stats_home(request: Request):
 
 
 # ------------------------------------------------------------
-# MONTHLY STATS (currently lifetime — Pick has no date field)
+# MONTHLY STATS (still lifetime — Pick has no date field)
 # ------------------------------------------------------------
 @router.get("/month/{month}")
 def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
@@ -66,7 +66,7 @@ def player_details(name: str, db: Session = Depends(get_db)):
     total = wins + places + loses
     win_rate = wins / total if total > 0 else 0
 
-    # biggest winner (if odds_fraction exists)
+    # biggest winner
     biggest = None
     for p in picks:
         if p.status == "Win":
@@ -102,7 +102,7 @@ def player_details(name: str, db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------------------
-# ACCA PERFORMANCE CENTER
+# ACCA PERFORMANCE CENTER (UPDATED FOR NEW MODEL)
 # ------------------------------------------------------------
 @router.get("/acca")
 def acca_stats(db: Session = Depends(get_db)):
@@ -114,15 +114,15 @@ def acca_stats(db: Session = Depends(get_db)):
     loses = q.filter(models.AccaHistory.status == "lose").count()
 
     total_profit = db.query(
-        func.coalesce(func.sum(models.AccaHistory.ew_return), 0.0)
+        func.coalesce(func.sum(models.AccaHistory.total_return), 0.0)
     ).scalar()
 
     biggest_return = db.query(
-        func.coalesce(func.max(models.AccaHistory.ew_return), 0.0)
+        func.coalesce(func.max(models.AccaHistory.total_return), 0.0)
     ).scalar()
 
     recent = (
-        q.order_by(models.AccaHistory.timestamp.desc())
+        q.order_by(models.AccaHistory.created_at.desc())
          .limit(5)
          .all()
     )
@@ -130,10 +130,9 @@ def acca_stats(db: Session = Depends(get_db)):
     recent_payload = [
         {
             "status": r.status,
-            "ew_return": float(r.ew_return or 0),
-            "win_acca_odds": float(r.win_acca_odds or 0),
-            "place_acca_odds": float(r.place_acca_odds or 0),
-            "timestamp": r.timestamp.isoformat() if r.timestamp else None,
+            "total_return": float(r.total_return or 0),
+            "combined_decimal_odds": float(r.combined_decimal_odds or 0),
+            "created_at": r.created_at.isoformat() if r.created_at else None,
         }
         for r in recent
     ]
@@ -151,7 +150,7 @@ def acca_stats(db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------------------
-# DASHBOARD (used by stats.html)
+# DASHBOARD (used by stats.html) — UPDATED FOR NEW MODEL
 # ------------------------------------------------------------
 @router.get("/dashboard")
 def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
@@ -180,27 +179,26 @@ def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
     # ACCA HISTORY (grouped by date)
     history = (
         db.query(models.AccaHistory)
-        .order_by(models.AccaHistory.timestamp.desc())
+        .order_by(models.AccaHistory.created_at.desc())
         .all()
     )
 
     grouped = {}
 
     for h in history:
-        if not h.timestamp:
+        if not h.created_at:
             continue
 
-        date_key = h.timestamp.strftime("%A, %d %B %Y")
+        date_key = h.created_at.strftime("%A, %d %B %Y")
 
         if date_key not in grouped:
             grouped[date_key] = []
 
         grouped[date_key].append({
             "status": h.status,
-            "win_acca_odds": float(h.win_acca_odds or 0),
-            "place_acca_odds": float(h.place_acca_odds or 0),
-            "ew_return": float(h.ew_return or 0),
-            "timestamp": h.timestamp.isoformat(),
+            "combined_decimal_odds": float(h.combined_decimal_odds or 0),
+            "total_return": float(h.total_return or 0),
+            "created_at": h.created_at.isoformat(),
         })
 
     return {
