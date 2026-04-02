@@ -946,9 +946,34 @@ async function deleteAccaPick(id) {
     }
 }
 
+/* ------------------------------------------------------------
+   COMPLETE ACCA
+------------------------------------------------------------ */
+const completeBtn = document.getElementById("completeAccaBtn");
+if (completeBtn) {
+    completeBtn.onclick = async () => {
+        if (!confirm("Mark this acca as complete and archive it?")) return;
+
+        const res = await fetch(`${API}/accumulator/complete`, {
+            method: "POST"
+        });
+
+        if (!res.ok) {
+            alert("Could not complete acca.");
+            return;
+        }
+
+        // refresh everything
+        loadAccaHero();
+        loadAccaPicks();
+        loadAccaStandings();
+        loadAccaHistory(); // this should now read from /accumulator/history
+    };
+}
+
 
 /* ------------------------------------------------------------
-   LOAD ACCA HISTORY (Old acca page)
+   LOAD ACCA HISTORY (Completed Accas Page)
 ------------------------------------------------------------ */
 async function loadAccaHistory() {
     const box = document.getElementById("accaHistory");
@@ -958,28 +983,56 @@ async function loadAccaHistory() {
 
     try {
         const res = await fetch(`${API}/accumulator/history`);
-        const history = await res.json();
-
-        if (!history.length) {
-            box.innerHTML = "<p>No history yet.</p>";
+        if (!res.ok) {
+            box.innerHTML = "<p>Failed to load history.</p>";
             return;
         }
 
-        box.innerHTML = history.map(h => `
-            <div class="acca-history-item ${h.status}">
-                <strong>${h.status.toUpperCase()}</strong><br>
-                Win Odds: ${(h.win_acca_odds - 1).toFixed(2)}/1<br>
-                Place Odds: ${(h.place_acca_odds - 1).toFixed(2)}/1<br>
-                E/W Return: £${h.ew_return.toFixed(2)}<br>
-                <small>${new Date(h.timestamp).toLocaleString()}</small>
-            </div>
-        `).join("");
+        const history = await res.json();
+
+        if (!history.length) {
+            box.innerHTML = "<p>No completed accas yet.</p>";
+            return;
+        }
+
+        box.innerHTML = history.map(h => {
+            const date = new Date(h.created_at).toLocaleString();
+
+            const picksHtml = h.picks.map(p => `
+                <div class="acca-history-pick">
+                    <div><strong>${p.player}</strong></div>
+                    <div>${p.course}</div>
+                    <div>${p.horse}</div>
+                    <div>@${p.odds}</div>
+                    <div class="result ${p.result.toLowerCase()}">${p.result}</div>
+                </div>
+            `).join("");
+
+            return `
+                <div class="acca-history-card ${h.status}">
+                    <div class="acca-history-header">
+                        <h3>${h.status.toUpperCase()}</h3>
+                        <small>${date}</small>
+                    </div>
+
+                    <div class="acca-history-summary">
+                        <p><strong>Stake:</strong> £${h.stake.toFixed(2)}</p>
+                        <p><strong>Odds:</strong> ${(h.combined_decimal_odds - 1).toFixed(2)}/1</p>
+                        <p><strong>Returns:</strong> £${h.total_return.toFixed(2)}</p>
+                    </div>
+
+                    <div class="acca-history-picks">
+                        ${picksHtml}
+                    </div>
+                </div>
+            `;
+        }).join("");
 
     } catch (err) {
         console.error("Failed to load acca history", err);
+        box.innerHTML = "<p>Error loading history.</p>";
     }
 }
-
 
 /* ------------------------------------------------------------
    RESET ACCA
