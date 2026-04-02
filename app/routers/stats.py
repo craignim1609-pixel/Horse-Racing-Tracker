@@ -34,6 +34,7 @@ def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
             models.Pick.player_id == p.id
         ).all()
 
+
         wins = sum(1 for x in picks if x.result == "Win")
         places = sum(1 for x in picks if x.result == "Place")
         loses = sum(1 for x in picks if x.result == "Lose")
