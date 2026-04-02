@@ -12,7 +12,6 @@ def get_accumulator(db: Session = Depends(get_db)):
         .all()
     )
 
-    # Debug each pick
     for p in picks:
         print("PICK:", p.id, p.status, p.odds_fraction, p.player_id)
 
@@ -37,6 +36,9 @@ def get_accumulator(db: Session = Depends(get_db)):
             place_acca_odds=None,
             status="all non runners",
         )
+
+    # (rest of your logic continues normally…)
+
 
     # --------------------------------------------------------
     # REAL EACH-WAY ACCA LOGIC
