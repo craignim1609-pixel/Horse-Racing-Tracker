@@ -989,8 +989,9 @@ if (resetBtn) {
     resetBtn.onclick = async () => {
         if (!confirm("Reset the entire acca?")) return;
 
-       await fetch(`${API}/accumulator/reset-all`, { method: "DELETE" });
-
+        await fetch(`${API}/accumulator/reset-all`, {
+            method: "DELETE"
+        });
 
         loadAccaHero();
         loadAccaPicks();
