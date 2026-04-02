@@ -190,3 +190,13 @@ def get_standings(db: Session = Depends(get_db)):
     ]
 
     return standings
+
+# ------------------------------------------------------------
+# RESET ALL PICKS
+# ------------------------------------------------------------
+@router.delete("/reset-all")
+def reset_all(db: Session = Depends(get_db)):
+    db.query(models.Pick).delete()
+    db.commit()
+    return {"message": "All picks reset"}
+
