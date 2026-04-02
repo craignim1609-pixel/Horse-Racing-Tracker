@@ -6,6 +6,34 @@ from app import models, schemas
 
 router = APIRouter(prefix="/accumulator", tags=["Accumulator"])
 
+
+# ------------------------------------------------------------
+# Helper: Convert fractional odds to decimal
+# ------------------------------------------------------------
+def fractional_to_decimal(frac: str) -> float:
+    if not frac:
+        return 1.0
+
+    if "/" not in frac:
+        try:
+            return float(frac)
+        except:
+            return 1.0
+
+    a, b = frac.split("/")
+    try:
+        return (float(a) / float(b)) + 1
+    except:
+        return 1.0
+
+
+# ------------------------------------------------------------
+# Helper: Place odds (¼ rule)
+# ------------------------------------------------------------
+def place_decimal(decimal_odds: float) -> float:
+    return ((decimal_odds - 1) / 4) + 1
+
+
 # ------------------------------------------------------------
 # GET ACCUMULATOR STATUS + ODDS (READ‑ONLY)
 # ------------------------------------------------------------
@@ -44,9 +72,6 @@ def get_accumulator(db: Session = Depends(get_db)):
             place_acca_odds=None,
             status="all non runners",
         )
-
-    # (rest of your logic continues normally…)
-
 
     # --------------------------------------------------------
     # REAL EACH-WAY ACCA LOGIC
