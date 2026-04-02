@@ -5,25 +5,22 @@ from sqlalchemy import func
 
 from app.database import get_db
 from app import models
-from datetime import datetime
 
 router = APIRouter(prefix="/stats", tags=["Stats"])
 templates = Jinja2Templates(directory="app/templates")
 
 
-# ============================================================
-# SERVE THE STATS PAGE
-# ============================================================
-
+# ------------------------------------------------------------
+# STATS PAGE (HTML)
+# ------------------------------------------------------------
 @router.get("")
 def stats_home(request: Request):
     return templates.TemplateResponse("stats.html", {"request": request})
 
 
-# ============================================================
-# MONTHLY PLAYER STATS (CURRENTLY LIFETIME – NO DATE FIELD)
-# ============================================================
-
+# ------------------------------------------------------------
+# MONTHLY STATS (currently lifetime — Pick has no date field)
+# ------------------------------------------------------------
 @router.get("/month/{month}")
 def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
     players = db.query(models.Player).all()
@@ -34,11 +31,10 @@ def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
             models.Pick.player_id == p.id
         ).all()
 
-
-        wins = sum(1 for x in picks if x.result == "Win")
-        places = sum(1 for x in picks if x.result == "Place")
-        loses = sum(1 for x in picks if x.result == "Lose")
-        nr = sum(1 for x in picks if x.result == "NR")
+        wins = sum(1 for x in picks if x.status == "Win")
+        places = sum(1 for x in picks if x.status == "Place")
+        loses = sum(1 for x in picks if x.status == "Lose")
+        nr = sum(1 for x in picks if x.status == "NR")
 
         results.append({
             "player": p.name,
@@ -51,10 +47,9 @@ def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
     return results
 
 
-# ============================================================
-# INDIVIDUAL PLAYER STATS
-# ============================================================
-
+# ------------------------------------------------------------
+# PLAYER DETAILS
+# ------------------------------------------------------------
 @router.get("/player/{name}")
 def player_details(name: str, db: Session = Depends(get_db)):
     player = db.query(models.Player).filter_by(name=name).first()
@@ -63,21 +58,36 @@ def player_details(name: str, db: Session = Depends(get_db)):
 
     picks = db.query(models.Pick).filter_by(player_id=player.id).all()
 
-    wins = sum(1 for p in picks if p.result == "Win")
-    places = sum(1 for p in picks if p.result == "Place")
-    loses = sum(1 for p in picks if p.result == "Lose")
-    nr = sum(1 for p in picks if p.result == "NR")
+    wins = sum(1 for p in picks if p.status == "Win")
+    places = sum(1 for p in picks if p.status == "Place")
+    loses = sum(1 for p in picks if p.status == "Lose")
+    nr = sum(1 for p in picks if p.status == "NR")
 
     total = wins + places + loses
     win_rate = wins / total if total > 0 else 0
 
+    # biggest winner (if odds_fraction exists)
     biggest = None
     for p in picks:
-        if p.result == "Win":
-            if biggest is None or p.decimal_odds > biggest.decimal_odds:
-                biggest = p
+        if p.status == "Win":
+            try:
+                frac = p.odds_fraction
+                if "/" in frac:
+                    a, b = frac.split("/")
+                    dec = (float(a) / float(b)) + 1
+                else:
+                    dec = float(frac)
 
-    recent = [p.result[0].upper() for p in picks[-5:]]
+                if biggest is None or dec > biggest["decimal"]:
+                    biggest = {
+                        "horse_name": p.horse_name,
+                        "odds_fraction": p.odds_fraction,
+                        "decimal": dec
+                    }
+            except:
+                continue
+
+    recent = [p.status[0].upper() for p in picks[-5:]]
 
     return {
         "player": player.name,
@@ -86,18 +96,14 @@ def player_details(name: str, db: Session = Depends(get_db)):
         "loses": loses,
         "nr": nr,
         "win_rate": win_rate,
-        "biggest_winner": {
-            "horse_name": biggest.horse_name,
-            "odds_fraction": biggest.odds_fraction
-        } if biggest else None,
+        "biggest_winner": biggest,
         "recent_form": recent
     }
 
 
-# ============================================================
+# ------------------------------------------------------------
 # ACCA PERFORMANCE CENTER
-# ============================================================
-
+# ------------------------------------------------------------
 @router.get("/acca")
 def acca_stats(db: Session = Depends(get_db)):
     q = db.query(models.AccaHistory)
@@ -144,15 +150,12 @@ def acca_stats(db: Session = Depends(get_db)):
     }
 
 
-# ============================================================
-# DASHBOARD ENDPOINT (LIFETIME STATS + GROUPED ACCAS)
-# ============================================================
-
+# ------------------------------------------------------------
+# DASHBOARD (used by stats.html)
+# ------------------------------------------------------------
 @router.get("/dashboard")
 def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
-    # ---------------------------------------------------------
-    # PLAYER STATS — lifetime (Pick has no date/timestamp field)
-    # ---------------------------------------------------------
+    # PLAYER STATS (lifetime)
     players = db.query(models.Player).all()
     player_stats = []
 
@@ -161,10 +164,10 @@ def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
             models.Pick.player_id == p.id
         ).all()
 
-        wins = sum(1 for x in picks if x.result == "Win")
-        places = sum(1 for x in picks if x.result == "Place")
-        loses = sum(1 for x in picks if x.result == "Lose")
-        nr = sum(1 for x in picks if x.result == "NR")
+        wins = sum(1 for x in picks if x.status == "Win")
+        places = sum(1 for x in picks if x.status == "Place")
+        loses = sum(1 for x in picks if x.status == "Lose")
+        nr = sum(1 for x in picks if x.status == "NR")
 
         player_stats.append({
             "player": p.name,
@@ -174,9 +177,7 @@ def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
             "nr": nr,
         })
 
-    # ---------------------------------------------------------
-    # COMPLETED ACCAS — grouped by date
-    # ---------------------------------------------------------
+    # ACCA HISTORY (grouped by date)
     history = (
         db.query(models.AccaHistory)
         .order_by(models.AccaHistory.timestamp.desc())
