@@ -242,8 +242,9 @@ async function loadPlayersForAddPick() {
    ============================================================ */
 
 async function loadCurrentPicks() {
-    const res = await fetch(`${API}/picks/current`);
-    const picks = await res.json();
+    const res = await fetch(`${API}/accumulator/`);
+    const data = await res.json();
+    const picks = data.picks;
 
     const container = document.getElementById("currentPicks");
 
@@ -274,14 +275,15 @@ async function loadCurrentPicks() {
 }
 
 async function updateResult(id, result) {
-    await fetch(`${API}/api/raceday/${id}/result`, {
+    await fetch(`${API}/accumulator/${id}/status`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ result })
+        body: JSON.stringify({ status: result })
     });
 
     loadCurrentPicks();
 }
+
 /* ============================================================
    STATS PAGE
    ============================================================ */
@@ -934,7 +936,7 @@ async function deleteAccaPick(id) {
     if (!confirm("Delete this pick?")) return;
 
     try {
-        await fetch(`${API}/picks/${id}`, { method: "DELETE" });
+        await fetch(`${API}/accumulator/${id}`, { method: "DELETE" });
 
         loadAccaPicks();
         loadAccaHero();
