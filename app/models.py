@@ -1,8 +1,8 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import JSON
 from app.database import Base
 from datetime import datetime
-from sqlalchemy import Column, Integer, Float, String, DateTime
 
 # -----------------------------
 # PLAYER
@@ -55,23 +55,28 @@ class RaceDay(Base):
     amount_bet = Column(Float)
 
     each_way = Column(Boolean, default=False)
-    
     result = Column(String, default="Pending")  # Win / Place / Lose / NR / Pending
 
     # Relationship
     player = relationship("Player", back_populates="racedays")
 
 
-#------------------------------------
-# acca history
-#-----------------------------------
+# ------------------------------------
+# ACCA HISTORY (Completed Accumulators)
+# ------------------------------------
 class AccaHistory(Base):
     __tablename__ = "acca_history"
 
     id = Column(Integer, primary_key=True, index=True)
-    status = Column(String, nullable=False)
-    win_acca_odds = Column(Float, nullable=False)
-    place_acca_odds = Column(Float, nullable=False)
-    ew_return = Column(Float, nullable=False)
-    timestamp = Column(DateTime, default=datetime.utcnow, index=True)
 
+    # When the acca was completed
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+    # Summary fields
+    stake = Column(Float, nullable=False)                 # e.g. 5.0 (E/W total)
+    combined_decimal_odds = Column(Float, nullable=False)
+    total_return = Column(Float, nullable=False)
+    status = Column(String, nullable=False)               # win / place / lose
+
+    # Full pick list stored as JSON (matches your screenshot layout)
+    picks_json = Column(JSON, nullable=False)
