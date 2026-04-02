@@ -127,3 +127,23 @@ def get_accumulator(db: Session = Depends(get_db)):
         place_acca_odds=place_acca,
         status=status,
     )
+# ------------------------------------------------------------
+# GROUP STANDINGS
+# ------------------------------------------------------------
+@router.get("/standings")
+def get_standings(db: Session = Depends(get_db)):
+    picks = (
+        db.query(models.Pick)
+        .options(joinedload(models.Pick.player))
+        .all()
+    )
+
+    standings = [
+        {
+            "player": p.player.name if p.player else "Unknown",
+            "status": p.status
+        }
+        for p in picks
+    ]
+
+    return standings
