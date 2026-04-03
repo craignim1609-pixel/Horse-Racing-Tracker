@@ -41,7 +41,7 @@ def place_decimal(decimal_odds: float) -> float:
 # ------------------------------------------------------------
 @router.get("/", response_model=schemas.AccumulatorOut)
 def get_accumulator(db: Session = Depends(get_db)):
-    
+
     picks = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
@@ -49,7 +49,7 @@ def get_accumulator(db: Session = Depends(get_db)):
         .all()
     )
 
-   for p in picks:
+    for p in picks:
         print("PICK:", p.id, p.status, p.odds_fraction, p.player_id)
 
     if not picks:
