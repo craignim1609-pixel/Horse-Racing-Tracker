@@ -1035,6 +1035,67 @@ async function loadAccaHistory() {
         box.innerHTML = "<p>Error loading history.</p>";
     }
 }
+/* ------------------------------------------------------------
+   LOAD ACCA HISTORY FOR STATS PAGE
+------------------------------------------------------------ */
+async function loadAccaHistoryForStats() {
+    const box = document.getElementById("accaHistoryContainer");
+    if (!box) return;
+
+    box.innerHTML = "";
+
+    try {
+        const res = await fetch(`${API}/accumulator/history`);
+        if (!res.ok) {
+            box.innerHTML = "<p>Failed to load history.</p>";
+            return;
+        }
+
+        const history = await res.json();
+
+        if (!history.length) {
+            box.innerHTML = "<p>No completed accas yet.</p>";
+            return;
+        }
+
+        box.innerHTML = history.map(h => {
+            const date = new Date(h.created_at).toLocaleString();
+
+            const picksHtml = h.picks.map(p => `
+                <div class="acca-history-pick">
+                    <div><strong>${p.player}</strong></div>
+                    <div>${p.course}</div>
+                    <div>${p.horse}</div>
+                    <div>@${p.odds}</div>
+                    <div class="result ${p.result.toLowerCase()}">${p.result}</div>
+                </div>
+            `).join("");
+
+            return `
+                <div class="acca-history-card ${h.status}">
+                    <div class="acca-history-header">
+                        <h3>${h.status.toUpperCase()}</h3>
+                        <small>${date}</small>
+                    </div>
+
+                    <div class="acca-history-summary">
+                        <p><strong>Stake:</strong> £${h.stake.toFixed(2)}</p>
+                        <p><strong>Odds:</strong> ${(h.combined_decimal_odds - 1).toFixed(2)}/1</p>
+                        <p><strong>Returns:</strong> £${h.total_return.toFixed(2)}</p>
+                    </div>
+
+                    <div class="acca-history-picks">
+                        ${picksHtml}
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+    } catch (err) {
+        console.error("Failed to load acca history", err);
+        box.innerHTML = "<p>Error loading history.</p>";
+    }
+}
 
 /* ------------------------------------------------------------
    RESET ACCA
@@ -1064,5 +1125,10 @@ document.addEventListener("DOMContentLoaded", () => {
         loadAccaHero();
         loadAccaPicks();
         loadAccaStandings();
+    }
+});
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("accaHistoryContainer")) {
+        loadAccaHistoryForStats();
     }
 });
