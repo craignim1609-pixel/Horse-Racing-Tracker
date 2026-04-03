@@ -150,34 +150,53 @@ def acca_stats(db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------------------
-# DASHBOARD (used by stats.html) — UPDATED FOR NEW MODEL
+# DASHBOARD (used by stats.html) — FIXED TO USE ACCA HISTORY
 # ------------------------------------------------------------
 @router.get("/dashboard")
-def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
-    # PLAYER STATS (lifetime)
+def stats_dashboard(db: Session = Depends(get_db)):
+
+    # ========================================================
+    # PLAYER PERFORMANCE (from AccaHistory, not Picks)
+    # ========================================================
     players = db.query(models.Player).all()
-    player_stats = []
 
-    for p in players:
-        picks = db.query(models.Pick).filter(
-            models.Pick.player_id == p.id
-        ).all()
+    # Initialise stats for each player
+    player_stats = {
+        p.name: {"wins": 0, "places": 0, "loses": 0, "nr": 0}
+        for p in players
+    }
 
-        wins = sum(1 for x in picks if x.status == "Win")
-        places = sum(1 for x in picks if x.status == "Place")
-        loses = sum(1 for x in picks if x.status == "Lose")
-        nr = sum(1 for x in picks if x.status == "NR")
+    # Load all completed accas
+    history = db.query(models.AccaHistory).all()
 
-        player_stats.append({
-            "player": p.name,
-            "wins": wins,
-            "places": places,
-            "loses": loses,
-            "nr": nr,
-        })
+    # Count results per player from picks_json
+    for h in history:
+        for pick in h.picks_json:
+            name = pick.get("player")
+            result = pick.get("result")
 
+            if name not in player_stats:
+                continue
+
+            if result == "Win":
+                player_stats[name]["wins"] += 1
+            elif result == "Place":
+                player_stats[name]["places"] += 1
+            elif result == "Lose":
+                player_stats[name]["loses"] += 1
+            elif result == "NR":
+                player_stats[name]["nr"] += 1
+
+    # Convert dict → list for frontend
+    player_stats_list = [
+        {"player": name, **stats}
+        for name, stats in player_stats.items()
+    ]
+
+    # ========================================================
     # ACCA HISTORY (grouped by date)
-    history = (
+    # ========================================================
+    history_rows = (
         db.query(models.AccaHistory)
         .order_by(models.AccaHistory.created_at.desc())
         .all()
@@ -185,7 +204,7 @@ def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
 
     grouped = {}
 
-    for h in history:
+    for h in history_rows:
         if not h.created_at:
             continue
 
@@ -199,7 +218,14 @@ def stats_dashboard(month: int, year: int, db: Session = Depends(get_db)):
             "combined_decimal_odds": float(h.combined_decimal_odds or 0),
             "total_return": float(h.total_return or 0),
             "created_at": h.created_at.isoformat(),
+            "picks": h.picks_json,  # optional but useful
         })
+
+    return {
+        "players": player_stats_list,
+        "accas": grouped
+    }
+
 
     return {
         "players": player_stats,
