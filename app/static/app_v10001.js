@@ -406,7 +406,7 @@ function renderAccaHistory(grouped) {
                     <div class="acca-body">
                         <div class="acca-row">
                             <span>Stake</span>
-                            <strong>£${a.stake.toFixed(2)}</strong>
+                            <strong>£${(a.stake ?? 5.00).toFixed(2)}</strong>
                         </div>
 
                         <div class="acca-row">
@@ -425,7 +425,7 @@ function renderAccaHistory(grouped) {
                         </div>
 
                         <div class="pick-grid">
-                            ${a.picks.map(p => `
+                            ${(a.picks || []).map(p => `
                                 <div class="pick-item">
                                     <div class="horse">${p.horse_name}</div>
                                     <div class="meta">
@@ -440,6 +440,7 @@ function renderAccaHistory(grouped) {
         });
     });
 }
+
 
 /* ============================================================
    COLLAPSIBLE BEHAVIOUR
