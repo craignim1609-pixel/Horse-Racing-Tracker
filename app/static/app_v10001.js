@@ -1022,76 +1022,6 @@ if (completeBtn) {
 
 
 /* ------------------------------------------------------------
-   SMART HISTORY LOADER (works on both pages)
------------------------------------------------------------- */
-async function loadAccaHistorySmart({ limit = null } = {}) {
-    const accaPageBox = document.getElementById("accaHistory");
-    const statsPageBox = document.getElementById("accaHistoryContainer");
-
-    const box = accaPageBox || statsPageBox;
-    if (!box) return;
-
-    box.innerHTML = "";
-
-    try {
-        const res = await fetch(`${API}/accumulator/history`);
-        if (!res.ok) {
-            box.innerHTML = "<p>Failed to load history.</p>";
-            return;
-        }
-
-        let history = await res.json();
-
-        if (limit) {
-            history = history.slice(0, limit);
-        }
-
-        if (!history.length) {
-            box.innerHTML = "<p>No completed accas yet.</p>";
-            return;
-        }
-
-        box.innerHTML = history.map(h => {
-            const date = new Date(h.created_at).toLocaleString();
-
-            const picksHtml = (h.picks_json || []).map(p => `
-                <div class="acca-history-pick">
-                    <div><strong>${p.player}</strong></div>
-                    <div>${p.course}</div>
-                    <div>${p.horse}</div>
-                    <div>@${p.odds}</div>
-                    <div class="result ${p.result.toLowerCase()}">${p.result}</div>
-                </div>
-            `).join("");
-
-            return `
-                <div class="acca-history-card fade-in ${h.status}">
-                    <div class="acca-history-header">
-                        <h3>${h.status.toUpperCase()}</h3>
-                        <small>${date}</small>
-                    </div>
-
-                    <div class="acca-history-summary">
-                        <p><strong>Stake:</strong> £${(h.stake ?? 5).toFixed(2)}</p>
-                        <p><strong>Odds:</strong> ${(h.combined_decimal_odds - 1).toFixed(2)}/1</p>
-                        <p><strong>Returns:</strong> £${(h.total_return ?? 0).toFixed(2)}</p>
-                    </div>
-
-                    <div class="acca-history-picks">
-                        ${picksHtml}
-                    </div>
-                </div>
-            `;
-        }).join("");
-
-    } catch (err) {
-        console.error("Failed to load acca history", err);
-        box.innerHTML = "<p>Error loading history.</p>";
-    }
-}
-
-
-/* ------------------------------------------------------------
    RESET ACCA
 ------------------------------------------------------------ */
 const resetBtn = document.getElementById("resetAccaBtn");
@@ -1114,15 +1044,16 @@ if (resetBtn) {
    PAGE INIT
 ------------------------------------------------------------ */
 document.addEventListener("DOMContentLoaded", () => {
+    // ACCA PAGE
     if (document.getElementById("accaOdds")) {
         loadAccaHero();
         loadAccaPicks();
         loadAccaStandings();
     }
-});
 
-document.addEventListener("DOMContentLoaded", () => {
+    // STATS PAGE
     if (document.getElementById("accaHistoryContainer")) {
-        loadAccaHistorySmart({ limit: 5 });
+        // Only the NEW loader should run here
+        loadStatsPageHistory();
     }
 });
