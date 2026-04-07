@@ -360,7 +360,7 @@ function renderPlayerTiles(players) {
 
 
 /* ============================================================
-   COMPLETED ACCAS — COLLAPSIBLE CARDS
+   COMPLETED ACCAS — SHADCN CARDS
    ============================================================ */
 function renderAccaHistory(grouped) {
     const container = document.getElementById("accaHistoryContainer");
@@ -439,10 +439,6 @@ function renderAccaHistory(grouped) {
             `;
         });
     });
-}
-
-
-    enableAccaCollapsibles();
 }
 
 /* ============================================================
