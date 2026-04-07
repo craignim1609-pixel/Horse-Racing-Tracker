@@ -312,27 +312,52 @@ async function loadStatsDashboard(month, year) {
    ============================================================ */
 function renderPlayerTiles(players) {
     const container = document.getElementById("playerStatsContainer");
-    if (!container) return;
-
     container.innerHTML = "";
 
-    if (!players.length) {
-        container.innerHTML = `<p>No player stats for this month.</p>`;
-        return;
-    }
-
     players.forEach(p => {
-        container.innerHTML += `
-            <div class="player-tile">
-                <h3>${p.player}</h3>
-                <div class="stat-row"><span>Month Wins</span><strong>${p.wins}</strong></div>
-                <div class="stat-row"><span>Places</span><strong>${p.places}</strong></div>
-                <div class="stat-row"><span>Losses</span><strong>${p.loses}</strong></div>
-                <div class="stat-row"><span>NR</span><strong>${p.nr}</strong></div>
+        const monthWins = p.wins; // You can refine this later if needed
+
+        const tile = document.createElement("div");
+        tile.className = "card player-tile";
+
+        tile.innerHTML = `
+            <div class="flex-between mb-2">
+                <span class="font-serif text-lg">${p.player}</span>
+                <span class="badge badge-win" style="opacity:${p.wins > 0 ? 1 : 0.2}">🏆</span>
+            </div>
+
+            <div class="flex-between text-small text-muted mt-1">
+                <span>Month Wins</span>
+                <span class="text-foreground font-bold">${monthWins}</span>
+            </div>
+
+            <div class="mt-2" style="display:grid; grid-template-columns:repeat(2,1fr); gap:0.5rem;">
+                <div class="stat-block stat-wins">
+                    <p class="text-[10px] uppercase font-bold">Wins</p>
+                    <p class="text-sm font-bold">${p.wins}</p>
+                </div>
+
+                <div class="stat-block stat-places">
+                    <p class="text-[10px] uppercase font-bold">Places</p>
+                    <p class="text-sm font-bold">${p.places}</p>
+                </div>
+
+                <div class="stat-block stat-loses">
+                    <p class="text-[10px] uppercase font-bold">Losses</p>
+                    <p class="text-sm font-bold">${p.loses}</p>
+                </div>
+
+                <div class="stat-block stat-nr">
+                    <p class="text-[10px] uppercase font-bold">NR</p>
+                    <p class="text-sm font-bold">${p.nr}</p>
+                </div>
             </div>
         `;
+
+        container.appendChild(tile);
     });
 }
+
 
 /* ============================================================
    COMPLETED ACCAS — COLLAPSIBLE CARDS
