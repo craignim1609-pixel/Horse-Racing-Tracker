@@ -62,12 +62,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const monthSelect = document.getElementById("statsMonth");
     const yearSelect = document.getElementById("statsYear");
 
-    function refreshStats() {
+    async function refreshStats() {
         const month = monthSelect.value;
         const year = yearSelect.value;
+
+        // Load player performance tiles
         loadStatsDashboard(month, year);
 
-        renderAccaHistory(grouped)
+        // Load completed accas (last 5)
+        loadStatsPageHistory();
     }
 
     monthSelect.addEventListener("change", refreshStats);
