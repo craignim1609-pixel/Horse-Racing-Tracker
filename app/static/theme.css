@@ -217,3 +217,105 @@ h1, h2, h3 {
 .mt-2 { margin-top: 0.5rem; }
 .mt-4 { margin-top: 1rem; }
 .pt-4 { padding-top: 1rem; }
+
+/* ========================================= */
+/* ACCA HISTORY CARDS                         */
+/* ========================================= */
+
+.acca-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left-width: 4px;
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: background var(--transition), border-color var(--transition);
+}
+
+.acca-card:hover {
+    background: var(--card-hover);
+    border-color: var(--primary);
+}
+
+.acca-card-win {
+    border-left-color: var(--primary);
+}
+
+.acca-card-lose {
+    border-left-color: var(--destructive);
+}
+
+.acca-card-place {
+    border-left-color: var(--slate);
+}
+
+.acca-header {
+    background: var(--secondary);
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-serif);
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.acca-body {
+    padding: 1rem;
+}
+
+.acca-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 14px;
+}
+
+.acca-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+
+.acca-badge-win {
+    background: var(--primary-soft);
+    color: var(--primary);
+    border-color: rgba(79, 70, 229, 0.3);
+}
+
+.acca-badge-lose {
+    background: var(--destructive-soft);
+    color: var(--destructive);
+    border-color: rgba(220, 38, 38, 0.3);
+}
+
+.acca-badge-place {
+    background: var(--slate-soft);
+    color: var(--slate);
+    border-color: rgba(100, 116, 139, 0.3);
+}
+
+.pick-grid {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+}
+
+.pick-item {
+    padding: 0.5rem;
+    background: var(--secondary);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.pick-item .horse {
+    font-weight: bold;
+}
+
+.pick-item .meta {
+    font-size: 12px;
+    color: var(--muted);
+}
