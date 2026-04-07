@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const year = yearSelect.value;
         loadStatsDashboard(month, year);
 
-        loadAccaHistorySmart({ limit: 5 });
+        renderAccaHistory(grouped)
     }
 
     monthSelect.addEventListener("change", refreshStats);
