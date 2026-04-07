@@ -1058,7 +1058,7 @@ async function loadAccaHistorySmart({ limit = null } = {}) {
         box.innerHTML = history.map(h => {
             const date = new Date(h.created_at).toLocaleString();
 
-            const picksHtml = h.picks.map(p => `
+            const picksHtml = (h.picks_json || []).map(p => `
                 <div class="acca-history-pick">
                     <div><strong>${p.player}</strong></div>
                     <div>${p.course}</div>
@@ -1076,9 +1076,9 @@ async function loadAccaHistorySmart({ limit = null } = {}) {
                     </div>
 
                     <div class="acca-history-summary">
-                        <p><strong>Stake:</strong> £${h.stake.toFixed(2)}</p>
+                        <p><strong>Stake:</strong> £${(h.stake ?? 5).toFixed(2)}</p>
                         <p><strong>Odds:</strong> ${(h.combined_decimal_odds - 1).toFixed(2)}/1</p>
-                        <p><strong>Returns:</strong> £${h.total_return.toFixed(2)}</p>
+                        <p><strong>Returns:</strong> £${(h.total_return ?? 0).toFixed(2)}</p>
                     </div>
 
                     <div class="acca-history-picks">
