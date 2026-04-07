@@ -393,7 +393,7 @@ function renderAccaHistory(grouped) {
                 a.status === "place" ? "acca-badge-place" :
                 "acca-badge-lose";
 
-            const oddsFraction = a.win_acca_odds
+            const oddsFraction = (a.win_acca_odds != null)
                 ? `${(a.win_acca_odds - 1).toFixed(2)}/1`
                 : "—";
 
@@ -416,12 +416,12 @@ function renderAccaHistory(grouped) {
 
                         <div class="acca-row">
                             <span>Returns</span>
-                            <strong>£${a.ew_return.toFixed(2)}</strong>
+                            <strong>£${(a.ew_return ?? 0).toFixed(2)}</strong>
                         </div>
 
                         <div class="acca-row">
-                            <span>Status</span>
-                            <span class="acca-badge ${badgeClass}">${a.status.toUpperCase()}</span>
+                            <span>Returns</span>
+                            <strong>£${(a.ew_return ?? 0).toFixed(2)}</strong>
                         </div>
 
                         <div class="pick-grid">
