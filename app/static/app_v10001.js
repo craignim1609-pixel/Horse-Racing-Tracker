@@ -287,6 +287,7 @@ async function updateResult(id, result) {
 /* ============================================================
    STATS PAGE
    ============================================================ */
+
 /* ============================================================
    DASHBOARD LOADER (month + year)
    ============================================================ */
@@ -301,11 +302,12 @@ async function loadStatsDashboard(month, year) {
         const data = await res.json();
 
         renderPlayerTiles(data.players || []);
-        renderAccaHistory(data.accas || {});
+        // DO NOT render accas here — stats page uses loadStatsPageHistory()
     } catch (err) {
         console.error("Error loading stats dashboard", err);
     }
 }
+
 
 /* ============================================================
    PLAYER TILES
@@ -315,7 +317,7 @@ function renderPlayerTiles(players) {
     container.innerHTML = "";
 
     players.forEach(p => {
-        const monthWins = p.wins; // You can refine this later if needed
+        const monthWins = p.wins;
 
         const tile = document.createElement("div");
         tile.className = "card player-tile";
@@ -360,7 +362,7 @@ function renderPlayerTiles(players) {
 
 
 /* ============================================================
-   COMPLETED ACCAS — SHADCN CARDS
+   COMPLETED ACCAS — SHADCN CARDS (MATCHES REAL DB FIELDS)
    ============================================================ */
 function renderAccaHistory(grouped) {
     const container = document.getElementById("accaHistoryContainer");
@@ -377,7 +379,6 @@ function renderAccaHistory(grouped) {
     dates.forEach(date => {
         const accas = grouped[date];
 
-        // Serif date header
         container.innerHTML += `
             <h3 class="font-serif text-muted" style="margin-top:1.5rem;">${date}</h3>
         `;
@@ -393,20 +394,23 @@ function renderAccaHistory(grouped) {
                 a.status === "place" ? "acca-badge-place" :
                 "acca-badge-lose";
 
-            const oddsFraction = (a.win_acca_odds != null)
-                ? `${(a.win_acca_odds - 1).toFixed(2)}/1`
+            // Convert decimal odds → fractional
+            const oddsFraction = (a.combined_decimal_odds != null)
+                ? `${(a.combined_decimal_odds - 1).toFixed(2)}/1`
                 : "—";
+
+            const picks = a.picks_json || [];
 
             container.innerHTML += `
                 <div class="acca-card ${statusClass}">
                     <div class="acca-header">
-                        ${a.time || ""}
+                        ${a.created_at ? a.created_at.split(" ")[1] : ""}
                     </div>
 
                     <div class="acca-body">
                         <div class="acca-row">
                             <span>Stake</span>
-                            <strong>£${(a.stake ?? 5.00).toFixed(2)}</strong>
+                            <strong>£${(a.stake ?? 5).toFixed(2)}</strong>
                         </div>
 
                         <div class="acca-row">
@@ -416,20 +420,20 @@ function renderAccaHistory(grouped) {
 
                         <div class="acca-row">
                             <span>Returns</span>
-                            <strong>£${(a.ew_return ?? 0).toFixed(2)}</strong>
+                            <strong>£${(a.total_return ?? 0).toFixed(2)}</strong>
                         </div>
 
                         <div class="acca-row">
-                            <span>Returns</span>
-                            <strong>£${(a.ew_return ?? 0).toFixed(2)}</strong>
+                            <span>Status</span>
+                            <span class="acca-badge ${badgeClass}">${a.status.toUpperCase()}</span>
                         </div>
 
                         <div class="pick-grid">
-                            ${(a.picks || []).map(p => `
+                            ${picks.map(p => `
                                 <div class="pick-item">
-                                    <div class="horse">${p.horse_name}</div>
+                                    <div class="horse">${p.horse}</div>
                                     <div class="meta">
-                                        ${p.course} — ${p.race_time} — @${p.odds_fraction}
+                                        ${p.course} — @${p.odds} — ${p.result}
                                     </div>
                                 </div>
                             `).join("")}
@@ -443,24 +447,44 @@ function renderAccaHistory(grouped) {
 
 
 /* ============================================================
-   COLLAPSIBLE BEHAVIOUR
+   STATS PAGE — LOAD LAST 5 COMPLETED ACCAS
    ============================================================ */
-function enableAccaCollapsibles() {
-    document.querySelectorAll(".acca-card.collapsible").forEach(card => {
-        const toggle = card.querySelector(".collapsible-toggle");
-        if (!toggle) return;
+async function loadStatsPageHistory() {
+    const container = document.getElementById("accaHistoryContainer");
+    if (!container) return;
 
-        toggle.addEventListener("click", () => {
-            card.classList.toggle("open");
+    try {
+        const res = await fetch(`${API}/accumulator/history`);
+        if (!res.ok) {
+            container.innerHTML = "<p>Failed to load history.</p>";
+            return;
+        }
+
+        let history = await res.json();
+
+        // Only show last 5
+        history = history.slice(0, 5);
+
+        // Group by date
+        const grouped = {};
+        history.forEach(h => {
+            const date = new Date(h.created_at).toLocaleDateString();
+            if (!grouped[date]) grouped[date] = [];
+            grouped[date].push(h);
         });
-    });
+
+        renderAccaHistory(grouped);
+
+    } catch (err) {
+        console.error("Failed to load stats history", err);
+        container.innerHTML = "<p>Error loading history.</p>";
+    }
 }
 
 
 /* ============================================================
-   PLAYER DETAILS
+   PLAYER DETAILS (unchanged)
    ============================================================ */
-
 function setupPlayerDetailsForm() {
     const form = document.getElementById("playerForm");
     const profile = document.getElementById("playerProfile");
@@ -512,34 +536,6 @@ function setupPlayerDetailsForm() {
             </div>
         `;
     };
-}
-
-//group balance
-function renderGroupBalance() {
-    const totalSpent = ALL_BETS.reduce((sum, b) => sum + parseFloat(b.amount_bet || 0), 0);
-    const totalWon = ALL_BETS.reduce((sum, b) => sum + calculateWinnings(b), 0);
-    const profit = totalWon - totalSpent;
-
-    const box = document.getElementById("groupBalance");
-
-    box.innerHTML = `
-        <div class="summary-row">
-            <span>Total Spent:</span>
-            <strong>£${totalSpent.toFixed(2)}</strong>
-        </div>
-
-        <div class="summary-row">
-            <span>Total Won:</span>
-            <strong style="color:#f7c600;">£${totalWon.toFixed(2)}</strong>
-        </div>
-
-        <div class="summary-row" style="border-top:1px solid #333;padding-top:8px;margin-top:8px;">
-            <span style="font-weight:bold;">Net Profit:</span>
-            <strong style="color:${profit >= 0 ? '#0f7a0f' : '#7a0f0f'};">
-                £${profit.toFixed(2)}
-            </strong>
-        </div>
-    `;
 }
 
 /* ============================================================
