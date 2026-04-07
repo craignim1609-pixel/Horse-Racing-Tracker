@@ -377,38 +377,70 @@ function renderAccaHistory(grouped) {
     dates.forEach(date => {
         const accas = grouped[date];
 
-        container.innerHTML += `<h3 class="acca-date">${date}</h3>`;
+        // Serif date header
+        container.innerHTML += `
+            <h3 class="font-serif text-muted" style="margin-top:1.5rem;">${date}</h3>
+        `;
 
         accas.forEach(a => {
+            const statusClass =
+                a.status === "win" ? "acca-card-win" :
+                a.status === "place" ? "acca-card-place" :
+                "acca-card-lose";
+
+            const badgeClass =
+                a.status === "win" ? "acca-badge-win" :
+                a.status === "place" ? "acca-badge-place" :
+                "acca-badge-lose";
+
             const oddsFraction = a.win_acca_odds
                 ? `${(a.win_acca_odds - 1).toFixed(2)}/1`
                 : "—";
 
             container.innerHTML += `
-                <div class="acca-card collapsible">
-                    <div class="acca-card-header collapsible-toggle">
-                        <div>Stake: £5.00 (E/W)</div>
-                        <div class="acca-arrow">▶</div>
+                <div class="acca-card ${statusClass}">
+                    <div class="acca-header">
+                        ${a.time || ""}
                     </div>
 
-                    <div class="acca-card-details">
-                        <div class="acca-detail-line">
-                            <span>Win Odds</span>
-                            <span>${oddsFraction}</span>
+                    <div class="acca-body">
+                        <div class="acca-row">
+                            <span>Stake</span>
+                            <strong>£${a.stake.toFixed(2)}</strong>
                         </div>
-                        <div class="acca-detail-line">
-                            <span>Return</span>
-                            <span>£${a.ew_return.toFixed(2)}</span>
+
+                        <div class="acca-row">
+                            <span>Odds</span>
+                            <strong>${oddsFraction}</strong>
                         </div>
-                        <div class="acca-detail-line">
+
+                        <div class="acca-row">
+                            <span>Returns</span>
+                            <strong>£${a.ew_return.toFixed(2)}</strong>
+                        </div>
+
+                        <div class="acca-row">
                             <span>Status</span>
-                            <span>${a.status.toUpperCase()}</span>
+                            <span class="acca-badge ${badgeClass}">${a.status.toUpperCase()}</span>
+                        </div>
+
+                        <div class="pick-grid">
+                            ${a.picks.map(p => `
+                                <div class="pick-item">
+                                    <div class="horse">${p.horse_name}</div>
+                                    <div class="meta">
+                                        ${p.course} — ${p.race_time} — @${p.odds_fraction}
+                                    </div>
+                                </div>
+                            `).join("")}
                         </div>
                     </div>
                 </div>
             `;
         });
     });
+}
+
 
     enableAccaCollapsibles();
 }
