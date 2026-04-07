@@ -1,0 +1,219 @@
+/* ========================================= */
+/* SHADCN-INSPIRED DARK THEME                */
+/* ========================================= */
+
+:root {
+    /* Core palette */
+    --background: #0f0f11;
+    --foreground: #fafafa;
+
+    /* Surfaces */
+    --card: #18181b;
+    --card-hover: #1f1f23;
+    --secondary: #1c1c1f;
+
+    /* Borders */
+    --border: #2a2a2e;
+    --border-muted: #3a3a40;
+
+    /* Text */
+    --muted: #9ca3af;
+    --muted-foreground: #a1a1aa;
+
+    /* Brand colours */
+    --primary: #4f46e5; /* Indigo */
+    --primary-soft: rgba(79, 70, 229, 0.15);
+
+    --destructive: #dc2626;
+    --destructive-soft: rgba(220, 38, 38, 0.15);
+
+    --slate: #64748b;
+    --slate-soft: rgba(100, 116, 139, 0.15);
+
+    /* Radius + fonts */
+    --radius: 10px;
+    --font-serif: "Georgia", "Times New Roman", serif;
+    --font-sans: "Inter", sans-serif;
+
+    /* Animation */
+    --transition: 0.2s ease;
+}
+
+/* ========================================= */
+/* BASE STYLES                                */
+/* ========================================= */
+
+body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3 {
+    font-family: var(--font-serif);
+    letter-spacing: -0.5px;
+    margin: 0 0 0.5rem 0;
+}
+
+/* ========================================= */
+/* CARD COMPONENT                             */
+/* ========================================= */
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    transition: background var(--transition), border-color var(--transition);
+}
+
+.card:hover {
+    background: var(--card-hover);
+    border-color: var(--primary);
+}
+
+/* ========================================= */
+/* GRID HELPERS                               */
+/* ========================================= */
+
+.grid-players {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.grid-accas {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+/* ========================================= */
+/* BADGES                                     */
+/* ========================================= */
+
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+
+.badge-win {
+    background: var(--primary-soft);
+    color: var(--primary);
+    border-color: rgba(79, 70, 229, 0.3);
+}
+
+.badge-lose {
+    background: var(--destructive-soft);
+    color: var(--destructive);
+    border-color: rgba(220, 38, 38, 0.3);
+}
+
+.badge-place {
+    background: var(--slate-soft);
+    color: var(--slate);
+    border-color: rgba(100, 116, 139, 0.3);
+}
+
+.badge-nr {
+    background: rgba(120, 120, 120, 0.15);
+    color: #aaa;
+    border-color: rgba(120, 120, 120, 0.3);
+}
+
+/* ========================================= */
+/* PLAYER TILE STATS                          */
+/* ========================================= */
+
+.stat-block {
+    padding: 6px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.stat-block p {
+    margin: 0;
+}
+
+.stat-wins {
+    background: var(--primary-soft);
+    color: var(--primary);
+}
+
+.stat-places {
+    background: var(--slate-soft);
+    color: var(--slate);
+}
+
+.stat-loses {
+    background: var(--destructive-soft);
+    color: var(--destructive);
+}
+
+.stat-nr {
+    background: rgba(120, 120, 120, 0.15);
+    color: #aaa;
+}
+
+/* ========================================= */
+/* ACCA HISTORY CARDS                         */
+/* ========================================= */
+
+.acca-card {
+    border-left: 4px solid var(--border-muted);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.acca-card-win {
+    border-left-color: var(--primary);
+}
+
+.acca-card-lose {
+    border-left-color: var(--destructive);
+}
+
+.acca-card-place {
+    border-left-color: var(--slate);
+}
+
+.acca-header {
+    background: var(--secondary);
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.acca-content {
+    padding: 1rem;
+}
+
+/* ========================================= */
+/* UTILITY CLASSES                            */
+/* ========================================= */
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.text-muted {
+    color: var(--muted);
+}
+
+.text-small {
+    font-size: 12px;
+}
+
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+.pt-4 { padding-top: 1rem; }
