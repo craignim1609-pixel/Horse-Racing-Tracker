@@ -195,6 +195,57 @@ h1, h2, h3 {
     padding: 1rem;
 }
 
+/* ============================================================
+   ACCA CARD ANIMATIONS
+   ============================================================ */
+
+/* Fade + slide up on load */
+.acca-card {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: accaFadeIn 0.45s ease-out forwards;
+}
+
+/* Slight stagger effect for multiple cards */
+.acca-card:nth-child(1) { animation-delay: 0.05s; }
+.acca-card:nth-child(2) { animation-delay: 0.10s; }
+.acca-card:nth-child(3) { animation-delay: 0.15s; }
+.acca-card:nth-child(4) { animation-delay: 0.20s; }
+.acca-card:nth-child(5) { animation-delay: 0.25s; }
+
+@keyframes accaFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hover lift */
+.acca-card:hover {
+    transform: translateY(-3px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Status glow */
+.acca-card-win {
+    box-shadow: 0 0 0 rgba(0, 255, 0, 0);
+}
+.acca-card-win:hover {
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.25);
+}
+
+.acca-card-place:hover {
+    box-shadow: 0 0 12px rgba(0, 150, 255, 0.25);
+}
+
+.acca-card-lose:hover {
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.15);
+}
+
 /* ========================================= */
 /* UTILITY CLASSES                            */
 /* ========================================= */
