@@ -21,7 +21,7 @@
     --muted-foreground: #a1a1aa;
 
     /* Brand colours */
-    --primary: #4f46e5; /* Indigo */
+    --primary: #4f46e5;
     --primary-soft: rgba(79, 70, 229, 0.15);
 
     --destructive: #dc2626;
@@ -164,7 +164,7 @@ h1, h2, h3 {
 }
 
 /* ========================================= */
-/* ACCA CARD — CLEAN, UNIFIED VERSION         */
+/* COMPLETED ACCA TILE — FINAL VERSION        */
 /* ========================================= */
 
 .acca-card {
@@ -174,138 +174,162 @@ h1, h2, h3 {
     margin-bottom: 1.2rem;
     border: 1px solid #222;
     border-left-width: 4px;
-    overflow: hidden;
 
-    /* Animation defaults */
     opacity: 0;
     transform: translateY(12px);
     animation: accaFadeIn 0.45s ease-out forwards;
 }
 
-/* Status colours */
 .acca-card-win { border-left-color: #0a4; }
-.acca-card-place { border-left-color: #06c; }
 .acca-card-lose { border-left-color: #900; }
+.acca-card-place { border-left-color: #06c; }
 
 /* Header */
 .acca-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.8rem;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 
 .acca-date {
-    font-size: 0.9rem;
-    color: #aaa;
+    font-size: 1.1rem;
+    font-family: var(--font-serif);
+    font-weight: bold;
 }
 
+.acca-sub {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-top: 2px;
+}
+
+/* Returns block */
+.acca-returns {
+    text-align: right;
+}
+
+.returns-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #888;
+    margin: 0;
+}
+
+.returns-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.returns-value.win { color: #0a4; }
+.returns-value.lose { color: #900; }
+.returns-value.place { color: #06c; }
+
+/* Status badge */
 .acca-status-badge {
+    display: inline-block;
+    margin-top: 4px;
     padding: 4px 10px;
     border-radius: 6px;
-    font-size: 0.75rem;
+    font-size: 10px;
     font-weight: bold;
     text-transform: uppercase;
 }
 
 .acca-badge-win { background: #0a4; color: white; }
-.acca-badge-place { background: #06c; color: white; }
 .acca-badge-lose { background: #900; color: white; }
+.acca-badge-place { background: #06c; color: white; }
 
-/* Summary rows */
-.acca-summary {
-    margin-bottom: 1rem;
+/* Picks grid */
+.acca-picks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
 }
 
-.summary-row {
+.pick-tile {
+    background: #18181b;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+
+.pick-header {
     display: flex;
     justify-content: space-between;
-    margin: 4px 0;
+    margin-bottom: 4px;
+}
+
+.pick-player {
+    font-weight: bold;
     font-size: 0.9rem;
 }
 
-/* Picks */
-.acca-picks {
-    border-top: 1px solid #222;
-    padding-top: 0.8rem;
+.pick-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
-.pick-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
-    padding: 6px 0;
-    font-size: 0.85rem;
-    border-bottom: 1px solid #1a1a1a;
+.pick-badge.win { background: #0a4; color: white; }
+.pick-badge.place { background: #06c; color: white; }
+.pick-badge.lose { background: #900; color: white; }
+.pick-badge.nr { background: #555; color: white; }
+
+.pick-course {
+    font-size: 10px;
+    color: #aaa;
+    margin-bottom: 2px;
 }
 
-.pick-row:last-child {
-    border-bottom: none;
+.pick-horse {
+    font-size: 0.9rem;
+    font-weight: bold;
 }
 
-.pick-result.win { color: #0f0; }
-.pick-result.place { color: #0af; }
-.pick-result.lose { color: #f33; }
-.pick-result.nr { color: #aaa; }
+.pick-odds {
+    font-size: 10px;
+    color: #4f46e5;
+    font-weight: bold;
+    margin-top: 4px;
+}
 
 /* ========================================= */
 /* ACCA CARD ANIMATIONS                       */
 /* ========================================= */
 
 @keyframes accaFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Stagger effect */
 .acca-card:nth-child(1) { animation-delay: 0.05s; }
 .acca-card:nth-child(2) { animation-delay: 0.10s; }
 .acca-card:nth-child(3) { animation-delay: 0.15s; }
 .acca-card:nth-child(4) { animation-delay: 0.20s; }
 .acca-card:nth-child(5) { animation-delay: 0.25s; }
 
-/* Hover lift */
 .acca-card:hover {
     transform: translateY(-3px);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Status glow */
-.acca-card-win:hover {
-    box-shadow: 0 0 12px rgba(0, 255, 0, 0.25);
-}
-
-.acca-card-place:hover {
-    box-shadow: 0 0 12px rgba(0, 150, 255, 0.25);
-}
-
-.acca-card-lose:hover {
-    box-shadow: 0 0 12px rgba(255, 0, 0, 0.15);
-}
+.acca-card-win:hover { box-shadow: 0 0 12px rgba(0,255,0,0.25); }
+.acca-card-place:hover { box-shadow: 0 0 12px rgba(0,150,255,0.25); }
+.acca-card-lose:hover { box-shadow: 0 0 12px rgba(255,0,0,0.15); }
 
 /* ========================================= */
 /* UTILITY CLASSES                            */
 /* ========================================= */
 
-.flex-between {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.text-muted {
-    color: var(--muted);
-}
-
-.text-small {
-    font-size: 12px;
-}
-
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.text-muted { color: var(--muted); }
+.text-small { font-size: 12px; }
 .mt-1 { margin-top: 0.25rem; }
 .mt-2 { margin-top: 0.5rem; }
 .mt-4 { margin-top: 1rem; }
