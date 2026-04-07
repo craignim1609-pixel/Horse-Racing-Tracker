@@ -402,58 +402,63 @@ function renderAccaHistory(grouped) {
             const picks = a.picks_json || [];
 
             container.innerHTML += `
-                <div class="acca-card ${statusClass}">
-                    
-                    <!-- HEADER -->
-                    <div class="acca-header">
-                        <div class="acca-date">
-                            ${new Date(a.created_at).toLocaleString("en-GB", {
-                                weekday: "long",
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric"
-                            })}
-                        </div>
-                        <div class="acca-status-badge ${badgeClass}">
-                            ${a.status.toUpperCase()}
-                        </div>
-                    </div>
-
-                    <!-- SUMMARY -->
-                    <div class="acca-summary">
-                        <div class="summary-row">
-                            <span>Stake</span>
-                            <strong>£${(a.stake ?? 5).toFixed(2)} (E/W)</strong>
-                        </div>
-
-                        <div class="summary-row">
-                            <span>Odds</span>
-                            <strong>${oddsFraction}</strong>
-                        </div>
-
-                        <div class="summary-row">
-                            <span>Returns</span>
-                            <strong>£${(a.total_return ?? 0).toFixed(2)}</strong>
-                        </div>
-                    </div>
-
-                    <!-- PICKS -->
-                    <div class="acca-picks">
-                        ${picks.map(p => `
-                            <div class="pick-row">
-                                <div class="pick-player">${p.player}</div>
-                                <div class="pick-course">${p.course}</div>
-                                <div class="pick-horse">
-                                    ${p.horse_number ? `(${p.horse_number})` : ""} ${p.horse}
-                                </div>
-                                <div class="pick-odds">@${p.odds}</div>
-                                <div class="pick-result ${p.result.toLowerCase()}">${p.result}</div>
-                            </div>
-                        `).join("")}
-                    </div>
-
+    <div class="acca-card ${statusClass}">
+        
+        <!-- HEADER -->
+        <div class="acca-header">
+            <div>
+                <div class="acca-date">
+                    ${new Date(a.created_at).toLocaleDateString("en-GB", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric"
+                    })}
                 </div>
-            `;
+
+                <div class="acca-sub">
+                    Stake: £${(a.stake ?? 5).toFixed(2)} (E/W) • 
+                    Odds: ${oddsFraction}
+                </div>
+            </div>
+
+            <div class="acca-returns">
+                <p class="returns-label">Returns</p>
+                <p class="returns-value ${a.status}">
+                    £${(a.total_return ?? 0).toFixed(2)}
+                </p>
+
+                <span class="acca-status-badge ${badgeClass}">
+                    ${a.status === "win" ? "WINNER" :
+                      a.status === "lose" ? "BUSTED" :
+                      a.status.toUpperCase()}
+                </span>
+            </div>
+        </div>
+
+        <!-- PICKS GRID -->
+        <div class="acca-picks-grid">
+            ${picks.map(p => `
+                <div class="pick-tile">
+                    <div class="pick-header">
+                        <span class="pick-player">${p.player}</span>
+                        <span class="pick-badge ${p.result.toLowerCase()}">${p.result}</span>
+                    </div>
+
+                    <div class="pick-course">${p.course}</div>
+
+                    <div class="pick-horse">
+                        ${p.horse_number ? `(${p.horse_number}) ` : ""}${p.horse}
+                    </div>
+
+                    <div class="pick-odds">@${p.odds}</div>
+                </div>
+            `).join("")}
+        </div>
+
+    </div>
+`;
+
         });
     });
 }
