@@ -2,55 +2,63 @@
 
 {% block content %}
 
-<h1>Performance Center</h1>
+<h1 class="page-title">Performance Center</h1>
 
 <!-- ========================= -->
 <!-- MONTH / YEAR SELECTOR     -->
 <!-- ========================= -->
 <div class="stats-filter-bar">
-    <label for="statsMonth">Month:</label>
-    <select id="statsMonth">
-        <option value="1">January</option>
-        <option value="2">February</option>
-        <option value="3">March</option>
-        <option value="4" selected>April</option>
-        <option value="5">May</option>
-        <option value="6">June</option>
-        <option value="7">July</option>
-        <option value="8">August</option>
-        <option value="9">September</option>
-        <option value="10">October</option>
-        <option value="11">November</option>
-        <option value="12">December</option>
-    </select>
+    <div class="filter-group">
+        <label for="statsMonth">Month</label>
+        <select id="statsMonth">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4" selected>April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select>
+    </div>
 
-    <label for="statsYear">Year:</label>
-    <select id="statsYear">
-        <option value="2025">2025</option>
-        <option value="2026" selected>2026</option>
-    </select>
+    <div class="filter-group">
+        <label for="statsYear">Year</label>
+        <select id="statsYear">
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+        </select>
+    </div>
 </div>
 
+<!-- ========================= -->
+<!-- SUMMARY TILES             -->
+<!-- ========================= -->
+<div id="statsSummary" class="stats-summary-grid">
+    <!-- JS will inject summary tiles -->
+</div>
 
 <!-- ========================= -->
 <!-- PLAYER PERFORMANCE TILES  -->
 <!-- ========================= -->
-<h2 class="text-2xl font-serif">Player Performance</h2>
+<h2 class="section-title">Player Performance</h2>
 
 <div id="playerStatsContainer" class="grid-players">
     <!-- JS will inject tiles -->
 </div>
 
-
 <!-- ========================= -->
 <!-- COMPLETED ACCAS SECTION   -->
 <!-- ========================= -->
-<h2>Completed Accumulators</h2>
+<h2 class="section-title">Completed Accumulators</h2>
 
-<div id="accaHistoryContainer" class="acca-history-wrapper">
+<div id="accaHistoryContainer">
     <!-- JS will fill this -->
 </div>
-
 
 <!-- ========================= -->
 <!-- JS LOADER                 -->
@@ -69,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Load player performance tiles
         loadStatsDashboard(month, year);
 
-        // Load completed accas (last 5)
+        // Load completed accas
         loadStatsPageHistory();
     }
 
