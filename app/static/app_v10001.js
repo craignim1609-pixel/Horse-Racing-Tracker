@@ -738,6 +738,82 @@ function renderStatsSummary(stats) {
     `;
 }
 
+/* ============================================================
+   STATS PAGE — PLAYER PERFORMANCE TILES
+   ============================================================ */
+
+async function loadPlayerStats() {
+    const container = document.getElementById("playerStatsContainer");
+    if (!container) return;
+
+    const month = Number(document.getElementById("statsMonth").value);
+    const year = Number(document.getElementById("statsYear").value);
+
+    // Static player list (matches your screenshot)
+    const PLAYERS = ["Craig", "Donald", "Miller", "Nick", "Josh"];
+
+    // Initialise stats
+    const stats = {};
+    PLAYERS.forEach(p => {
+        stats[p] = {
+            monthWins: 0,
+            wins: 0,
+            places: 0,
+            losses: 0,
+            nr: 0
+        };
+    });
+
+    // Fetch completed accas
+    const res = await fetch(`${API}/accumulator/history`);
+    const accas = await res.json();
+
+    accas.forEach(a => {
+        const d = new Date(a.created_at);
+        const aMonth = d.getMonth() + 1;
+        const aYear = d.getFullYear();
+
+        a.picks.forEach(p => {
+            if (!stats[p.player]) return;
+
+            const result = p.result.toLowerCase();
+
+            // Lifetime totals
+            if (result === "win") stats[p.player].wins++;
+            if (result === "place") stats[p.player].places++;
+            if (result === "lose") stats[p.player].losses++;
+            if (result === "nr") stats[p.player].nr++;
+
+            // Month wins
+            if (aMonth === month && aYear === year && result === "win") {
+                stats[p.player].monthWins++;
+            }
+        });
+    });
+
+    // Render tiles
+    container.innerHTML = PLAYERS.map(p => {
+        const s = stats[p];
+
+        return `
+            <div class="card">
+                <h3 class="font-serif text-lg mb-2">${p}</h3>
+
+                <div class="stat-block stat-wins">
+                    <p>Month Wins: ${s.monthWins}</p>
+                </div>
+
+                <div class="mt-2 text-small text-muted">
+                    Wins: ${s.wins}<br>
+                    Places: ${s.places}<br>
+                    Losses: ${s.losses}<br>
+                    NR: ${s.nr}
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
 
 /* ============================================================
    STATS PAGE — MAIN DASHBOARD LOADER
