@@ -324,6 +324,78 @@ h1, h2, h3 {
 .acca-card-lose:hover { box-shadow: 0 0 12px rgba(255,0,0,0.15); }
 
 /* ========================================= */
+/* STATS PAGE LAYOUT                         */
+/* ========================================= */
+
+.page-title {
+    font-size: 2rem;
+    font-family: var(--font-serif);
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.4rem;
+    font-family: var(--font-serif);
+    margin: 2rem 0 1rem;
+    color: var(--muted);
+}
+
+/* Filter bar */
+.stats-filter-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.filter-group label {
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.filter-group select {
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    border-radius: 6px;
+    color: var(--foreground);
+}
+
+/* Summary tiles */
+.stats-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.summary-tile {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    text-align: center;
+}
+
+.summary-tile .label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+.summary-tile .value {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+/* ========================================= */
 /* UTILITY CLASSES                            */
 /* ========================================= */
 
