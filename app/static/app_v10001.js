@@ -738,6 +738,180 @@ function renderStatsSummary(stats) {
     `;
 }
 
+
+/* ============================================================
+   STATS PAGE — MAIN DASHBOARD LOADER
+   ============================================================ */
+
+async function loadStatsDashboard(month, year) {
+    try {
+        const res = await fetch(`${API}/api/stats/${year}/${month}`);
+        const stats = await res.json();
+
+        renderStatsSummary({
+            totalAccas: stats.total_accas,
+            wins: stats.wins,
+            places: stats.places,
+            busted: stats.busted,
+            totalStaked: stats.total_staked,
+            totalReturned: stats.total_returned,
+            profit: stats.profit
+        });
+
+        const container = document.getElementById("playerStatsContainer");
+        if (container) {
+            container.innerHTML = "";
+
+            stats.players.forEach(p => {
+                const profitColor =
+                    p.profit > 0 ? "stat-wins" :
+                    p.profit < 0 ? "stat-loses" :
+                    "stat-nr";
+
+                container.innerHTML += `
+                    <div class="card">
+                        <h3 class="font-serif text-lg mb-2">${p.player}</h3>
+
+                        <div class="stat-block ${profitColor}">
+                            <p>Profit: £${p.profit.toFixed(2)}</p>
+                        </div>
+
+                        <div class="mt-2 text-small text-muted">
+                            Stake: £${p.total_stake.toFixed(2)}<br>
+                            Return: £${p.total_return.toFixed(2)}<br>
+                            Wins: ${p.wins} • Places: ${p.places} • Busted: ${p.busted}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        loadStatsPageHistory();
+    } catch (err) {
+        console.error("Error loading stats dashboard:", err);
+    }
+}
+
+
+/* ============================================================
+   STATS PAGE — COMPLETED ACCA HISTORY (REPLIT-STYLE TILES)
+   ============================================================ */
+
+async function loadStatsPageHistory() {
+    try {
+        const container = document.getElementById("accaHistoryContainer");
+        if (!container) return;
+
+        const res = await fetch(`${API}/accumulator/history`);
+        const data = await res.json();
+
+        if (!data.length) {
+            container.innerHTML = "<p>No completed accumulators yet.</p>";
+            return;
+        }
+
+        const grouped = {};
+
+        data.forEach(a => {
+            const d = new Date(a.created_at);
+            const dateKey = d.toLocaleDateString("en-GB");
+            if (!grouped[dateKey]) grouped[dateKey] = [];
+            grouped[dateKey].push(a);
+        });
+
+        const dates = Object.keys(grouped).sort((a, b) => {
+            const da = new Date(a.split("/").reverse().join("-"));
+            const db = new Date(b.split("/").reverse().join("-"));
+            return db - da;
+        });
+
+        container.innerHTML = "";
+
+        dates.forEach(date => {
+            const accas = grouped[date];
+
+            container.innerHTML += `
+                <h3 class="font-serif text-muted" style="margin-top:1.5rem;">${date}</h3>
+            `;
+
+            accas.forEach(a => {
+                const statusClass =
+                    a.status === "win" ? "acca-card-win" :
+                    a.status === "place" ? "acca-card-place" :
+                    "acca-card-lose";
+
+                const badgeClass =
+                    a.status === "win" ? "acca-badge-win" :
+                    a.status === "place" ? "acca-badge-place" :
+                    "acca-badge-lose";
+
+                const oddsFraction = (a.combined_decimal_odds != null)
+                    ? `${(a.combined_decimal_odds - 1).toFixed(2)}/1`
+                    : "—";
+
+                const picks = a.picks || [];
+
+                container.innerHTML += `
+                    <div class="acca-card ${statusClass}">
+                        <div class="acca-header">
+                            <div>
+                                <div class="acca-date">
+                                    ${new Date(a.created_at).toLocaleDateString("en-GB", {
+                                        weekday: "long",
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric"
+                                    })}
+                                </div>
+
+                                <div class="acca-sub">
+                                    Stake: £${(a.stake ?? 5).toFixed(2)} (E/W) • 
+                                    Odds: ${oddsFraction}
+                                </div>
+                            </div>
+
+                            <div class="acca-returns">
+                                <p class="returns-label">Returns</p>
+                                <p class="returns-value ${a.status}">
+                                    £${(a.total_return ?? 0).toFixed(2)}
+                                </p>
+
+                                <span class="acca-status-badge ${badgeClass}">
+                                    ${a.status === "win" ? "WINNER" :
+                                      a.status === "lose" ? "BUSTED" :
+                                      a.status.toUpperCase()}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="acca-picks-grid">
+                            ${picks.map(p => `
+                                <div class="pick-tile">
+                                    <div class="pick-header">
+                                        <span class="pick-player">${p.player}</span>
+                                        <span class="pick-badge ${p.result.toLowerCase()}">${p.result}</span>
+                                    </div>
+
+                                    <div class="pick-course">${p.course}</div>
+
+                                    <div class="pick-horse">
+                                        ${p.horse}
+                                    </div>
+
+                                    <div class="pick-odds">@${p.odds}</div>
+                                </div>
+                            `).join("")}
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    } catch (err) {
+        console.error("Error loading stats page history:", err);
+    }
+}
+
+
 /* ============================================================
    RECENT ACTIVITY
    ============================================================ */
@@ -755,46 +929,47 @@ async function loadRecentActivity() {
 
     const icons = getIcons();
 
-   box.innerHTML = items.map(a => {
-    const winnings = calculateWinnings(a);
-    const stake = parseFloat(a.amount_bet || 0);
-    const profit = winnings - stake;
+    box.innerHTML = items.map(a => {
+        const winnings = calculateWinnings(a);
+        const stake = parseFloat(a.amount_bet || 0);
+        const profit = winnings - stake;
 
-    return `
-        <div class="activity-card-modern">
+        return `
+            <div class="activity-card-modern">
 
-            <div class="activity-left">
-                <div class="stake-box">
-                    <span class="stake-label">Stake</span>
-                    <span class="stake-value">£${stake.toFixed(2)}</span>
+                <div class="activity-left">
+                    <div class="stake-box">
+                        <span class="stake-label">Stake</span>
+                        <span class="stake-value">£${stake.toFixed(2)}</span>
+                    </div>
                 </div>
+
+                <div class="activity-middle">
+                    <div class="horse-line">
+                        ${a.horse_number ? `<span class="horse-number">(${a.horse_number})</span>` : ""}
+                        <span class="horse-name">${a.horse_name}</span>
+                        <span class="horse-odds">@${a.odds_fraction}</span>
+                    </div>
+
+                    <div class="meta-line">
+                        <span class="meta-player">${PLAYER_MAP[a.player_id]}</span>
+                        <span>${a.course}</span>
+                        <span>${a.race_time}</span>
+                    </div>
+                </div>
+
+                <div class="activity-right">
+                    <div class="winnings-label">Winnings</div>
+                    <div class="winnings-value ${profit > 0 ? "profit-pos" : profit < 0 ? "profit-neg" : ""}">
+                        £${winnings.toFixed(2)}
+                    </div>
+                </div>
+
             </div>
-
-            <div class="activity-middle">
-                <div class="horse-line">
-                    ${a.horse_number ? `<span class="horse-number">(${a.horse_number})</span>` : ""}
-                    <span class="horse-name">${a.horse_name}</span>
-                    <span class="horse-odds">@${a.odds_fraction}</span>
-                </div>
-
-                <div class="meta-line">
-                    <span class="meta-player">${PLAYER_MAP[a.player_id]}</span>
-                    <span>${a.course}</span>
-                    <span>${a.race_time}</span>
-                </div>
-            </div>
-
-            <div class="activity-right">
-                <div class="winnings-label">Winnings</div>
-                <div class="winnings-value ${profit > 0 ? "profit-pos" : profit < 0 ? "profit-neg" : ""}">
-                    £${winnings.toFixed(2)}
-                </div>
-            </div>
-
-        </div>
-    `;
-}).join("");
+        `;
+    }).join("");
 }
+
 
 /* ============================================================
    FILTER BAR — TODAY ONLY / ALL BETS
@@ -848,7 +1023,11 @@ function renderFilteredBets() {
     `;
 }
 
-//delete button
+
+/* ============================================================
+   RACE DAY — DELETE BET
+   ============================================================ */
+
 async function deleteRaceBet(id) {
     if (!confirm("Delete this bet?")) return;
 
@@ -858,6 +1037,7 @@ async function deleteRaceBet(id) {
 
     loadRaceStats();
 }
+
 
 /* ============================================================
    ACCUMULATOR PAGE — CLEAN VERSION
@@ -877,7 +1057,6 @@ async function loadAccaHero() {
         const res = await fetch(`${API}/accumulator/`);
         const data = await res.json();
 
-        // No picks
         if (data.status === "no picks" || data.status === "all non runners") {
             oddsEl.textContent = "0.00/1";
             returnsEl.textContent = "£0.00";
@@ -887,7 +1066,6 @@ async function loadAccaHero() {
             return;
         }
 
-        // Odds
         if (data.win_acca_odds > 0) {
             oddsEl.textContent = `${(data.win_acca_odds - 1).toFixed(2)}/1`;
         } else if (data.place_acca_odds > 0) {
@@ -896,11 +1074,9 @@ async function loadAccaHero() {
             oddsEl.textContent = "0.00/1";
         }
 
-        // Returns
         const ew = Number(data.ew_250_potential_return) || 0;
         returnsEl.textContent = `£${ew.toFixed(2)}`;
 
-        // Status badge
         const status = data.status.toLowerCase();
         statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
         statusEl.className = "acca-hero-status";
@@ -1104,16 +1280,13 @@ if (resetBtn) {
    PAGE INIT
 ------------------------------------------------------------ */
 document.addEventListener("DOMContentLoaded", () => {
-    // ACCA PAGE
     if (document.getElementById("accaOdds")) {
         loadAccaHero();
         loadAccaPicks();
         loadAccaStandings();
     }
 
-    // STATS PAGE
     if (document.getElementById("accaHistoryContainer")) {
-        // Only the NEW loader should run here
         loadStatsPageHistory();
     }
 });
