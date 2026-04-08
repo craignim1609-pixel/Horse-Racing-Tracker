@@ -813,6 +813,80 @@ async function loadPlayerStats() {
         `;
     }).join("");
 }
+/* ============================================================
+   STATS PAGE — GROUP PERFORMANCE SUMMARY
+   ============================================================ */
+
+async function loadGroupSummary() {
+    const box = document.getElementById("groupSummary");
+    if (!box) return;
+
+    const month = Number(document.getElementById("statsMonth").value);
+    const year = Number(document.getElementById("statsYear").value);
+
+    const res = await fetch(`${API}/accumulator/history`);
+    const accas = await res.json();
+
+    let totalAccas = 0;
+    let wins = 0;
+    let places = 0;
+    let losses = 0;
+    let totalStake = 0;
+    let totalReturn = 0;
+
+    accas.forEach(a => {
+        const d = new Date(a.created_at);
+        const aMonth = d.getMonth() + 1;
+        const aYear = d.getFullYear();
+
+        if (aMonth !== month || aYear !== year) return;
+
+        totalAccas++;
+        totalStake += a.stake ?? 0;
+        totalReturn += a.total_return ?? 0;
+
+        if (a.status === "win") wins++;
+        if (a.status === "place") places++;
+        if (a.status === "lose") losses++;
+    });
+
+    const profit = totalReturn - totalStake;
+    const strikeRate = totalAccas ? ((wins / totalAccas) * 100).toFixed(1) : 0;
+
+    box.innerHTML = `
+        <div class="summary-tile">
+            <div class="label">Total Accas</div>
+            <div class="value">${totalAccas}</div>
+        </div>
+
+        <div class="summary-tile">
+            <div class="label">Wins</div>
+            <div class="value" style="color:#0a4">${wins}</div>
+        </div>
+
+        <div class="summary-tile">
+            <div class="label">Places</div>
+            <div class="value" style="color:#06c">${places}</div>
+        </div>
+
+        <div class="summary-tile">
+            <div class="label">Losses</div>
+            <div class="value" style="color:#900">${losses}</div>
+        </div>
+
+        <div class="summary-tile">
+            <div class="label">Strike Rate</div>
+            <div class="value">${strikeRate}%</div>
+        </div>
+
+        <div class="summary-tile">
+            <div class="label">Profit</div>
+            <div class="value" style="color:${profit >= 0 ? '#0a4' : '#900'}">
+                £${profit.toFixed(2)}
+            </div>
+        </div>
+    `;
+}
 
 
 /* ============================================================
