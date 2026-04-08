@@ -629,16 +629,10 @@ async function loadRaceStats() {
     const grouped = groupBets(bets);
     const icons = getIcons();
 
-   const accaDecimal = calculateAccaOdds(ALL_BETS);
-   const ew = ewReturns(accaDecimal);
-  
-   /* UPDATE HEADER VALUES */
-//document.querySelector(".header-stat:nth-child(1) .stat-value").innerText =
-    //`#${(accaDecimal - 1).toFixed(2)}/1`;
+    const accaDecimal = calculateAccaOdds(ALL_BETS);
+    const ew = ewReturns(accaDecimal);
 
-//document.querySelector(".header-stat:nth-child(2) .stat-value").innerText =
-    //`#£${ew.toFixed(2)}`;
-
+    /* BUILD RACE LIST */
     list.innerHTML = `
         <div class="race-list-wrapper">
             ${Object.keys(grouped).map(course => `
@@ -691,10 +685,58 @@ async function loadRaceStats() {
         }).join("")}
     `;
 
-   renderFilteredBets();
-   loadRecentActivity();
+    renderFilteredBets();
+    loadRecentActivity();
+}
 
-   }
+
+/* ============================================================
+   STATS PAGE — SUMMARY TILES
+   ============================================================ */
+
+function renderStatsSummary(stats) {
+    const box = document.getElementById("statsSummary");
+    if (!box) return;
+
+    box.innerHTML = `
+        <div class="summary-tile">
+            <div class="label">Accas</div>
+            <div class="value">${stats.totalAccas}</div>
+        </div>
+
+        <div class="summary-tile">
+            <div class="label">Wins</div>
+            <div class="value" style="color:#0a4">${stats.wins}</div>
+        </div>
+
+        <div class="summary-tile">
+            <div class="label">Places</div>
+            <div class="value" style="color:#06c">${stats.places}</div>
+        </div>
+
+        <div class="summary-tile">
+            <div class="label">Busted</div>
+            <div class="value" style="color:#900">${stats.busted}</div>
+        </div>
+
+        <div class="summary-tile">
+            <div class="label">Staked</div>
+            <div class="value">£${stats.totalStaked.toFixed(2)}</div>
+        </div>
+
+        <div class="summary-tile">
+            <div class="label">Returned</div>
+            <div class="value">£${stats.totalReturned.toFixed(2)}</div>
+        </div>
+
+        <div class="summary-tile">
+            <div class="label">Profit</div>
+            <div class="value" style="color:${stats.profit >= 0 ? '#0a4' : '#900'}">
+                £${stats.profit.toFixed(2)}
+            </div>
+        </div>
+    `;
+}
 
 /* ============================================================
    RECENT ACTIVITY
