@@ -468,20 +468,19 @@ function renderAccaHistory(grouped) {
    STATS PAGE — LOAD LAST 5 COMPLETED ACCAS
    ============================================================ */
 async function loadStatsPageHistory() {
-    const container = document.getElementById("accaHistoryContainer");
-    if (!container) return;
-
     try {
+        const container = document.getElementById("accaHistoryContainer");
+        if (!container) return;
+
         const res = await fetch(`${API}/accumulator/history`);
-        if (!res.ok) {
-            container.innerHTML = "<p>Failed to load history.</p>";
-            return;
-        }
+        let data = await res.json();
 
-        let history = await res.json();
+        // Sort newest → oldest
+        data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-        // Only show last 5
-        history = history.slice(0, 5);
+        // Only keep the last 5
+        data = data.slice(0, 5);
+
 
         // Group by date
         const grouped = {};
