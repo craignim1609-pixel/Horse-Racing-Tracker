@@ -76,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const yearSelect = document.getElementById("statsYear");
 
     async function refreshStats() {
+        loadGroupSummary();       // NEW
         loadPlayerStats();        // Player tiles
         loadStatsPageHistory();   // Completed accas
     }
@@ -86,6 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     refreshStats();
 });
 </script>
+
 
 
 
