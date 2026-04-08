@@ -71,20 +71,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const yearSelect = document.getElementById("statsYear");
 
     async function refreshStats() {
-        const month = monthSelect.value;
-        const year = yearSelect.value;
-
-
-        // Load completed accas
-        loadStatsPageHistory();
+        // REMOVE loadStatsDashboard() — backend does not support it
+        loadStatsPageHistory();   // Completed accas
+        loadPlayerStats();        // Player performance (new function)
     }
 
     monthSelect.addEventListener("change", refreshStats);
     yearSelect.addEventListener("change", refreshStats);
 
-    // Initial load
     refreshStats();
 });
 </script>
+
 
 {% endblock %}
