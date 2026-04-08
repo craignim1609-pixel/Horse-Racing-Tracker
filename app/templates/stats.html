@@ -71,9 +71,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const yearSelect = document.getElementById("statsYear");
 
     async function refreshStats() {
-        // REMOVE loadStatsDashboard() — backend does not support it
+        loadPlayerStats();        // Player tiles
         loadStatsPageHistory();   // Completed accas
-        loadPlayerStats();        // Player performance (new function)
     }
 
     monthSelect.addEventListener("change", refreshStats);
@@ -82,6 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     refreshStats();
 });
 </script>
+
 
 
 {% endblock %}
