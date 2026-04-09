@@ -155,6 +155,29 @@ h2 {
 .navbar a:hover {
     opacity: 0.8;
 }
+    
+/* ========================================= */
+/* SECTION TITLE TILE (MATCHES PERFORMANCE BOX) */
+/* ========================================= */
+
+.section-title-box {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(247,198,0,0.25);
+    border-radius: var(--radius-lg);
+    padding: 14px 20px;
+    margin: 30px 0 15px 0;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.section-title-box h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--gold);
+    text-shadow: 0 0 6px rgba(247,198,0,0.25);
+}
 
 /* ========================================= */
 /* PAGE HEADER (H1) — MATCH PERFORMANCE BOX  */
