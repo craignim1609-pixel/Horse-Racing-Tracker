@@ -847,11 +847,7 @@ textarea:focus {
         padding: 12px;
     }
 
-    .player-stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    }
-
-    .comparison-container {
+      .comparison-container {
         grid-template-columns: 1fr;
     }
 }
