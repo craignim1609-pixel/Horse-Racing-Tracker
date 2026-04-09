@@ -504,7 +504,10 @@ async function loadMonthlyOverview() {
         if (a.status === "place") places++;
         if (a.status === "lose") losses++;
 
-        profit += Number(a.profit || 0);
+        // FIXED PROFIT CALCULATION
+        const stake = Number(a.stake || 0);
+        const returns = Number(a.total_return || 0);
+        profit += (returns - stake);
     });
 
     const strikeRate = total > 0 ? ((wins / total) * 100).toFixed(1) : "0.0";
@@ -541,6 +544,7 @@ async function loadMonthlyOverview() {
         </div>
     `;
 }
+
 
 /* ============================================================
    PLAYER DETAILS (unchanged)
