@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Form
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session, joinedload
 from typing import List
 from app.database import get_db
@@ -10,7 +11,7 @@ router = APIRouter(prefix="/picks", tags=["Picks"])
 # ------------------------------------------------------------
 # CREATE PICK (FORM SUBMISSION)
 # ------------------------------------------------------------
-@router.post("/add", response_model=schemas.PickOut)
+@router.post("/add")
 def add_pick(
     player_id: int = Form(...),
     course: str = Form(...),
@@ -32,22 +33,14 @@ def add_pick(
         horse_number=horse_number,
         odds_fraction=odds_fraction,
         race_time=race_time,
-        status="Pending"   # <-- Always Pending on creation
+        status="Pending"
     )
 
     db.add(pick)
     db.commit()
-    db.refresh(pick)
 
-    # Reload WITH player relationship
-    pick = (
-        db.query(models.Pick)
-        .options(joinedload(models.Pick.player))
-        .filter(models.Pick.id == pick.id)
-        .first()
-    )
-
-    return pick
+    # Redirect to ACCA page (no JSON output)
+    return RedirectResponse(url="/acca", status_code=303)
 
 
 # ------------------------------------------------------------
