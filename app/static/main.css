@@ -130,71 +130,46 @@ h2 {
 }
 
 /* ========================================= */
-/* 5. HEADER + NAVBAR                        */
+/* NAVBAR — MATCH PERFORMANCE CENTER STYLE   */
 /* ========================================= */
 
-.main-header {
-    background-color: #0b1915;
-    border-bottom: 2px solid var(--gold);
-    padding: 15px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: var(--radius-md);
-}
-
-.site-title {
-    font-family: var(--font-title);
-    font-size: 1.8rem;
-    color: var(--gold);
-    margin: 0;
-}
-
-.header-nav {
-    display: flex;
-    gap: 15px;
-}
-
-.nav-btn {
-    padding: 8px 16px;
-    border: 1px solid var(--gold);
-    border-radius: var(--radius-md);
-    color: var(--gold);
-    text-decoration: none;
-    font-weight: 500;
-    transition: 0.2s ease;
-}
-
-.nav-btn:hover {
-    background-color: var(--gold);
-    color: #0d1f1a;
-}
-
 .navbar {
-    background: #0f2a0f;
-    padding: 12px 20px;
+    background: rgba(255,255,255,0.05);
+    border-bottom: 2px solid rgba(247,198,0,0.25);
+    padding: 14px 22px;
     display: flex;
-    gap: 20px;
-    border-bottom: 2px solid var(--gold);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    overflow-x: auto;
-    white-space: nowrap;
-    border-radius: var(--radius-md);
+    justify-content: center;
+    gap: 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    backdrop-filter: blur(6px);
 }
 
 .navbar a {
     color: var(--gold);
-    font-weight: bold;
-    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: 0.4px;
+    transition: 0.2s;
 }
 
-.navbar a:hover,
-.navbar a.active {
-    color: white;
-    text-decoration: underline;
+.navbar a:hover {
+    opacity: 0.8;
 }
+
+/* ========================================= */
+/* PAGE HEADER (H1) — MATCH PERFORMANCE BOX  */
+/* ========================================= */
+
+.page-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 20px 0;
+    letter-spacing: 0.5px;
+    color: var(--gold);
+    text-shadow: 0 0 6px rgba(247,198,0,0.25);
+}
+
 /* ========================================= */
 /* 6. BUTTONS + INTERACTIONS                 */
 /* ========================================= */
