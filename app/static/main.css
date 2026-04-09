@@ -472,42 +472,78 @@ button:active,
     }
 }
 
-.player-tile {
-    background: #1e1e1e;
-    padding: 16px;
-    border-radius: var(--radius-lg);
-    color: #fff;
-    text-align: center;
-    box-shadow: var(--shadow-soft);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.player-tile h3 {
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.stat-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 4px 0;
-    font-size: 0.95rem;
-    border-bottom: 1px solid #333;
-}
-
-.stat-row:last-child {
-    border-bottom: none;
-}
-    
 /* FORCE correct stats grid layout */
 .player-stats-grid {
     display: grid !important;
     grid-template-columns: repeat(5, 1fr) !important;
     gap: 20px !important;
 }
+
+/* =============================== */
+/* PLAYER TILE NEW INTERNAL LAYOUT */
+/* =============================== */
+
+.player-tile {
+    background: #1e1e1e;
+    padding: 18px;
+    border-radius: var(--radius-lg);
+    color: #fff;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Header section */
+.player-header h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+}
+
+.player-header .month-wins {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin: 0;
+}
+
+/* Stats grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+/* Individual stat boxes */
+.stat-box {
+    background: rgba(255,255,255,0.05);
+    padding: 10px 6px;
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Label + value */
+.stat-label {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* Optional colour accents */
+.stat-box.wins .stat-value { color: #f7c600; }   /* gold */
+.stat-box.places .stat-value { color: #4aa3ff; } /* blue */
+.stat-box.losses .stat-value { color: #ff4a4a; } /* red */
+.stat-box.nr .stat-value { color: #aaa; }        /* grey */
+
 
 /* ========================================= */
 /* 11. RACE DAY COMPONENTS                   */
