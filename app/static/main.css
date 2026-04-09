@@ -45,6 +45,9 @@ body {
 .page-content {
     background: red !important;
 }
+body {
+    border: 10px solid red !important;
+}
 
 .page-content {
     padding: 30px;
