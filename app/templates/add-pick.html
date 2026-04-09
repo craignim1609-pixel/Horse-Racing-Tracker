@@ -1,52 +1,45 @@
 {% extends "base.html" %}
-
 {% block content %}
 
-<h1>Add New Pick</h1>
+<h1 class="page-title">Add New Pick</h1>
 
-<form id="pickForm" class="race-form">
+<div class="form-tile">
 
-    <div class="form-row">
-        <label for="playerSelect">Player</label>
-        <select id="playerSelect" name="player_id" required></select>
-    </div>
+    <form method="post" action="/picks/add">
 
-    <div class="form-row">
-        <label for="courseSelect">Course</label>
-        <input id="courseSelect" name="course" type="text" placeholder="e.g. Ascot" required>
-    </div>
-
-    <div class="horse-group">
-        <div>
-            <label for="horseNumber">#</label>
-            <input id="horseNumber" name="horse_number" placeholder="3" required>
+        <div class="form-row">
+            <label>Player</label>
+            <select name="player" required>
+                {% for p in players %}
+                    <option value="{{ p.name }}">{{ p.name }}</option>
+                {% endfor %}
+            </select>
         </div>
-        <div>
-            <label for="horseName">Horse Name</label>
-            <input id="horseName" name="horse_name" placeholder="e.g. Frankel" required>
+
+        <div class="form-row">
+            <label>Horse Name</label>
+            <input type="text" name="horse_name" required>
         </div>
-    </div>
 
-    <div class="form-row">
-        <label for="raceTime">Race Time</label>
-        <input id="raceTime" name="race_time" type="time" required>
-    </div>
+        <div class="form-row">
+            <label>Odds (Fractional)</label>
+            <input type="text" name="odds_fraction" placeholder="e.g. 5/1" required>
+        </div>
 
-    <div class="form-row">
-        <label for="odds">Odds</label>
-        <input id="odds" name="odds_fraction" placeholder="e.g. 4/1" required>
-    </div>
+        <div class="form-row">
+            <label>Status</label>
+            <select name="status" required>
+                <option value="Win">Win</option>
+                <option value="Place">Place</option>
+                <option value="Lose">Lose</option>
+                <option value="NR">NR</option>
+            </select>
+        </div>
 
-    <button type="submit" class="submit-btn">Submit Pick</button>
+        <button class="submit-btn" type="submit">Submit Pick</button>
 
-</form>
+    </form>
 
-<div id="resultBox" class="result-box"></div>
-
-<script src="/static/app_v10001.js"></script>
-<script>
-    setupAddPickForm();
-    loadPlayersForAddPick();
-</script>
+</div>
 
 {% endblock %}
