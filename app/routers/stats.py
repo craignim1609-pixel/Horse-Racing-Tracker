@@ -11,11 +11,14 @@ templates = Jinja2Templates(directory="app/templates")
 
 
 # ------------------------------------------------------------
-# STATS PAGE (HTML)
+# STATS PAGE (HTML) — FIXED WITH ACTIVE PAGE HIGHLIGHT
 # ------------------------------------------------------------
 @router.get("")
 def stats_home(request: Request):
-    return templates.TemplateResponse("stats.html", {"request": request})
+    return templates.TemplateResponse("stats.html", {
+        "request": request,
+        "active": "stats"
+    })
 
 
 # ------------------------------------------------------------
@@ -150,26 +153,23 @@ def acca_stats(db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------------------
-# DASHBOARD (used by stats.html) — FIXED TO USE ACCA HISTORY
+# DASHBOARD (used by stats.html)
 # ------------------------------------------------------------
 @router.get("/dashboard")
 def stats_dashboard(db: Session = Depends(get_db)):
 
     # ========================================================
-    # PLAYER PERFORMANCE (from AccaHistory, not Picks)
+    # PLAYER PERFORMANCE (from AccaHistory)
     # ========================================================
     players = db.query(models.Player).all()
 
-    # Initialise stats for each player
     player_stats = {
         p.name: {"wins": 0, "places": 0, "loses": 0, "nr": 0}
         for p in players
     }
 
-    # Load all completed accas
     history = db.query(models.AccaHistory).all()
 
-    # Count results per player from picks_json
     for h in history:
         for pick in h.picks_json:
             name = pick.get("player")
@@ -187,7 +187,6 @@ def stats_dashboard(db: Session = Depends(get_db)):
             elif result == "NR":
                 player_stats[name]["nr"] += 1
 
-    # Convert dict → list for frontend
     player_stats_list = [
         {"player": name, **stats}
         for name, stats in player_stats.items()
@@ -218,16 +217,10 @@ def stats_dashboard(db: Session = Depends(get_db)):
             "combined_decimal_odds": float(h.combined_decimal_odds or 0),
             "total_return": float(h.total_return or 0),
             "created_at": h.created_at.isoformat(),
-            "picks": h.picks_json,  # optional but useful
+            "picks": h.picks_json,
         })
 
     return {
         "players": player_stats_list,
-        "accas": grouped
-    }
-
-
-    return {
-        "players": player_stats,
         "accas": grouped
     }
