@@ -326,7 +326,7 @@ button:active,
     font-size: 0.9rem;
 }
 
-/* Status buttons inside card */
+/* Status buttons */
 .acca-status-buttons {
     display: flex;
     gap: 8px;
@@ -421,7 +421,7 @@ button:active,
 }
 
 /* ========================================= */
-/* 10. PLAYER TILES + STATS PAGE (GRID LAYOUT)            */
+/* 10. PLAYER TILES + STATS PAGE GRID        */
 /* ========================================= */
 
 .player-stats-grid {
@@ -472,11 +472,7 @@ button:active,
     }
 }
 
-
-/* =============================== */
-/* PLAYER TILE NEW INTERNAL LAYOUT */
-/* =============================== */
-
+/* Player tile internal layout */
 .player-tile {
     background: rgba(255,255,255,0.05);
     padding: 18px;
@@ -490,7 +486,6 @@ button:active,
     gap: 16px;
 }
 
-/* Header section */
 .player-header h3 {
     font-size: 1.4rem;
     font-weight: 700;
@@ -504,14 +499,12 @@ button:active,
     margin: 0;
 }
 
-/* Stats grid */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
 }
 
-/* Individual stat boxes */
 .stat-box {
     background: rgba(255,255,255,0.05);
     padding: 10px 6px;
@@ -521,7 +514,6 @@ button:active,
     gap: 4px;
 }
 
-/* Label + value */
 .stat-label {
     font-size: 0.75rem;
     opacity: 0.7;
@@ -533,16 +525,15 @@ button:active,
     font-weight: 700;
 }
 
-/* Optional colour accents */
-.stat-box.wins .stat-value { color: #f7c600; }   /* gold */
-.stat-box.places .stat-value { color: #4aa3ff; } /* blue */
-.stat-box.losses .stat-value { color: #ff4a4a; } /* red */
-.stat-box.nr .stat-value { color: #aaa; }        /* grey */
+.stat-box.wins .stat-value { color: #f7c600; }
+.stat-box.places .stat-value { color: #4aa3ff; }
+.stat-box.losses .stat-value { color: #ff4a4a; }
+.stat-box.nr .stat-value { color: #aaa; }
 
-/* =============================== */
-/* PERFORMANCE CENTRE */
-/* =============================== */
-    
+/* ========================================= */
+/* PERFORMANCE CENTRE                        */
+/* ========================================= */
+
 .performance-center-box {
     background: rgba(255,255,255,0.05);
     border: 2px solid rgba(247,198,0,0.25);
@@ -552,7 +543,6 @@ button:active,
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
 
-/* Title inside the box */
 .performance-center-box .page-title {
     margin: 0 0 16px 0;
     font-size: 1.8rem;
@@ -561,13 +551,13 @@ button:active,
     letter-spacing: 0.5px;
 }
 
-/* Keep your existing filter bar styling */
 .performance-center-box .stats-filter-bar {
     display: flex;
     justify-content: center;
     gap: 20px;
     flex-wrap: wrap;
 }
+
 .monthly-overview-box {
     margin-top: 20px;
     padding: 16px;
@@ -592,7 +582,6 @@ button:active,
     margin-top: 4px;
 }
 
-    
 /* ========================================= */
 /* 11. RACE DAY COMPONENTS                   */
 /* ========================================= */
@@ -721,7 +710,6 @@ button:active,
     opacity: 1;
 }
 
-/* Modal stats grid */
 .modal-stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -767,7 +755,6 @@ button:active,
     background: rgba(255,255,255,0.05);
 }
 
-/* Heatmap */
 .heatmap-cell {
     text-align: center;
     padding: 8px;
@@ -801,7 +788,6 @@ button:active,
     font-size: 1.3rem;
 }
 
-/* Bar chart bars */
 .bar {
     background: var(--gold);
     border-radius: var(--radius-sm);
@@ -810,7 +796,6 @@ button:active,
     transition: width 0.4s ease;
 }
 
-/* Line chart */
 .line-chart-point {
     width: 10px;
     height: 10px;
@@ -824,6 +809,7 @@ button:active,
     height: 3px;
     background: var(--gold);
 }
+
 /* ========================================= */
 /* 16. COMPARISON MODE                       */
 /* ========================================= */
@@ -938,7 +924,7 @@ textarea:focus {
         padding: 12px;
     }
 
-      .comparison-container {
+    .comparison-container {
         grid-template-columns: 1fr;
     }
 }
