@@ -40,7 +40,7 @@ def add_pick(
     db.commit()
 
     # Redirect to ACCA page (no JSON output)
-    return RedirectResponse(url="/acca", status_code=303)
+    return RedirectResponse(url="/acca?added=1", status_code=303)
 
 
 # ------------------------------------------------------------
