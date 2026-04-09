@@ -501,6 +501,13 @@ button:active,
 .stat-row:last-child {
     border-bottom: none;
 }
+    
+/* FORCE correct stats grid layout */
+.player-stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 20px !important;
+}
 
 /* ========================================= */
 /* 11. RACE DAY COMPONENTS                   */
