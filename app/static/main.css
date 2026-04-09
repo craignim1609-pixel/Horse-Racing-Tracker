@@ -568,6 +568,29 @@ button:active,
     gap: 20px;
     flex-wrap: wrap;
 }
+.monthly-overview-box {
+    margin-top: 20px;
+    padding: 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(247,198,0,0.25);
+    border-radius: var(--radius-md);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+    text-align: center;
+}
+
+.monthly-overview-box .stat-label {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    letter-spacing: 0.5px;
+}
+
+.monthly-overview-box .stat-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-top: 4px;
+}
 
     
 /* ========================================= */
