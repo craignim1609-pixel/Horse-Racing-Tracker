@@ -1,9 +1,11 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.database import Base, engine
+from sqlalchemy.orm import Session
+
+from app.database import Base, engine, get_db
 from app import models
 
 # Routers
@@ -75,11 +77,13 @@ def current_picks_page(request: Request):
     })
 
 
-# ADD PICK PAGE
+# ADD PICK PAGE  ⭐ FIXED — NOW LOADS PLAYERS
 @app.get("/add-pick", response_class=HTMLResponse)
-def add_pick_page(request: Request):
+def add_pick_page(request: Request, db: Session = Depends(get_db)):
+    players = db.query(models.Player).all()
     return templates.TemplateResponse("add-pick.html", {
         "request": request,
+        "players": players,
         "active": "newpick"
     })
 
