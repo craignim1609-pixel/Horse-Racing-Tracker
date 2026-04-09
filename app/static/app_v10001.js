@@ -500,9 +500,9 @@ async function loadMonthlyOverview() {
 
         total++;
 
-        if (a.result === "win") wins++;
-        if (a.result === "place") places++;
-        if (a.result === "lose") losses++;
+        if (a.status === "win") wins++;
+        if (a.status === "place") places++;
+        if (a.status === "lose") losses++;
 
         profit += Number(a.profit || 0);
     });
