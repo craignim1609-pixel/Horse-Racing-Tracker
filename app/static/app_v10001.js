@@ -738,7 +738,7 @@ function renderStatsSummary(stats) {
 }
 
 /* ============================================================
-   STATS PAGE — PLAYER PERFORMANCE TILES
+   STATS PAGE — PLAYER PERFORMANCE TILES (NEW PREMIUM LAYOUT)
    ============================================================ */
 
 async function loadPlayerStats() {
@@ -748,7 +748,7 @@ async function loadPlayerStats() {
     const month = Number(document.getElementById("statsMonth").value);
     const year = Number(document.getElementById("statsYear").value);
 
-    // Static player list (matches your screenshot)
+    // Static player list
     const PLAYERS = ["Craig", "Donald", "Miller", "Nick", "Josh"];
 
     // Initialise stats
@@ -790,28 +790,45 @@ async function loadPlayerStats() {
         });
     });
 
-    // Render tiles
+    // Render tiles using the new premium layout
     container.innerHTML = PLAYERS.map(p => {
         const s = stats[p];
 
         return `
-            <div class="card">
-                <h3 class="font-serif text-lg mb-2">${p}</h3>
+            <div class="player-tile">
 
-                <div class="stat-block stat-wins">
-                    <p>Month Wins: ${s.monthWins}</p>
+                <div class="player-header">
+                    <h3>${p}</h3>
+                    <p class="month-wins">Month Wins: ${s.monthWins}</p>
                 </div>
 
-                <div class="mt-2 text-small text-muted">
-                    Wins: ${s.wins}<br>
-                    Places: ${s.places}<br>
-                    Losses: ${s.losses}<br>
-                    NR: ${s.nr}
+                <div class="stats-grid">
+                    <div class="stat-box wins">
+                        <span class="stat-label">WINS</span>
+                        <span class="stat-value">${s.wins}</span>
+                    </div>
+
+                    <div class="stat-box places">
+                        <span class="stat-label">PLACES</span>
+                        <span class="stat-value">${s.places}</span>
+                    </div>
+
+                    <div class="stat-box losses">
+                        <span class="stat-label">LOSSES</span>
+                        <span class="stat-value">${s.losses}</span>
+                    </div>
+
+                    <div class="stat-box nr">
+                        <span class="stat-label">NR</span>
+                        <span class="stat-value">${s.nr}</span>
+                    </div>
                 </div>
+
             </div>
         `;
     }).join("");
 }
+
 /* ============================================================
    STATS PAGE — GROUP PERFORMANCE SUMMARY
    ============================================================ */
