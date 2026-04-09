@@ -288,6 +288,56 @@ button:active,
     text-transform: uppercase;
     border: 1px solid var(--gold);
 }
+/* ========================================= */
+/* ACCA PAGE — TWO COLUMN LAYOUT             */
+/* ========================================= */
+
+.acca-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    margin-top: 20px;
+}
+
+/* Left column: tall stacked tiles */
+.acca-left {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Right column: standings box */
+.acca-right {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(247,198,0,0.25);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    height: fit-content;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* ========================================= */
+/* ACCA PICK TILE — FULL WIDTH LEFT COLUMN   */
+/* ========================================= */
+
+.acca-pick-tile {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(247,198,0,0.25);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Make the buttons stretch nicely */
+.pick-status-buttons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+}
 
 /* ========================================= */
 /* PLAYER TILES + STATS PAGE GRID            */
