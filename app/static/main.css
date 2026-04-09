@@ -970,3 +970,6 @@ textarea:focus {
     }
 }
 
+.player-stats-grid {
+    border: 5px solid yellow !important;
+}
