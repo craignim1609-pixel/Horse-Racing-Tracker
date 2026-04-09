@@ -184,7 +184,13 @@ h2 {
     opacity: 0.8;
 }
 
-/* ACTIVE PAGE INDICATOR — GOLD UNDERLINE */
+/* ACTIVE PAGE — GOLD GLOW UNDERLINE */
+.nav-bar a.active {
+    color: #fff;
+    position: relative;
+    text-shadow: 0 0 8px rgba(247,198,0,0.7);
+}
+
 .nav-bar a.active::after {
     content: "";
     position: absolute;
@@ -194,7 +200,7 @@ h2 {
     height: 3px;
     background: var(--gold);
     border-radius: 2px;
-    box-shadow: 0 0 6px rgba(247,198,0,0.5);
+    box-shadow: 0 0 10px rgba(247,198,0,0.6);
 }
 
 
