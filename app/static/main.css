@@ -42,6 +42,9 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+.page-content {
+    background: red !important;
+}
 
 .page-content {
     padding: 30px;
