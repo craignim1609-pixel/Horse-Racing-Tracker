@@ -838,6 +838,46 @@ textarea:focus {
     justify-content: center;
     align-items: center;
 }
+/* === PATCH: Restore full-width stats tiles === */
+
+/* 1. Reduce global padding so content isn't squeezed inward */
+@media (max-width: 1100px) {
+    body {
+        padding: 10px;
+    }
+
+    .page-content {
+        padding: 10px;
+    }
+}
+
+/* 2. Ensure all cards stretch to the full available width */
+@media (max-width: 1100px) {
+    .card,
+    .player-tile,
+    .acca-card,
+    .activity-card,
+    .race-card,
+    .comparison-card,
+    .chart-container {
+        width: 100%;
+    }
+}
+
+/* 3. Restore the wide, even grid layout */
+.player-stats-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+/* 4. On small phones, use single-column tiles */
+@media (max-width: 480px) {
+    .player-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
 /* === PATCH: Restore full-width tile layout === */
 
 /* Reduce global padding on smaller screens */
@@ -878,3 +918,4 @@ textarea:focus {
         grid-template-columns: 1fr;
     }
 }
+
