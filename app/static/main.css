@@ -477,10 +477,10 @@ button:active,
 /* =============================== */
 
 .player-tile {
-    background: #1e1e1e;
+    background: rgba(255,255,255,0.05);
     padding: 18px;
     border-radius: var(--radius-lg);
-    border: 1px solid rgba(247,198,0,0.25);
+    border: 2px solid rgba(247,198,0,0.25);
     color: #fff;
     text-align: center;
     box-shadow: var(--shadow-soft);
