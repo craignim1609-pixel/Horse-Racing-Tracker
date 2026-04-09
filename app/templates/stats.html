@@ -38,9 +38,7 @@
 <!-- ========================= -->
 <!-- SUMMARY TILES             -->
 <!-- ========================= -->
-<div id="statsSummary" class="stats-summary-grid">
-    <!-- JS will inject summary tiles -->
-</div>
+<div id="statsSummary" class="stats-summary-grid"></div>
 
 <!-- ========================= -->
 <!-- GROUP SUMMARY TILES       -->
@@ -61,9 +59,7 @@
 <!-- ========================= -->
 <h2 class="section-title">Completed Accumulators</h2>
 
-<div id="accaHistoryContainer">
-    <!-- JS will fill this -->
-</div>
+<div id="accaHistoryContainer"></div>
 
 <!-- ========================= -->
 <!-- JS LOADER                 -->
@@ -76,9 +72,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const yearSelect = document.getElementById("statsYear");
 
     async function refreshStats() {
-        loadGroupSummary();       // NEW
-        loadPlayerStats();        // Player tiles
-        loadStatsPageHistory();   // Completed accas
+        loadGroupSummary();
+        loadPlayerStats();        // Injects tiles using new layout
+        loadStatsPageHistory();
     }
 
     monthSelect.addEventListener("change", refreshStats);
@@ -87,8 +83,5 @@ document.addEventListener("DOMContentLoaded", () => {
     refreshStats();
 });
 </script>
-
-
-
 
 {% endblock %}
