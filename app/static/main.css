@@ -260,132 +260,141 @@ button:active,
 }
 
 /* ========================================= */
-/* 8. ACCA CARDS (BOOKMAKER GREEN/GOLD)      */
+/* COMPLETED ACCAS — PREMIUM BOOKMAKER STYLE */
 /* ========================================= */
 
+/* ACCA CARD WRAPPER */
 .acca-card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-md);
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(247,198,0,0.25);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     animation: fadeIn 0.35s ease forwards;
+    text-align: center;
 }
 
-/* Header */
-.acca-card-header {
+/* HEADER */
+.acca-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    text-align: left;
 }
 
-.acca-player {
-    font-weight: bold;
-    color: var(--gold);
+.acca-date {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
 }
 
-.acca-delete-btn {
-    background: none;
-    border: none;
-    color: var(--gold);
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0.7;
-}
-
-.acca-delete-btn:hover {
-    opacity: 1;
-}
-
-/* Horse line */
-.acca-horse-line {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.acca-horse-number {
-    opacity: 0.7;
-}
-
-.acca-horse-name {
-    font-family: var(--font-title);
-    font-size: 1.2rem;
-}
-
-.acca-horse-odds {
-    color: var(--gold);
-    font-weight: bold;
-}
-
-/* Meta */
-.acca-meta {
-    opacity: 0.7;
+.acca-sub {
+    opacity: 0.75;
     font-size: 0.9rem;
 }
 
-/* Status buttons */
-.acca-status-buttons {
-    display: flex;
-    gap: 8px;
+/* RETURNS BOX */
+.acca-returns {
+    text-align: right;
 }
 
-.acca-status-btn {
-    flex: 1;
-    padding: 6px 8px;
+.returns-label {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin: 0;
+}
+
+.returns-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 4px 0;
+}
+
+.returns-value.win { color: #00d26a; }
+.returns-value.place { color: #4aa3ff; }
+.returns-value.lose { color: #ff4a4a; }
+
+/* STATUS BADGE */
+.acca-status-badge {
+    display: inline-block;
+    padding: 4px 10px;
     border-radius: var(--radius-md);
-    border: 1px solid var(--gold);
-    background: none;
-    color: var(--gold);
-    cursor: pointer;
-    font-size: 0.8rem;
-    transition: 0.2s;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid rgba(247,198,0,0.4);
 }
 
-.acca-status-btn.active,
-.acca-status-btn:hover {
-    background-color: var(--gold);
-    color: #0d1f1a;
+.acca-badge-win { background: rgba(0,200,0,0.25); color: #00ff88; }
+.acca-badge-place { background: rgba(0,120,255,0.25); color: #4aa3ff; }
+.acca-badge-lose { background: rgba(255,0,0,0.25); color: #ff4a4a; }
+
+/* PICKS GRID — SIDE BY SIDE */
+.acca-picks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 18px;
 }
 
-/* Collapsible behaviour */
-.acca-card.collapsible {
-    cursor: pointer;
+/* PICK TILE */
+.pick-tile {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(247,198,0,0.25);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
-.acca-arrow {
-    transition: transform 0.25s ease;
-    font-size: 1.1rem;
-    opacity: 0.8;
-}
-
-.acca-card.open .acca-arrow {
-    transform: rotate(90deg);
-}
-
-.acca-card-details {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: max-height 0.35s ease, opacity 0.25s ease;
-}
-
-.acca-card.open .acca-card-details {
-    max-height: 500px;
-    opacity: 1;
-}
-
-.acca-detail-line {
+/* PICK HEADER */
+.pick-header {
     display: flex;
     justify-content: space-between;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 6px;
 }
 
-.acca-detail-line:last-child {
-    border-bottom: none;
+.pick-player {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+/* RESULT BADGE */
+.pick-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.pick-badge.win { background: rgba(0,200,0,0.3); color: #00ff88; }
+.pick-badge.place { background: rgba(0,120,255,0.3); color: #4aa3ff; }
+.pick-badge.lose { background: rgba(255,0,0,0.3); color: #ff4a4a; }
+
+/* HORSE + COURSE + ODDS */
+.pick-horse {
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.pick-course {
+    opacity: 0.7;
+    margin-top: 2px;
+    font-size: 0.85rem;
+}
+
+.pick-odds {
+    margin-top: 6px;
+    font-weight: 700;
+    color: var(--gold);
+}
+
+/* DATE HEADERS */
+#accaHistoryContainer h3 {
+    text-align: center;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
 }
 
 /* ========================================= */
