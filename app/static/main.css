@@ -427,9 +427,50 @@ button:active,
 
 .player-stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 14px;
+    width: 100%;
+    gap: 16px;
     margin: 20px 0 35px 0;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+/* Desktop: 4 columns */
+@media (min-width: 1100px) {
+    .player-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+}
+
+/* Medium screens: 3 columns */
+@media (min-width: 800px) and (max-width: 1099px) {
+    .player-stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+}
+
+/* Tablets: 2 columns */
+@media (min-width: 600px) and (max-width: 799px) {
+    .player-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+/* Phones: 2 columns */
+@media (max-width: 599px) {
+    .player-stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+}
+
+/* Small phones: 1 column */
+@media (max-width: 420px) {
+    .player-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
 }
 
 .player-tile {
@@ -439,6 +480,9 @@ button:active,
     color: #fff;
     text-align: center;
     box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .player-tile h3 {
@@ -458,6 +502,7 @@ button:active,
 .stat-row:last-child {
     border-bottom: none;
 }
+
 /* ========================================= */
 /* 11. RACE DAY COMPONENTS                   */
 /* ========================================= */
