@@ -34,7 +34,7 @@ app.include_router(picks.router)
 app.include_router(accumulator.router)
 app.include_router(raceday.router)
 app.include_router(players.router)
-app.include_router(stats.router)   # <-- Stats router is loaded here
+app.include_router(stats.router)
 
 
 # -----------------------------------------
@@ -45,34 +45,49 @@ templates = Jinja2Templates(directory="app/templates")
 
 
 # -----------------------------------------
-# PAGE ROUTES
+# PAGE ROUTES (WITH ACTIVE PAGE HIGHLIGHT)
 # -----------------------------------------
 
 # HOME PAGE
 @app.get("/", response_class=HTMLResponse)
 def home_page(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "active": "home"
+    })
 
 
 # RACE DAY PAGE
 @app.get("/raceday", response_class=HTMLResponse)
 def raceday_page(request: Request):
-    return templates.TemplateResponse("raceday.html", {"request": request})
+    return templates.TemplateResponse("raceday.html", {
+        "request": request,
+        "active": "raceday"
+    })
 
 
 # CURRENT PICKS PAGE
 @app.get("/current-picks", response_class=HTMLResponse)
 def current_picks_page(request: Request):
-    return templates.TemplateResponse("current-picks.html", {"request": request})
+    return templates.TemplateResponse("current-picks.html", {
+        "request": request,
+        "active": "currentpicks"
+    })
 
 
 # ADD PICK PAGE
 @app.get("/add-pick", response_class=HTMLResponse)
 def add_pick_page(request: Request):
-    return templates.TemplateResponse("add-pick.html", {"request": request})
+    return templates.TemplateResponse("add-pick.html", {
+        "request": request,
+        "active": "newpick"
+    })
 
 
 # ACCA PAGE
 @app.get("/acca", response_class=HTMLResponse)
 def acca_page(request: Request):
-    return templates.TemplateResponse("acca.html", {"request": request})
+    return templates.TemplateResponse("acca.html", {
+        "request": request,
+        "active": "accumulator"
+    })
