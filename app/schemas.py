@@ -30,6 +30,7 @@ class PickBase(BaseModel):
 
 class PickCreate(PickBase):
     player_id: int
+    status: str   # <-- REQUIRED for New Pick form
 
 
 class PickUpdateStatus(BaseModel):
