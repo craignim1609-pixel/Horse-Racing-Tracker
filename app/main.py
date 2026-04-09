@@ -88,10 +88,12 @@ def add_pick_page(request: Request, db: Session = Depends(get_db)):
     })
 
 
-# ACCA PAGE
 @app.get("/acca", response_class=HTMLResponse)
 def acca_page(request: Request):
+    added = request.query_params.get("added")
     return templates.TemplateResponse("acca.html", {
         "request": request,
-        "active": "accumulator"
+        "active": "accumulator",
+        "added": added
     })
+
