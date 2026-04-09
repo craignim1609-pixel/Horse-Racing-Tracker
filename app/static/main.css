@@ -133,28 +133,6 @@ h2 {
 /* NAVBAR — MATCH PERFORMANCE CENTER STYLE   */
 /* ========================================= */
 
-.navbar {
-    background: rgba(255,255,255,0.05);
-    border-bottom: 2px solid rgba(247,198,0,0.25);
-    padding: 14px 22px;
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    backdrop-filter: blur(6px);
-}
-
-.navbar a {
-    color: var(--gold);
-    font-weight: 600;
-    text-decoration: none;
-    letter-spacing: 0.4px;
-    transition: 0.2s;
-}
-
-.navbar a:hover {
-    opacity: 0.8;
-}
     
 /* ========================================= */
 /* CLEAN BOOKMAKER NAV — SMALL + PREMIUM     */
