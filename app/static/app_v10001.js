@@ -408,7 +408,7 @@ function renderAccaHistory(grouped) {
                             </div>
 
                             <div class="acca-sub">
-                                Stake: £${(a.stake ?? 5).toFixed(2)} (E/W) • 
+                                Stake: £${((a.stake ?? 5) / 2).toFixed(2)} (E/W) • 
                                 Odds: ${oddsFraction}
                             </div>
                         </div>
