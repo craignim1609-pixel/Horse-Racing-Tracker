@@ -35,6 +35,11 @@
             </select>
         </div>
     </div>
+
+    <!-- ========================= -->
+    <!-- MONTHLY OVERVIEW (NEW)    -->
+    <!-- ========================= -->
+    <div id="monthlyOverview" class="monthly-overview-box"></div>
 </div>
 
 <!-- ========================= -->
@@ -74,6 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const yearSelect = document.getElementById("statsYear");
 
     async function refreshStats() {
+        loadMonthlyOverview();   // NEW
         loadGroupSummary();
         loadPlayerStats();
         loadStatsPageHistory();
