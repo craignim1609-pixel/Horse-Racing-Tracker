@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Form
 from sqlalchemy.orm import Session, joinedload
 from typing import List
 from app.database import get_db
@@ -8,23 +8,31 @@ router = APIRouter(prefix="/picks", tags=["Picks"])
 
 
 # ------------------------------------------------------------
-# CREATE PICK (MATCHES NEW PICK FORM)
+# CREATE PICK (FORM SUBMISSION)
 # ------------------------------------------------------------
 @router.post("/add", response_model=schemas.PickOut)
-def add_pick(data: schemas.PickCreate, db: Session = Depends(get_db)):
+def add_pick(
+    player_id: int = Form(...),
+    course: str = Form(...),
+    horse_name: str = Form(...),
+    horse_number: int = Form(...),
+    odds_fraction: str = Form(...),
+    race_time: str = Form(...),
+    db: Session = Depends(get_db)
+):
     # Validate player exists
-    player = db.query(models.Player).filter(models.Player.id == data.player_id).first()
+    player = db.query(models.Player).filter(models.Player.id == player_id).first()
     if not player:
         raise HTTPException(status_code=400, detail="Player not found")
 
     pick = models.Pick(
-        player_id=data.player_id,
-        course=data.course,
-        horse_name=data.horse_name,
-        horse_number=data.horse_number,
-        odds_fraction=data.odds_fraction,
-        race_time=data.race_time,
-        status=data.status  # <-- IMPORTANT: use status from form
+        player_id=player_id,
+        course=course,
+        horse_name=horse_name,
+        horse_number=horse_number,
+        odds_fraction=odds_fraction,
+        race_time=race_time,
+        status="Pending"   # <-- Always Pending on creation
     )
 
     db.add(pick)
