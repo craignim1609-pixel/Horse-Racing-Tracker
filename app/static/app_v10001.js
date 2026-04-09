@@ -351,9 +351,8 @@ function renderPlayerTiles(players) {
     });
 }
 
-
 /* ============================================================
-   COMPLETED ACCAS — CLEAN TILE VERSION
+   COMPLETED ACCAS — CLEAN PREMIUM TILE VERSION
    ============================================================ */
 function renderAccaHistory(grouped) {
     const container = document.getElementById("accaHistoryContainer");
@@ -371,7 +370,9 @@ function renderAccaHistory(grouped) {
         const accas = grouped[date];
 
         container.innerHTML += `
-            <h3 class="font-serif text-muted" style="margin-top:1.5rem;">${date}</h3>
+            <h3 class="font-serif text-muted" style="margin-top:1.5rem; text-align:center;">
+                ${date}
+            </h3>
         `;
 
         accas.forEach(a => {
@@ -392,8 +393,10 @@ function renderAccaHistory(grouped) {
             const picks = a.picks_json || [];
 
             container.innerHTML += `
-                <div class="acca-card ${statusClass}">
-                    <div class="acca-header">
+                <div class="acca-card ${statusClass}" style="text-align:center;">
+                    
+                    <!-- HEADER -->
+                    <div class="acca-header" style="display:flex; justify-content:space-between; align-items:center; text-align:left;">
                         <div>
                             <div class="acca-date">
                                 ${new Date(a.created_at).toLocaleDateString("en-GB", {
@@ -424,29 +427,44 @@ function renderAccaHistory(grouped) {
                         </div>
                     </div>
 
-                    <div class="acca-picks-grid">
+                    <!-- PICKS GRID (SIDE-BY-SIDE PLAYER TILES) -->
+                    <div class="acca-picks-grid" 
+                         style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-top:16px;">
+                        
                         ${picks.map(p => `
-                            <div class="pick-tile">
-                                <div class="pick-header">
-                                    <span class="pick-player">${p.player}</span>
-                                    <span class="pick-badge ${p.result.toLowerCase()}">${p.result}</span>
+                            <div class="pick-tile" 
+                                 style="background:rgba(255,255,255,0.05); border:1px solid rgba(247,198,0,0.25); border-radius:var(--radius-md); padding:12px; text-align:center;">
+                                
+                                <div class="pick-header" 
+                                     style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                                    <span class="pick-player" style="font-weight:700;">${p.player}</span>
+                                    <span class="pick-badge ${p.result.toLowerCase()}" 
+                                          style="padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700;">
+                                        ${p.result}
+                                    </span>
                                 </div>
 
-                                <div class="pick-course">${p.course}</div>
-
-                                <div class="pick-horse">
+                                <div class="pick-horse" style="font-weight:600;">
                                     ${p.horse_number ? `(${p.horse_number}) ` : ""}${p.horse}
                                 </div>
 
-                                <div class="pick-odds">@${p.odds}</div>
+                                <div class="pick-course" style="opacity:0.7; margin-top:4px;">
+                                    ${p.course}
+                                </div>
+
+                                <div class="pick-odds" style="margin-top:6px; font-weight:700;">
+                                    @${p.odds}
+                                </div>
                             </div>
                         `).join("")}
+
                     </div>
                 </div>
             `;
         });
     });
 }
+
 
 
 /* ============================================================
