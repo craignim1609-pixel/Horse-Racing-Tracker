@@ -3,9 +3,9 @@
 /* ========================================= */
 
 :root {
-    --bg: #0e2412;                /* Softened bookmaker green */
-    --card-bg: #0b1915;           /* Dark green card background */
-    --card-border: #d4af37;       /* Gold border */
+    --bg: #0e2412;
+    --card-bg: #0b1915;
+    --card-border: #d4af37;
     --text-main: #f5f5f5;
     --text-muted: #ccc;
     --gold: #d4af37;
@@ -38,9 +38,7 @@ body {
     color: var(--text-main);
     font-family: var(--font-body);
     padding: 20px;
-
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+}
 
 .page-content {
     padding: 30px;
@@ -130,11 +128,6 @@ h2 {
 }
 
 /* ========================================= */
-/* NAVBAR — MATCH PERFORMANCE CENTER STYLE   */
-/* ========================================= */
-
-    
-/* ========================================= */
 /* CLEAN BOOKMAKER NAV — SMALL + PREMIUM     */
 /* ========================================= */
 
@@ -157,12 +150,10 @@ h2 {
     position: relative;
 }
 
-/* Hover effect */
 .nav-bar a:hover {
     opacity: 0.8;
 }
 
-/* ACTIVE PAGE — GOLD GLOW UNDERLINE */
 .nav-bar a.active {
     color: #fff;
     position: relative;
@@ -181,7 +172,6 @@ h2 {
     box-shadow: 0 0 10px rgba(247,198,0,0.6);
 }
 
-
 /* ========================================= */
 /* PAGE HEADER (H1) — MATCH PERFORMANCE BOX  */
 /* ========================================= */
@@ -194,6 +184,50 @@ h2 {
     letter-spacing: 0.5px;
     color: var(--gold);
     text-shadow: 0 0 6px rgba(247,198,0,0.25);
+}
+
+/* ========================================= */
+/* FORM TILE — MATCHES STATS PAGE STYLE      */
+/* ========================================= */
+
+.form-tile {
+    max-width: 500px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(247,198,0,0.25);
+    border-radius: var(--radius-lg);
+    padding: 25px 30px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    backdrop-filter: blur(6px);
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.form-row label {
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.form-row input,
+.form-row select {
+    padding: 10px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    font-size: 1rem;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+    outline: none;
+    border-color: rgba(247,198,0,0.6);
+    box-shadow: 0 0 6px rgba(247,198,0,0.4);
 }
 
 /* ========================================= */
@@ -223,184 +257,10 @@ button:active,
     transform: scale(0.95);
 }
 
-/* Status buttons (WIN / PLACE / LOSE / NR) */
-.status-btn {
-    padding: 6px 10px;
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    font-weight: bold;
-    cursor: pointer;
-    border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.05);
-    color: #fff;
-    opacity: 0.5;
-    transition: 0.15s ease;
-}
-
-.status-btn.active {
-    opacity: 1;
-    color: #000;
-}
-
-.status-win.active { background: #0f7a0f; }
-.status-place.active { background: #0077cc; }
-.status-lose.active { background: #7a0f0f; }
-.status-nr.active { background: #777; }
-
 /* ========================================= */
-/* 7. CARD COMPONENTS (GLOBAL)               */
+/* (rest of your CSS continues unchanged...) */
 /* ========================================= */
 
-.card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-md);
-    padding: 15px;
-    box-shadow: var(--shadow-soft);
-    animation: fadeIn 0.35s ease forwards;
-}
-
-/* ========================================= */
-/* COMPLETED ACCAS — PREMIUM BOOKMAKER STYLE */
-/* ========================================= */
-
-/* ACCA CARD WRAPPER */
-.acca-card {
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(247,198,0,0.25);
-    border-radius: var(--radius-lg);
-    padding: 18px;
-    margin-bottom: 22px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    animation: fadeIn 0.35s ease forwards;
-    text-align: center;
-}
-
-/* HEADER */
-.acca-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-align: left;
-}
-
-.acca-date {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 4px;
-}
-
-.acca-sub {
-    opacity: 0.75;
-    font-size: 0.9rem;
-}
-
-/* RETURNS BOX */
-.acca-returns {
-    text-align: right;
-}
-
-.returns-label {
-    font-size: 0.75rem;
-    opacity: 0.7;
-    margin: 0;
-}
-
-.returns-value {
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin: 4px 0;
-}
-
-.returns-value.win { color: #00d26a; }
-.returns-value.place { color: #4aa3ff; }
-.returns-value.lose { color: #ff4a4a; }
-
-/* STATUS BADGE */
-.acca-status-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: var(--radius-md);
-    font-size: 0.75rem;
-    font-weight: 700;
-    border: 1px solid rgba(247,198,0,0.4);
-}
-
-.acca-badge-win { background: rgba(0,200,0,0.25); color: #00ff88; }
-.acca-badge-place { background: rgba(0,120,255,0.25); color: #4aa3ff; }
-.acca-badge-lose { background: rgba(255,0,0,0.25); color: #ff4a4a; }
-
-/* PICKS GRID — SIDE BY SIDE */
-.acca-picks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-    margin-top: 18px;
-}
-
-/* PICK TILE */
-.pick-tile {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(247,198,0,0.25);
-    border-radius: var(--radius-md);
-    padding: 12px;
-    text-align: center;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-}
-
-/* PICK HEADER */
-.pick-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-}
-
-.pick-player {
-    font-weight: 700;
-    font-size: 0.95rem;
-}
-
-/* RESULT BADGE */
-.pick-badge {
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 700;
-}
-
-.pick-badge.win { background: rgba(0,200,0,0.3); color: #00ff88; }
-.pick-badge.place { background: rgba(0,120,255,0.3); color: #4aa3ff; }
-.pick-badge.lose { background: rgba(255,0,0,0.3); color: #ff4a4a; }
-
-/* HORSE + COURSE + ODDS */
-.pick-horse {
-    font-weight: 600;
-    margin-top: 4px;
-}
-
-.pick-course {
-    opacity: 0.7;
-    margin-top: 2px;
-    font-size: 0.85rem;
-}
-
-.pick-odds {
-    margin-top: 6px;
-    font-weight: 700;
-    color: var(--gold);
-}
-
-/* DATE HEADERS */
-#accaHistoryContainer h3 {
-    text-align: center;
-    margin-top: 2rem;
-    margin-bottom: 0.5rem;
-    opacity: 0.8;
-}
-
-/* ========================================= */
-/* 9. ACCA STANDINGS                         */
-/* ========================================= */
 
 .acca-standings-list {
     display: flex;
