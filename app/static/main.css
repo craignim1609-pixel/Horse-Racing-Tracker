@@ -435,16 +435,16 @@ button:active,
 /* Desktop: 4 columns */
 @media (min-width: 1100px) {
     .player-stats-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 20px !important;
     }
 }
-
+    
 /* Medium screens: 3 columns */
 @media (min-width: 800px) and (max-width: 1099px) {
     .player-stats-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 18px;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 18px !important;
     }
 }
 
@@ -472,13 +472,6 @@ button:active,
     }
 }
 
-/* FORCE correct stats grid layout */
-.player-stats-grid {
-    display: grid !important;
-    grid-template-columns: repeat(5, 1fr) !important;
-    gap: 20px !important;
-}
-
 /* =============================== */
 /* PLAYER TILE NEW INTERNAL LAYOUT */
 /* =============================== */
@@ -487,6 +480,7 @@ button:active,
     background: #1e1e1e;
     padding: 18px;
     border-radius: var(--radius-lg);
+    border: 1px solid rgba(247,198,0,0.25);
     color: #fff;
     text-align: center;
     box-shadow: var(--shadow-soft);
