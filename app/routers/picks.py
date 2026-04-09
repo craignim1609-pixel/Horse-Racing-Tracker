@@ -7,8 +7,10 @@ from app import models, schemas
 router = APIRouter(prefix="/picks", tags=["Picks"])
 
 
-# CREATE PICK
-@router.post("/", response_model=schemas.PickOut)
+# ------------------------------------------------------------
+# CREATE PICK (MATCHES NEW PICK FORM)
+# ------------------------------------------------------------
+@router.post("/add", response_model=schemas.PickOut)
 def add_pick(data: schemas.PickCreate, db: Session = Depends(get_db)):
     # Validate player exists
     player = db.query(models.Player).filter(models.Player.id == data.player_id).first()
@@ -22,7 +24,7 @@ def add_pick(data: schemas.PickCreate, db: Session = Depends(get_db)):
         horse_number=data.horse_number,
         odds_fraction=data.odds_fraction,
         race_time=data.race_time,
-        status="Pending"
+        status=data.status  # <-- IMPORTANT: use status from form
     )
 
     db.add(pick)
@@ -40,7 +42,9 @@ def add_pick(data: schemas.PickCreate, db: Session = Depends(get_db)):
     return pick
 
 
-# GET CURRENT PENDING PICKS
+# ------------------------------------------------------------
+# GET CURRENT PICKS
+# ------------------------------------------------------------
 @router.get("/current", response_model=List[schemas.PickOut])
 def get_current_picks(db: Session = Depends(get_db)):
     picks = (
@@ -52,7 +56,9 @@ def get_current_picks(db: Session = Depends(get_db)):
     return picks
 
 
+# ------------------------------------------------------------
 # UPDATE PICK RESULT
+# ------------------------------------------------------------
 @router.patch("/{pick_id}/result", response_model=schemas.PickOut)
 def update_pick_result(
     pick_id: int,
@@ -66,7 +72,6 @@ def update_pick_result(
     pick.status = data.status
     db.commit()
 
-    # Reload WITH player relationship
     pick = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
@@ -77,7 +82,9 @@ def update_pick_result(
     return pick
 
 
+# ------------------------------------------------------------
 # CANCEL PICK (NR)
+# ------------------------------------------------------------
 @router.patch("/{pick_id}/cancel", response_model=schemas.PickOut)
 def cancel_pick(pick_id: int, db: Session = Depends(get_db)):
     pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
@@ -87,7 +94,6 @@ def cancel_pick(pick_id: int, db: Session = Depends(get_db)):
     pick.status = "NR"
     db.commit()
 
-    # Reload WITH player relationship
     pick = (
         db.query(models.Pick)
         .options(joinedload(models.Pick.player))
@@ -98,7 +104,9 @@ def cancel_pick(pick_id: int, db: Session = Depends(get_db)):
     return pick
 
 
-# DELETE PICK (needed for Accumulator page)
+# ------------------------------------------------------------
+# DELETE PICK
+# ------------------------------------------------------------
 @router.delete("/{pick_id}")
 def delete_pick(pick_id: int, db: Session = Depends(get_db)):
     pick = db.query(models.Pick).filter(models.Pick.id == pick_id).first()
