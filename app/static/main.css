@@ -421,7 +421,7 @@ button:active,
 }
 
 /* ========================================= */
-/* 10. PLAYER TILES + STATS PAGE             */
+/* 10. PLAYER TILES + STATS PAGE (GRID LAYOUT)            */
 /* ========================================= */
 
 .player-stats-grid {
@@ -435,16 +435,16 @@ button:active,
 /* Desktop: 4 columns */
 @media (min-width: 1100px) {
     .player-stats-grid {
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 20px !important;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
     }
 }
-    
+
 /* Medium screens: 3 columns */
 @media (min-width: 800px) and (max-width: 1099px) {
     .player-stats-grid {
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 18px !important;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
     }
 }
 
@@ -472,6 +472,7 @@ button:active,
     }
 }
 
+
 /* =============================== */
 /* PLAYER TILE NEW INTERNAL LAYOUT */
 /* =============================== */
@@ -480,7 +481,7 @@ button:active,
     background: rgba(255,255,255,0.05);
     padding: 18px;
     border-radius: var(--radius-lg);
-    border: 5px solid rgba(247,198,0,0.25);
+    border: 3px solid rgba(247,198,0,0.25);
     color: #fff;
     text-align: center;
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
