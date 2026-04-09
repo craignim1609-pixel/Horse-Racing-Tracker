@@ -37,20 +37,10 @@
     </div>
 
     <!-- ========================= -->
-    <!-- MONTHLY OVERVIEW (NEW)    -->
+    <!-- MONTHLY OVERVIEW          -->
     <!-- ========================= -->
     <div id="monthlyOverview" class="monthly-overview-box"></div>
 </div>
-
-<!-- ========================= -->
-<!-- SUMMARY TILES             -->
-<!-- ========================= -->
-<div id="statsSummary" class="stats-summary-grid"></div>
-
-<!-- ========================= -->
-<!-- GROUP SUMMARY TILES       -->
-<!-- ========================= -->
-<div id="groupSummary" class="stats-summary-grid"></div>
 
 <!-- ========================= -->
 <!-- PLAYER PERFORMANCE TILES  -->
@@ -79,8 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const yearSelect = document.getElementById("statsYear");
 
     async function refreshStats() {
-        loadMonthlyOverview();   // NEW
-        loadGroupSummary();
+        loadMonthlyOverview();
         loadPlayerStats();
         loadStatsPageHistory();
     }
