@@ -1338,32 +1338,43 @@ async function loadAccaPicks() {
 
         picks.forEach(p => {
             container.innerHTML += `
-                <div class="acca-card">
-                    <div class="acca-card-header">
-                        <span class="acca-player">${p.player.name}</span>
-                        <button class="acca-delete-btn" onclick="deleteAccaPick(${p.id})">✕</button>
-                    </div>
+    <div class="acca-pick-tile">
 
-                    <div class="acca-horse-line">
-                        ${p.horse_number ? `<span class="acca-horse-number">(${p.horse_number})</span>` : ""}
-                        <span class="acca-horse-name">${p.horse_name}</span>
-                        <span class="acca-horse-odds">@${p.odds_fraction}</span>
-                    </div>
+        <!-- HEADER: Player + Delete -->
+        <div class="pick-header">
+            <span class="pick-player">${p.player.name}</span>
+            <button class="pick-delete-btn" onclick="deleteAccaPick(${p.id})">✕</button>
+        </div>
 
-                    <div class="acca-meta">${p.course} — ${p.race_time}</div>
+        <!-- HORSE INFO -->
+        <div class="pick-horse-block">
+            <div class="pick-horse-line">
+                ${p.horse_number ? `<span class="pick-horse-number">(${p.horse_number})</span>` : ""}
+                <span class="pick-horse-name">${p.horse_name}</span>
+            </div>
+            <div class="pick-odds">@${p.odds_fraction}</div>
+        </div>
 
-                    <div class="acca-status-buttons">
-                        ${["Pending", "Win", "Place", "Lose", "NR"].map(s => `
-                            <button 
-                                class="acca-status-btn ${p.status === s ? 'active' : ''}"
-                                onclick="updateAccaStatus(${p.id}, '${s}')"
-                            >
-                                ${s.toUpperCase()}
-                            </button>
-                        `).join("")}
-                    </div>
-                </div>
-            `;
+        <!-- COURSE + TIME -->
+        <div class="pick-meta">
+            ${p.course} • ${p.race_time}
+        </div>
+
+        <!-- STATUS BUTTONS -->
+        <div class="pick-status-buttons">
+            ${["Pending", "Win", "Place", "Lose", "NR"].map(s => `
+                <button 
+                    class="pick-status-btn ${p.status === s ? 'active' : ''} status-${s.toLowerCase()}"
+                    onclick="updateAccaStatus(${p.id}, '${s}')"
+                >
+                    ${s}
+                </button>
+            `).join("")}
+        </div>
+
+    </div>
+`;
+
         });
 
     } catch (err) {
