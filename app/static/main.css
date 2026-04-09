@@ -258,9 +258,8 @@ button:active,
 }
 
 /* ========================================= */
-/* (rest of your CSS continues unchanged...) */
+/* ACCA STANDINGS                            */
 /* ========================================= */
-
 
 .acca-standings-list {
     display: flex;
@@ -291,7 +290,7 @@ button:active,
 }
 
 /* ========================================= */
-/* 10. PLAYER TILES + STATS PAGE GRID        */
+/* PLAYER TILES + STATS PAGE GRID            */
 /* ========================================= */
 
 .player-stats-grid {
@@ -451,6 +450,7 @@ button:active,
     font-weight: 700;
     margin-top: 4px;
 }
+
 /* ========================================= */
 /* COMPLETED ACCA CARDS — PREMIUM LAYOUT     */
 /* ========================================= */
@@ -465,17 +465,9 @@ button:active,
     backdrop-filter: blur(6px);
 }
 
-.acca-card-win {
-    border-color: #00c853;
-}
-
-.acca-card-place {
-    border-color: #4aa3ff;
-}
-
-.acca-card-lose {
-    border-color: #ff4a4a;
-}
+.acca-card-win { border-color: #00c853; }
+.acca-card-place { border-color: #4aa3ff; }
+.acca-card-lose { border-color: #ff4a4a; }
 
 .acca-header {
     display: flex;
@@ -614,48 +606,16 @@ button:active,
 }
 
 /* ========================================= */
-/* 11. RACE DAY COMPONENTS                   */
+/* ACCA PAGE — CURRENT PICKS (NEW TILES)     */
 /* ========================================= */
 
-.race-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-md);
-    padding: 14px;
-    margin-bottom: 14px;
-    box-shadow: var(--shadow-soft);
-}
-
-.race-card h3 {
-    color: var(--gold);
-    margin-bottom: 8px;
-    font-family: var(--font-title);
-}
-
-.horse-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.horse-item {
+.acca-pick-tile {
     background: rgba(255,255,255,0.05);
-    padding: 10px;
-    border-radius: var(--radius-md);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.horse-name {
-    font-weight: bold;
-    font-size: 1.05rem;
-}
-
-.horse-odds {
-    color: var(--gold);
-    font-weight: bold;
-}
+    border: 2px solid rgba(247,198,0,0.25);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 6
 
 /* ========================================= */
 /* 12. ACTIVITY CARDS                        */
