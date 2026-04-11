@@ -1,30 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Race Day</h1>
+<h1 class="page-title">Race Day</h1>
 
 <div class="race-container">
 
+    <!-- LEFT COLUMN: GROUP STATS -->
     <div class="left-panel">
         <h2>Group Stats</h2>
         <div id="raceStats" class="player-profile"></div>
     </div>
 
+    <!-- RIGHT COLUMN: RACE DAY TRACKER -->
     <div class="right-panel">
         <h2>Race Day Tracker</h2>
 
         <form id="raceForm" class="race-form">
 
+            <!-- PLAYER -->
             <div class="form-row">
                 <label for="playerSelect">Player</label>
                 <select id="playerSelect" name="player_id" required></select>
             </div>
 
+            <!-- COURSE -->
             <div class="form-row">
                 <label for="courseSelect">Course</label>
                 <input id="courseSelect" name="course" type="text" placeholder="e.g. Ascot" required>
             </div>
 
+            <!-- HORSE NUMBER + NAME -->
             <div class="horse-group">
                 <div>
                     <label for="horseNumber">#</label>
@@ -36,16 +41,19 @@
                 </div>
             </div>
 
+            <!-- RACE TIME -->
             <div class="form-row">
                 <label for="raceTime">Race Time</label>
                 <input id="raceTime" name="race_time" type="time" required>
             </div>
 
+            <!-- ODDS -->
             <div class="form-row">
                 <label for="odds">Odds</label>
                 <input id="odds" name="odds_fraction" placeholder="e.g. 4/1" required>
             </div>
 
+            <!-- STAKE + EACH WAY -->
             <div class="form-row" style="display:flex; gap:12px; align-items:flex-end;">
                 <div style="flex:1;">
                     <label for="stake">Stake (£)</label>
@@ -58,14 +66,17 @@
                 </div>
             </div>
 
+            <!-- SUBMIT -->
             <button type="submit" class="submit-btn">
                 Submit Bet Details
             </button>
 
         </form>
 
+        <!-- RESULT BOX -->
         <div id="raceResult" class="result-box"></div>
 
+        <!-- RECENT ACTIVITY -->
         <h2>Recent Activity</h2>
         <div id="recentActivity" class="activity-list">
             No race day bets recorded yet.
@@ -75,6 +86,7 @@
 
 </div>
 
+<!-- TODAY'S BETS -->
 <h2>Today's Bets</h2>
 <div id="raceList"></div>
 
