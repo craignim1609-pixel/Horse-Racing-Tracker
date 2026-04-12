@@ -1213,29 +1213,38 @@ function filterAll() {
 }
 
 function renderFilteredBets() {
-    let bets = [...ALL_BETS];
-
-    if (FILTER_MODE === "today") {
-        const today = new Date().toISOString().split("T")[0];
-        bets = bets.filter(b => b.date === today);
-    }
-
-    const grouped = groupBets(bets);
-    const icons = getIcons();
-
     const list = document.getElementById("raceList");
 
+    if (!FILTERED_BETS || FILTERED_BETS.length === 0) {
+        loadRaceStats();
+        return;
+    }
+
+    // Group filtered bets by player
+    const playerGroups = {};
+    FILTERED_BETS.forEach(b => {
+        const playerName = PLAYER_MAP[b.player_id] || "Unknown";
+        if (!playerGroups[playerName]) playerGroups[playerName] = [];
+        playerGroups[playerName].push(b);
+    });
+
+    // Build the player-grouped layout
     list.innerHTML = `
-        <div class="race-list-wrapper">
-            ${Object.keys(grouped).map(course => `
-                <div class="race-course-header">${course}</div>
+        <div class="player-bets-wrapper">
+            ${Object.keys(playerGroups).map(player => `
+                
+                <div class="player-bet-block">
 
-                ${Object.keys(grouped[course]).sort().map(time => `
-                    <div class="race-time-header">${time}</div>
+                    <h2 class="player-bet-header">${player}</h2>
 
-                    ${grouped[course][time].map(b => renderRaceCard(b, icons)).join("")}
+                    <div class="player-bet-inner">
+                        ${playerGroups[player]
+                            .sort((a, b) => a.race_time.localeCompare(b.race_time))
+                            .map(b => renderRaceCard(b))
+                            .join("")}
+                    </div>
 
-                `).join("")}
+                </div>
 
             `).join("")}
         </div>
