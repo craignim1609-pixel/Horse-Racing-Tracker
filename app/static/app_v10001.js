@@ -92,68 +92,57 @@ function calculateWinnings(bet) {
 }
 
 /* Render a single race card */
-function renderRaceCard(b, icons) {
+function renderRaceCard(bet) {
+    const status = bet.result || "Pending";
+
+    const badgeClass = {
+        "Pending": "pending",
+        "Win": "win",
+        "Place": "place",
+        "Lose": "lose",
+        "NR": "nr"
+    }[status] || "pending";
+
     return `
-        <div class="race-card">
+    <div class="race-bet-card acca-card acca-card-${badgeClass}">
 
-            <div class="race-stake">Stake: £${b.amount_bet}</div>
-
-            <div class="race-horse">
-                (${b.horse_number}) ${b.horse_name} @ ${b.odds_fraction}
+        <div class="acca-header">
+            <div>
+                <div class="acca-date">${bet.course}</div>
+                <div class="acca-sub">${bet.race_time}</div>
             </div>
 
-            <div class="race-meta">
-                Player: ${PLAYER_MAP[b.player_id]}<br>
-                Course: ${b.course}<br>
-                Race Time: ${b.race_time}<br>
-                Winnings: £${calculateWinnings(b).toFixed(2)}
+            <div class="acca-returns">
+                <p class="returns-label">Stake</p>
+                <p class="returns-value">£${bet.amount_bet.toFixed(2)}</p>
+                <span class="acca-status-badge acca-badge-${badgeClass}">${status}</span>
             </div>
-
-            <div class="race-status">
-                <span class="result-${b.result.toLowerCase()}">
-                    ${icons[b.result]} ${b.result}
-                </span>
-            </div>
-
-            <div class="race-buttons">
-                <button 
-                    type="button"
-                    class="status-btn status-win ${b.result === 'Win' ? 'active' : ''}"
-                    onclick="updateRaceResult(${b.id}, 'Win')">
-                    WIN
-                </button>
-
-                <button 
-                    type="button"
-                    class="status-btn status-place ${b.result === 'Place' ? 'active' : ''}"
-                    onclick="updateRaceResult(${b.id}, 'Place')">
-                    PLACE
-                </button>
-
-                <button 
-                    type="button"
-                    class="status-btn status-lose ${b.result === 'Lose' ? 'active' : ''}"
-                    onclick="updateRaceResult(${b.id}, 'Lose')">
-                    LOSE
-                </button>
-
-                <button 
-                    type="button"
-                    class="status-btn status-nr ${b.result === 'NR' ? 'active' : ''}"
-                    onclick="updateRaceResult(${b.id}, 'NR')">
-                    NR
-                </button>
-
-                <button 
-                    type="button"
-                    class="status-btn"
-                    style="background:#7a0f0f; opacity:1;"
-                    onclick="deleteRaceBet(${b.id})">
-                    DELETE
-                </button>
-            </div>
-
         </div>
+
+        <div class="acca-picks-grid">
+            <div class="pick-tile">
+
+                <div class="pick-header">
+                    <span class="pick-player">${PLAYER_MAP[bet.player_id] || "Player"}</span>
+                    <span class="pick-badge ${badgeClass}">${status}</span>
+                </div>
+
+                <div class="pick-course">${bet.course}</div>
+                <div class="pick-horse">(${bet.horse_number}) ${bet.horse_name}</div>
+                <div class="pick-odds">@ ${bet.odds_fraction}</div>
+
+            </div>
+        </div>
+
+        <div class="pick-status-buttons">
+            <button class="pick-status-btn" onclick="updateRaceResult(${bet.id}, 'Win')">WIN</button>
+            <button class="pick-status-btn" onclick="updateRaceResult(${bet.id}, 'Place')">PLACE</button>
+            <button class="pick-status-btn" onclick="updateRaceResult(${bet.id}, 'Lose')">LOSE</button>
+            <button class="pick-status-btn" onclick="updateRaceResult(${bet.id}, 'NR')">NR</button>
+            <button class="pick-status-btn delete" onclick="deleteRaceBet(${bet.id})">DELETE</button>
+        </div>
+
+    </div>
     `;
 }
 
