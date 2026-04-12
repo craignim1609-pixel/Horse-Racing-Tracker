@@ -258,35 +258,65 @@ button:active,
 }
 
 /* ========================================= */
-/* RACE DAY*/
+/* RACE DAY — BASE TILE STYLES               */
 /* ========================================= */
-/* Race card tile */
-.race-card {
+
+.race-card,
+.player-bet-block,
+.right-panel {
     background: rgba(255,255,255,0.05);
     border: 2px solid rgba(247,198,0,0.25);
     border-radius: var(--radius-lg);
-    padding: 18px 22px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     backdrop-filter: blur(6px);
 }
 
-/* Race title */
-.race-card h3 {
+.race-card {
+    padding: 18px 22px;
+}
+
+.right-panel {
+    padding: 16px 20px;
+    height: fit-content;
+}
+
+.player-bet-block {
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+/* ========================================= */
+/* RACE DAY — HEADERS                        */
+/* ========================================= */
+
+.race-card h3,
+.player-bet-header {
     color: var(--gold);
     font-family: var(--font-title);
-    font-size: 1.4rem;
-    margin-bottom: 12px;
     text-shadow: 0 0 6px rgba(0,0,0,0.35);
 }
 
-/* Horse list */
+.race-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+}
+
+.player-bet-header {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+/* ========================================= */
+/* RACE DAY — HORSE LIST + ITEMS             */
+/* ========================================= */
+
 .horse-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-/* Horse tile */
 .horse-item {
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(247,198,0,0.25);
@@ -298,7 +328,6 @@ button:active,
     box-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
-/* Horse name + number */
 .horse-name {
     font-weight: 700;
     font-size: 1.05rem;
@@ -310,13 +339,6 @@ button:active,
 
 .horse-number {
     opacity: 0.7;
-}
-
-/* Odds */
-.horse-odds {
-    color: var(--gold);
-    font-weight: 700;
-    font-size: 1rem;
 }
 
 .horse-odds {
@@ -340,6 +362,7 @@ button:active,
     transform: scale(1.05);
     opacity: 0.9;
 }
+
 /* ========================================= */
 /* RACE DAY — TWO COLUMN LAYOUT              */
 /* ========================================= */
@@ -351,22 +374,22 @@ button:active,
     margin-top: 20px;
 }
 
-/* Left column: race cards stacked */
 .left-panel {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* Right column: optional sidebar */
-.right-panel {
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(247,198,0,0.25);
-    border-radius: var(--radius-lg);
-    padding: 16px 20px;
-    height: fit-content;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+/* ========================================= */
+/* PLAYER GROUP TILES                        */
+/* ========================================= */
+
+.player-bet-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
+
 /* ========================================= */
 /* TODAY'S BETS — PREMIUM ACCA STYLE         */
 /* ========================================= */
