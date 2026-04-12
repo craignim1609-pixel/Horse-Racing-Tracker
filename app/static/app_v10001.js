@@ -654,13 +654,21 @@ async function updateRaceResult(id, result) {
    ============================================================ */
 
 async function loadRaceStats() {
+
+    // Ensure PLAYER_MAP is populated BEFORE grouping
+    if (Object.keys(PLAYER_MAP).length === 0) {
+        const res = await fetch(`${API}/players/`);
+        const players = await res.json();
+        players.forEach(p => PLAYER_MAP[p.id] = p.name);
+    }
+
     const listRes = await fetch(`${API}/api/raceday/`);
     ALL_BETS = await listRes.json();
     let bets = [...ALL_BETS];
 
     const list = document.getElementById("raceList");
 
-    /* GROUP BY PLAYER */
+    /* GROUP BY PLAYER (no sorting — Option A) */
     const playerGroups = {};
     bets.forEach(b => {
         const playerName = PLAYER_MAP[b.player_id] || "Unknown";
@@ -726,10 +734,13 @@ async function loadRaceStats() {
         }).join("")}
     `;
 
-    //renderFilteredBets();
+    // Only run filtering if a filter is active
+    if (FILTERED_BETS && FILTERED_BETS.length > 0) {
+        renderFilteredBets();
+    }
+
     loadRecentActivity();
 }
-
 
 /* ============================================================
    STATS PAGE — SUMMARY TILES
