@@ -660,24 +660,31 @@ async function loadRaceStats() {
 
     const list = document.getElementById("raceList");
 
-    const grouped = groupBets(bets);
-    const icons = getIcons();
+    /* GROUP BY PLAYER */
+    const playerGroups = {};
+    bets.forEach(b => {
+        const playerName = PLAYER_MAP[b.player_id] || "Unknown";
+        if (!playerGroups[playerName]) playerGroups[playerName] = [];
+        playerGroups[playerName].push(b);
+    });
 
-    const accaDecimal = calculateAccaOdds(ALL_BETS);
-    const ew = ewReturns(accaDecimal);
-
-    /* BUILD RACE LIST */
+    /* BUILD PLAYER-GROUPED LIST */
     list.innerHTML = `
-        <div class="race-list-wrapper">
-            ${Object.keys(grouped).map(course => `
-                <div class="race-course-header">${course}</div>
+        <div class="player-bets-wrapper">
+            ${Object.keys(playerGroups).map(player => `
+                
+                <div class="player-bet-block">
 
-                ${Object.keys(grouped[course]).sort().map(time => `
-                    <div class="race-time-header">${time}</div>
+                    <h2 class="player-bet-header">${player}</h2>
 
-                    ${grouped[course][time].map(b => renderRaceCard(b, icons)).join("")}
+                    <div class="player-bet-inner">
+                        ${playerGroups[player]
+                            .sort((a, b) => a.race_time.localeCompare(b.race_time))
+                            .map(b => renderRaceCard(b))
+                            .join("")}
+                    </div>
 
-                `).join("")}
+                </div>
 
             `).join("")}
         </div>
