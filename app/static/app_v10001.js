@@ -726,7 +726,7 @@ async function loadRaceStats() {
         }).join("")}
     `;
 
-    renderFilteredBets();
+    //renderFilteredBets();
     loadRecentActivity();
 }
 
