@@ -257,6 +257,9 @@ button:active,
     transform: scale(0.95);
 }
 
+/* ========================================= */
+/* RACE DAY*/
+/* ========================================= */
 /* Race card tile */
 .race-card {
     background: rgba(255,255,255,0.05);
@@ -363,6 +366,179 @@ button:active,
     padding: 16px 20px;
     height: fit-content;
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+/* ========================================= */
+/* TODAY'S BETS — PREMIUM ACCA STYLE         */
+/* ========================================= */
+
+.race-bet-card {
+    margin-bottom: 22px;
+    border-radius: var(--radius-lg);
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(247,198,0,0.25);
+    padding: 18px 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    backdrop-filter: blur(6px);
+}
+.acca-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.acca-date {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gold);
+}
+
+.acca-sub {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.acca-returns {
+    text-align: right;
+}
+
+.returns-label {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin: 0;
+}
+
+.returns-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+}
+/* Base badge */
+.acca-status-badge,
+.pick-badge {
+    padding: 4px 10px;
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Pending */
+.acca-badge-pending,
+.pick-badge.pending {
+    background: rgba(247,198,0,0.15);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+}
+
+/* Win */
+.acca-badge-win,
+.pick-badge.win {
+    background: rgba(0,150,0,0.2);
+    border: 1px solid #00cc00;
+    color: #00ff00;
+}
+
+/* Place */
+.acca-badge-place,
+.pick-badge.place {
+    background: rgba(0,120,255,0.2);
+    border: 1px solid #3399ff;
+    color: #66b3ff;
+}
+
+/* Lose */
+.acca-badge-lose,
+.pick-badge.lose {
+    background: rgba(255,0,0,0.2);
+    border: 1px solid #ff4a4a;
+    color: #ff6b6b;
+}
+
+/* NR */
+.acca-badge-nr,
+.pick-badge.nr {
+    background: rgba(180,180,180,0.2);
+    border: 1px solid #aaa;
+    color: #ccc;
+}
+.pick-tile {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(247,198,0,0.25);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    margin-top: 10px;
+}
+
+.pick-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.pick-player {
+    font-weight: 700;
+    color: #fff;
+}
+
+.pick-course {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.pick-horse {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+.pick-odds {
+    color: var(--gold);
+    font-weight: 700;
+    margin-top: 4px;
+}
+.pick-status-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.pick-status-btn {
+    flex: 1 1 calc(20% - 8px);
+    min-width: 70px;
+    padding: 8px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(247,198,0,0.25);
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+
+.pick-status-btn:hover {
+    background: var(--gold);
+    color: black;
+    transform: scale(1.05);
+}
+
+.pick-status-btn.delete {
+    border-color: #ff4a4a;
+    color: #ff4a4a;
+}
+
+.pick-status-btn.delete:hover {
+    background: #ff4a4a;
+    color: black;
+}
+
+@media (min-width: 900px) {
+    #raceList {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
 }
 
 /* ========================================= */
