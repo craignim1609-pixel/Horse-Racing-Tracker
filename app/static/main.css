@@ -386,9 +386,10 @@ button:active,
 
 .player-bet-inner {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 16px;
 }
+//if i want to increase/decrese the tile sizes change 6=(160px), 4=(220px).
 
 /* ========================================= */
 /* TODAY'S BETS — PREMIUM ACCA STYLE         */
