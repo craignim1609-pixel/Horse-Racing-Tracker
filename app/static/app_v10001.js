@@ -655,20 +655,27 @@ async function updateRaceResult(id, result) {
 
 async function loadRaceStats() {
 
-    // Ensure PLAYER_MAP is populated BEFORE grouping
+    /* ------------------------------------------------------------
+       1. Ensure PLAYER_MAP is populated BEFORE grouping
+       ------------------------------------------------------------ */
     if (Object.keys(PLAYER_MAP).length === 0) {
         const res = await fetch(`${API}/players/`);
         const players = await res.json();
         players.forEach(p => PLAYER_MAP[p.id] = p.name);
     }
 
+    /* ------------------------------------------------------------
+       2. Fetch all bets
+       ------------------------------------------------------------ */
     const listRes = await fetch(`${API}/api/raceday/`);
     ALL_BETS = await listRes.json();
-    let bets = [...ALL_BETS];
+    const bets = [...ALL_BETS];
 
     const list = document.getElementById("raceList");
 
-    /* GROUP BY PLAYER (no sorting — Option A) */
+    /* ------------------------------------------------------------
+       3. Group bets by player (no sorting — Option A)
+       ------------------------------------------------------------ */
     const playerGroups = {};
     bets.forEach(b => {
         const playerName = PLAYER_MAP[b.player_id] || "Unknown";
@@ -676,11 +683,12 @@ async function loadRaceStats() {
         playerGroups[playerName].push(b);
     });
 
-    /* BUILD PLAYER-GROUPED LIST */
+    /* ------------------------------------------------------------
+       4. Build player‑grouped Race Day list
+       ------------------------------------------------------------ */
     list.innerHTML = `
         <div class="player-bets-wrapper">
             ${Object.keys(playerGroups).map(player => `
-                
                 <div class="player-bet-block">
 
                     <h2 class="player-bet-header">${player}</h2>
@@ -693,21 +701,28 @@ async function loadRaceStats() {
                     </div>
 
                 </div>
-
             `).join("")}
         </div>
     `;
 
-    /* GROUP STATS */
+    /* ------------------------------------------------------------
+       5. Fetch group stats
+       ------------------------------------------------------------ */
     const statsRes = await fetch(`${API}/api/raceday/stats`);
     const stats = await statsRes.json();
 
     const box = document.getElementById("raceStats");
 
+    /* ------------------------------------------------------------
+       6. Calculate summary values
+       ------------------------------------------------------------ */
     const totalBets = bets.length;
     const wins = bets.filter(b => b.result === "Win").length;
     const strikeRate = totalBets ? (wins / totalBets * 100).toFixed(1) : 0;
 
+    /* ------------------------------------------------------------
+       7. Render existing Group Summary (will be replaced with new layout)
+       ------------------------------------------------------------ */
     box.innerHTML = `
         <h3>Group Summary</h3>
         Total Bets: ${totalBets}<br>
@@ -734,13 +749,19 @@ async function loadRaceStats() {
         }).join("")}
     `;
 
-    // Only run filtering if a filter is active
+    /* ------------------------------------------------------------
+       8. Apply filters if active
+       ------------------------------------------------------------ */
     if (FILTERED_BETS && FILTERED_BETS.length > 0) {
         renderFilteredBets();
     }
 
+    /* ------------------------------------------------------------
+       9. Load recent activity (safe-guarded inside function)
+       ------------------------------------------------------------ */
     loadRecentActivity();
 }
+
 
 /* ============================================================
    STATS PAGE — SUMMARY TILES
