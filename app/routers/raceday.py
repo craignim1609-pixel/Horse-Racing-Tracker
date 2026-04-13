@@ -29,18 +29,20 @@ def fractional_to_decimal(frac: str) -> float:
 
 
 # ------------------------------------------------------------
-# Helper: Calculate winnings
+# Helper: Calculate winnings (E/W with 1/5 odds)
 # ------------------------------------------------------------
 def calculate_winnings(bet: models.RaceDay) -> float:
     dec = fractional_to_decimal(bet.odds_fraction)
     stake = float(bet.amount_bet)
 
-    # If not each-way, use normal logic
+    # Place odds = 1/5
+    place_dec = ((dec - 1) * 0.2) + 1
+
+    # If NOT each-way
     if not bet.each_way:
         if bet.result == "Win":
             return stake * dec
         if bet.result == "Place":
-            place_dec = ((dec - 1) / 4) + 1
             return stake * place_dec
         if bet.result == "NR":
             return stake
@@ -49,9 +51,6 @@ def calculate_winnings(bet: models.RaceDay) -> float:
     # EACH-WAY LOGIC
     win_stake = stake
     place_stake = stake
-
-    # Place odds = 1/4
-    place_dec = ((dec - 1) / 4) + 1
 
     if bet.result == "Win":
         win_return = win_stake * dec
@@ -62,9 +61,10 @@ def calculate_winnings(bet: models.RaceDay) -> float:
         return place_stake * place_dec
 
     if bet.result == "NR":
-        return stake * 2  # both stakes refunded
+        return stake * 2  # refund both stakes
 
     return 0.0
+
 
 # ------------------------------------------------------------
 # CREATE RACE DAY BET
@@ -75,7 +75,16 @@ def add_race_day_bet(data: schemas.RaceDayCreate, db: Session = Depends(get_db))
     if not player:
         raise HTTPException(status_code=400, detail="Player not found")
 
-    bet = models.RaceDay(**data.dict())
+    # Calculate total stake (E/W doubles it)
+    total_stake = data.amount_bet * (2 if data.each_way else 1)
+
+    bet = models.RaceDay(
+        **data.dict(),
+        total_stake=total_stake,
+        return_amount=0,
+        result="Pending"
+    )
+
     db.add(bet)
     db.commit()
     db.refresh(bet)
@@ -133,6 +142,8 @@ def update_race_result(
         raise HTTPException(status_code=404, detail="Bet not found")
 
     bet.result = data.result
+    bet.return_amount = calculate_winnings(bet)
+
     db.commit()
 
     # Reload with player relationship
@@ -157,8 +168,8 @@ def race_day_stats(db: Session = Depends(get_db)):
     for p in players:
         bets = db.query(models.RaceDay).filter(models.RaceDay.player_id == p.id).all()
 
-        total_stake = sum(float(b.amount_bet) for b in bets)
-        total_return = sum(calculate_winnings(b) for b in bets)
+        total_stake = sum(float(b.total_stake) for b in bets)
+        total_return = sum(float(b.return_amount) for b in bets)
         profit = total_return - total_stake
 
         player_stats.append({
