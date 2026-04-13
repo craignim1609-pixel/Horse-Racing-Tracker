@@ -57,6 +57,10 @@ class RaceDay(Base):
     each_way = Column(Boolean, default=False)
     result = Column(String, default="Pending")  # Win / Place / Lose / NR / Pending
 
+    # NEW FIELDS REQUIRED FOR E/W LOGIC
+    total_stake = Column(Float, default=0)      # stake * 2 if E/W
+    return_amount = Column(Float, default=0)    # calculated after result
+
     # Relationship
     player = relationship("Player", back_populates="racedays")
 
