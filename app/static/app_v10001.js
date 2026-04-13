@@ -103,6 +103,16 @@ function renderRaceCard(bet) {
         "NR": "nr"
     }[status] || "pending";
 
+    // --- NEW: Correct E/W stake display ---
+    const stakeLabel = bet.each_way
+        ? `£${bet.amount_bet.toFixed(2)} E/W`
+        : `£${bet.amount_bet.toFixed(2)}`;
+
+    const stakeLarge = bet.total_stake
+        ? `£${bet.total_stake.toFixed(2)}`
+        : `£${bet.amount_bet.toFixed(2)}`;
+    // --------------------------------------
+
     return `
     <div class="race-bet-card acca-card acca-card-${badgeClass}">
 
@@ -114,7 +124,8 @@ function renderRaceCard(bet) {
 
             <div class="acca-returns">
                 <p class="returns-label">Stake</p>
-                <p class="returns-value">£${bet.amount_bet.toFixed(2)}</p>
+                <p class="returns-value">${stakeLabel}</p>
+                <p class="returns-total">${stakeLarge}</p>
                 <span class="acca-status-badge acca-badge-${badgeClass}">${status}</span>
             </div>
         </div>
@@ -145,6 +156,7 @@ function renderRaceCard(bet) {
     </div>
     `;
 }
+
 
 /* ============================================================
    HOME PAGE
