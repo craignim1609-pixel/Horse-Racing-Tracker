@@ -70,7 +70,7 @@ h1 {
 h2 {
     font-size: 22px;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-letter-spacing: 0.5px;
     margin-bottom: 14px;
     color: var(--gold);
     text-shadow: 0 0 4px rgba(0,0,0,0.35);
@@ -103,7 +103,6 @@ h2 {
     flex-direction: column;
     gap: 4px;
 }
-
 /* ========================================= */
 /* 4. LAYOUT HELPERS                         */
 /* ========================================= */
@@ -156,7 +155,6 @@ h2 {
 
 .nav-bar a.active {
     color: #fff;
-    position: relative;
     text-shadow: 0 0 8px rgba(247,198,0,0.7);
 }
 
@@ -185,7 +183,6 @@ h2 {
     color: var(--gold);
     text-shadow: 0 0 6px rgba(247,198,0,0.25);
 }
-
 /* ========================================= */
 /* FORM TILE — MATCHES STATS PAGE STYLE      */
 /* ========================================= */
@@ -256,7 +253,6 @@ button:active,
 .submit-btn:active {
     transform: scale(0.95);
 }
-
 /* ========================================= */
 /* RACE DAY — BASE TILE STYLES               */
 /* ========================================= */
@@ -389,7 +385,10 @@ button:active,
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 16px;
 }
-//if i want to increase/decrese the tile sizes change 6=(160px), 4=(220px).
+/* To adjust tile size:
+   - 160px = more tiles per row (smaller)
+   - 220px = fewer tiles per row (larger)
+*/
 
 /* ========================================= */
 /* TODAY'S BETS — PREMIUM ACCA STYLE         */
@@ -404,6 +403,7 @@ button:active,
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     backdrop-filter: blur(6px);
 }
+
 .acca-header {
     display: flex;
     justify-content: space-between;
@@ -437,134 +437,6 @@ button:active,
     font-weight: 700;
     margin: 0;
 }
-/* Base badge */
-.acca-status-badge,
-.pick-badge {
-    padding: 4px 10px;
-    border-radius: var(--radius-md);
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-/* Pending */
-.acca-badge-pending,
-.pick-badge.pending {
-    background: rgba(247,198,0,0.15);
-    border: 1px solid var(--gold);
-    color: var(--gold);
-}
-
-/* Win */
-.acca-badge-win,
-.pick-badge.win {
-    background: rgba(0,150,0,0.2);
-    border: 1px solid #00cc00;
-    color: #00ff00;
-}
-
-/* Place */
-.acca-badge-place,
-.pick-badge.place {
-    background: rgba(0,120,255,0.2);
-    border: 1px solid #3399ff;
-    color: #66b3ff;
-}
-
-/* Lose */
-.acca-badge-lose,
-.pick-badge.lose {
-    background: rgba(255,0,0,0.2);
-    border: 1px solid #ff4a4a;
-    color: #ff6b6b;
-}
-
-/* NR */
-.acca-badge-nr,
-.pick-badge.nr {
-    background: rgba(180,180,180,0.2);
-    border: 1px solid #aaa;
-    color: #ccc;
-}
-.pick-tile {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(247,198,0,0.25);
-    border-radius: var(--radius-md);
-    padding: 12px 14px;
-    margin-top: 10px;
-}
-
-.pick-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-}
-
-.pick-player {
-    font-weight: 700;
-    color: #fff;
-}
-
-.pick-course {
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-.pick-horse {
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin-top: 4px;
-}
-
-.pick-odds {
-    color: var(--gold);
-    font-weight: 700;
-    margin-top: 4px;
-}
-.pick-status-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 16px;
-}
-
-.pick-status-btn {
-    flex: 1 1 calc(20% - 8px);
-    min-width: 70px;
-    padding: 8px;
-    border-radius: var(--radius-md);
-    border: 1px solid rgba(247,198,0,0.25);
-    background: rgba(255,255,255,0.05);
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.15s ease;
-}
-
-.pick-status-btn:hover {
-    background: var(--gold);
-    color: black;
-    transform: scale(1.05);
-}
-
-.pick-status-btn.delete {
-    border-color: #ff4a4a;
-    color: #ff4a4a;
-}
-
-.pick-status-btn.delete:hover {
-    background: #ff4a4a;
-    color: black;
-}
-
-@media (min-width: 900px) {
-    #raceList {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-}
-
 /* ========================================= */
 /* ACCA STANDINGS                            */
 /* ========================================= */
@@ -596,6 +468,7 @@ button:active,
     text-transform: uppercase;
     border: 1px solid var(--gold);
 }
+
 /* ========================================= */
 /* ACCA PAGE — TWO COLUMN LAYOUT             */
 /* ========================================= */
@@ -661,169 +534,31 @@ button:active,
 .pick-status-btn {
     flex: 1 1 calc(20% - 6px);
     min-width: 70px;
-    text-align: center;
-}
-
-/* ========================================= */
-/* PLAYER TILES + STATS PAGE GRID            */
-/* ========================================= */
-
-.player-stats-grid {
-    display: grid;
-    width: 100%;
-    gap: 16px;
-    margin: 20px 0 35px 0;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-}
-
-/* Desktop: 4 columns */
-@media (min-width: 1100px) {
-    .player-stats-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-    }
-}
-
-/* Medium screens: 3 columns */
-@media (min-width: 800px) and (max-width: 1099px) {
-    .player-stats-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 18px;
-    }
-}
-
-/* Tablets: 2 columns */
-@media (min-width: 600px) and (max-width: 799px) {
-    .player-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-    }
-}
-
-/* Phones: 2 columns */
-@media (max-width: 599px) {
-    .player-stats-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-}
-
-/* Small phones: 1 column */
-@media (max-width: 420px) {
-    .player-stats-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-}
-
-/* Player tile internal layout */
-.player-tile {
-    background: rgba(255,255,255,0.05);
-    padding: 18px;
-    border-radius: var(--radius-lg);
-    border: 3px solid rgba(247,198,0,0.25);
-    color: #fff;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.player-header h3 {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 6px;
-    letter-spacing: 0.5px;
-}
-
-.player-header .month-wins {
-    font-size: 0.9rem;
-    opacity: 0.8;
-    margin: 0;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-}
-
-.stat-box {
-    background: rgba(255,255,255,0.05);
-    padding: 10px 6px;
+    padding: 8px;
     border-radius: var(--radius-md);
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.stat-label {
-    font-size: 0.75rem;
-    opacity: 0.7;
-    letter-spacing: 0.5px;
-}
-
-.stat-value {
-    font-size: 1.2rem;
-    font-weight: 700;
-}
-
-.stat-box.wins .stat-value { color: #f7c600; }
-.stat-box.places .stat-value { color: #4aa3ff; }
-.stat-box.losses .stat-value { color: #ff4a4a; }
-.stat-box.nr .stat-value { color: #aaa; }
-
-/* ========================================= */
-/* PERFORMANCE CENTRE                        */
-/* ========================================= */
-
-.performance-center-box {
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(247,198,0,0.25);
-    border-radius: var(--radius-lg);
-    padding: 20px 24px;
-    margin-bottom: 30px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-}
-
-.performance-center-box .page-title {
-    margin: 0 0 16px 0;
-    font-size: 1.8rem;
-    font-weight: 700;
-    text-align: center;
-    letter-spacing: 0.5px;
-}
-
-.performance-center-box .stats-filter-bar {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.monthly-overview-box {
-    margin-top: 20px;
-    padding: 16px;
-    background: rgba(255,255,255,0.05);
     border: 1px solid rgba(247,198,0,0.25);
-    border-radius: var(--radius-md);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 16px;
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
     text-align: center;
+    transition: 0.15s ease;
 }
 
-.monthly-overview-box .stat-label {
-    font-size: 0.85rem;
-    opacity: 0.7;
-    letter-spacing: 0.5px;
+.pick-status-btn:hover {
+    background: var(--gold);
+    color: black;
+    transform: scale(1.05);
 }
 
-.monthly-overview-box .stat-value {
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-top: 4px;
+.pick-status-btn.delete {
+    border-color: #ff4a4a;
+    color: #ff4a4a;
+}
+
+.pick-status-btn.delete:hover {
+    background: #ff4a4a;
+    color: black;
 }
 
 /* ========================================= */
@@ -911,6 +646,10 @@ button:active,
     color: #ff4a4a;
 }
 
+/* ========================================= */
+/* ACCA PICKS GRID (COMPLETED ACCAS)         */
+/* ========================================= */
+
 .acca-picks-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -979,19 +718,170 @@ button:active,
     font-size: 0.9rem;
     opacity: 0.8;
 }
+/* ========================================= */
+/* PLAYER TILES + STATS PAGE GRID            */
+/* ========================================= */
+
+.player-stats-grid {
+    display: grid;
+    width: 100%;
+    gap: 16px;
+    margin: 20px 0 35px 0;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+/* Desktop: 4 columns */
+@media (min-width: 1100px) {
+    .player-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+}
+
+/* Medium screens: 3 columns */
+@media (min-width: 800px) and (max-width: 1099px) {
+    .player-stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+}
+
+/* Tablets: 2 columns */
+@media (min-width: 600px) and (max-width: 799px) {
+    .player-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+/* Phones: 2 columns */
+@media (max-width: 599px) {
+    .player-stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+}
+
+/* Small phones: 1 column */
+@media (max-width: 420px) {
+    .player-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+/* Player tile internal layout */
+.player-tile {
+    background: rgba(255,255,255,0.05);
+    padding: 18px;
+    border-radius: var(--radius-lg);
+    border: 3px solid rgba(247,198,0,0.25);
+    color: #fff;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.player-header h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+.player-header .month-wins {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin: 0;
+}
+
+/* Stats inside each player tile */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.stat-box {
+    background: rgba(255,255,255,0.05);
+    padding: 10px 6px;
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* Colour coding */
+.stat-box.wins .stat-value { color: #f7c600; }
+.stat-box.places .stat-value { color: #4aa3ff; }
+.stat-box.losses .stat-value { color: #ff4a4a; }
+.stat-box.nr .stat-value { color: #aaa; }
 
 /* ========================================= */
-/* ACCA PAGE — CURRENT PICKS (NEW TILES)     */
+/* PERFORMANCE CENTRE                        */
 /* ========================================= */
 
-.acca-pick-tile {
+.performance-center-box {
     background: rgba(255,255,255,0.05);
     border: 2px solid rgba(247,198,0,0.25);
     border-radius: var(--radius-lg);
-    padding: 16px 18px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 6
+    padding: 20px 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
 
+.performance-center-box .page-title {
+    margin: 0 0 16px 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.performance-center-box .stats-filter-bar {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Monthly overview grid */
+.monthly-overview-box {
+    margin-top: 20px;
+    padding: 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(247,198,0,0.25);
+    border-radius: var(--radius-md);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+    text-align: center;
+}
+
+.monthly-overview-box .stat-label {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    letter-spacing: 0.5px;
+}
+
+.monthly-overview-box .stat-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-top: 4px;
+}
 /* ========================================= */
 /* 12. ACTIVITY CARDS                        */
 /* ========================================= */
@@ -1052,6 +942,7 @@ button:active,
     max-width: 550px;
     box-shadow: var(--shadow-gold);
     animation: fadeIn 0.35s ease forwards;
+    position: relative;
 }
 
 .modal h2 {
@@ -1129,10 +1020,10 @@ button:active,
     font-weight: bold;
 }
 
-.heatmap-low { background: #1e4620; }
-.heatmap-mid { background: #2e6b2f; }
+.heatmap-low  { background: #1e4620; }
+.heatmap-mid  { background: #2e6b2f; }
 .heatmap-high { background: #3f8f3f; }
-.heatmap-max { background: #4fbf4f; }
+.heatmap-max  { background: #4fbf4f; }
 
 /* ========================================= */
 /* 15. CHARTS (BAR, LINE)                    */
@@ -1211,61 +1102,6 @@ button:active,
 .comparison-stat:last-child {
     border-bottom: none;
 }
-
-/* ========================================= */
-/* 17. FORMS                                 */
-/* ========================================= */
-
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-top: 20px;
-}
-
-input,
-select,
-textarea {
-    padding: 10px;
-    border-radius: var(--radius-md);
-    border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.05);
-    color: var(--text-main);
-    font-size: 1rem;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-    outline: 2px solid var(--gold);
-}
-
-.form-label {
-    font-weight: bold;
-    color: var(--gold);
-    margin-bottom: -6px;
-}
-
-.form-section-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--gold);
-    margin-top: 20px;
-    border-bottom: 1px solid rgba(247,198,0,0.35);
-    padding-bottom: 6px;
-}
-
-.success-banner {
-    background: rgba(0, 128, 0, 0.25);
-    border: 1px solid #00c853;
-    padding: 12px 16px;
-    margin-bottom: 20px;
-    border-radius: var(--radius-md);
-    color: #00e676;
-    font-weight: 600;
-    text-align: center;
-}
-
 /* ========================================= */
 /* 18. RESPONSIVE RULES                      */
 /* ========================================= */
