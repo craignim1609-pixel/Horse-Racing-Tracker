@@ -220,11 +220,26 @@ h2 {
     font-size: 1rem;
 }
 
-/* FIX: Horse number + horse name fields */
+/* HORSE NUMBER + NAME FIXES */
+.horse-group div {
+    display: flex;
+    flex-direction: column;
+}
+
+.horse-group label {
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
 .horse-group input {
+    width: 100%;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.2);
     background: rgba(255,255,255,0.05);
     color: #fff;
-    border: 1px solid rgba(255,255,255,0.2);
+    font-size: 1rem;
 }
 
 /* FIX: Dropdown background + text colour */
