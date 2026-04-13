@@ -810,8 +810,7 @@ document.getElementById("completeDayBtn").onclick = async () => {
         `Profit: £${data.group.profit.toFixed(2)}`
     );
 
-    window.location.href = "/stats.html";
-
+    window.location.href = "/stats";
 };
 
 
