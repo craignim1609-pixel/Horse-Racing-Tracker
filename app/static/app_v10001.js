@@ -156,8 +156,6 @@ function renderRaceCard(bet) {
     </div>
     `;
 }
-
-
 /* ============================================================
    HOME PAGE
    ============================================================ */
@@ -181,6 +179,8 @@ async function loadAccumulator() {
     const data = await res.json();
     document.getElementById("accumulator").innerHTML = JSON.stringify(data, null, 2);
 }
+
+
 /* ============================================================
    ADD PICK
    ============================================================ */
@@ -238,6 +238,7 @@ async function loadPlayersForAddPick() {
     });
 }
 
+
 /* ============================================================
    CURRENT PICKS
    ============================================================ */
@@ -284,324 +285,6 @@ async function updateResult(id, result) {
 
     loadCurrentPicks();
 }
-
-/* ============================================================
-   STATS PAGE
-   ============================================================ */
-
-/* ============================================================
-   DASHBOARD LOADER (month + year)
-   ============================================================ */
-async function loadStatsDashboard(month, year) {
-    try {
-        const res = await fetch(`${API}/stats/dashboard?month=${month}&year=${year}`);
-        if (!res.ok) {
-            console.error("Failed to load stats dashboard", res.status);
-            return;
-        }
-
-        const data = await res.json();
-        renderPlayerTiles(data.players || []);
-    } catch (err) {
-        console.error("Error loading stats dashboard", err);
-    }
-}
-
-
-/* ============================================================
-   PLAYER TILES — NEW PREMIUM LAYOUT
-   ============================================================ */
-function renderPlayerTiles(players) {
-    const container = document.getElementById("playerStatsContainer");
-    container.innerHTML = "";
-
-    players.forEach(p => {
-        const tile = document.createElement("div");
-        tile.className = "player-tile";
-
-        tile.innerHTML = `
-            <div class="player-header">
-                <h3>${p.player}</h3>
-                <p class="month-wins">Month Wins: ${p.wins}</p>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-box wins">
-                    <span class="stat-label">WINS</span>
-                    <span class="stat-value">${p.wins}</span>
-                </div>
-
-                <div class="stat-box places">
-                    <span class="stat-label">PLACES</span>
-                    <span class="stat-value">${p.places}</span>
-                </div>
-
-                <div class="stat-box losses">
-                    <span class="stat-label">LOSSES</span>
-                    <span class="stat-value">${p.loses}</span>
-                </div>
-
-                <div class="stat-box nr">
-                    <span class="stat-label">NR</span>
-                    <span class="stat-value">${p.nr}</span>
-                </div>
-            </div>
-        `;
-
-        container.appendChild(tile);
-    });
-}
-
-/* ============================================================
-   COMPLETED ACCAS — PREMIUM BOOKMAKER LAYOUT
-   ============================================================ */
-function renderAccaHistory(grouped) {
-    const container = document.getElementById("accaHistoryContainer");
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    const dates = Object.keys(grouped);
-    if (!dates.length) {
-        container.innerHTML = `<p>No completed accumulators yet.</p>`;
-        return;
-    }
-
-    dates.forEach(date => {
-        const accas = grouped[date];
-
-        container.innerHTML += `
-            <h3 class="font-serif text-muted" style="margin-top:1.5rem;">${date}</h3>
-        `;
-
-        accas.forEach(a => {
-            const statusClass =
-                a.status === "win" ? "acca-card-win" :
-                a.status === "place" ? "acca-card-place" :
-                "acca-card-lose";
-
-            const badgeClass =
-                a.status === "win" ? "acca-badge-win" :
-                a.status === "place" ? "acca-badge-place" :
-                "acca-badge-lose";
-
-            const oddsFraction = (a.combined_decimal_odds != null)
-                ? `${(a.combined_decimal_odds - 1).toFixed(2)}/1`
-                : "—";
-
-            const picks = a.picks_json || [];
-
-            container.innerHTML += `
-                <div class="acca-card ${statusClass}">
-                    <div class="acca-header">
-                        <div>
-                            <div class="acca-date">
-                                ${new Date(a.created_at).toLocaleDateString("en-GB", {
-                                    weekday: "long",
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric"
-                                })}
-                            </div>
-
-                            <div class="acca-sub">
-                                Stake: £${(a.stake ?? 5).toFixed(2)} (E/W) • 
-                                Odds: ${oddsFraction}
-                            </div>
-                        </div>
-
-                        <div class="acca-returns">
-                            <p class="returns-label">Returns</p>
-                            <p class="returns-value ${a.status}">
-                                £${(a.total_return ?? 0).toFixed(2)}
-                            </p>
-
-                            <span class="acca-status-badge ${badgeClass}">
-                                ${a.status === "win" ? "WINNER" :
-                                  a.status === "lose" ? "BUSTED" :
-                                  a.status.toUpperCase()}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="acca-picks-grid">
-                        ${picks.map(p => `
-                            <div class="pick-tile">
-                                <div class="pick-header">
-                                    <span class="pick-player">${p.player}</span>
-                                    <span class="pick-badge ${p.result.toLowerCase()}">${p.result}</span>
-                                </div>
-
-                                <div class="pick-course">${p.course}</div>
-
-                                <div class="pick-horse">
-                                    ${p.horse_number ? `(${p.horse_number}) ` : ""}${p.horse}
-                                </div>
-
-                                <div class="pick-odds">@${p.odds}</div>
-                            </div>
-                        `).join("")}
-                    </div>
-                </div>
-            `;
-        });
-    });
-}
-
-
-/* ============================================================
-   STATS PAGE — LOAD LAST 5 COMPLETED ACCAS
-   ============================================================ */
-async function loadStatsPageHistory() {
-    try {
-        const container = document.getElementById("accaHistoryContainer");
-        if (!container) return;
-
-        const res = await fetch(`${API}/accumulator/history`);
-        let data = await res.json();
-
-        data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        data = data.slice(0, 5);
-
-        const grouped = {};
-        data.forEach(h => {
-            const date = new Date(h.created_at).toLocaleDateString();
-            if (!grouped[date]) grouped[date] = [];
-            grouped[date].push(h);
-        });
-
-        renderAccaHistory(grouped);
-
-    } catch (err) {
-        console.error("Failed to load stats history", err);
-    }
-}
-
-
-/* ============================================================
-   MONTHLY OVERVIEW (TOP BOX)
-   ============================================================ */
-async function loadMonthlyOverview() {
-    const month = Number(document.getElementById("statsMonth").value);
-    const year = Number(document.getElementById("statsYear").value);
-
-    const res = await fetch(`${API}/accumulator/history`);
-    const accas = await res.json();
-
-    let total = 0;
-    let wins = 0;
-    let places = 0;
-    let losses = 0;
-    let profit = 0;
-
-    accas.forEach(a => {
-        const d = new Date(a.created_at);
-        if (d.getMonth() + 1 !== month || d.getFullYear() !== year) return;
-
-        total++;
-
-        if (a.status === "win") wins++;
-        if (a.status === "place") places++;
-        if (a.status === "lose") losses++;
-
-        // FIXED PROFIT CALCULATION
-        const stake = Number(a.stake || 0);
-        const returns = Number(a.total_return || 0);
-        profit += (returns - stake);
-    });
-
-    const strikeRate = total > 0 ? ((wins / total) * 100).toFixed(1) : "0.0";
-
-    document.getElementById("monthlyOverview").innerHTML = `
-        <div>
-            <div class="stat-label">Total Accas</div>
-            <div class="stat-value">${total}</div>
-        </div>
-
-        <div>
-            <div class="stat-label">Wins</div>
-            <div class="stat-value">${wins}</div>
-        </div>
-
-        <div>
-            <div class="stat-label">Places</div>
-            <div class="stat-value">${places}</div>
-        </div>
-
-        <div>
-            <div class="stat-label">Losses</div>
-            <div class="stat-value">${losses}</div>
-        </div>
-
-        <div>
-            <div class="stat-label">Strike Rate</div>
-            <div class="stat-value">${strikeRate}%</div>
-        </div>
-
-        <div>
-            <div class="stat-label">Profit</div>
-            <div class="stat-value">£${profit.toFixed(2)}</div>
-        </div>
-    `;
-}
-
-
-/* ============================================================
-   PLAYER DETAILS (unchanged)
-   ============================================================ */
-function setupPlayerDetailsForm() {
-    const form = document.getElementById("playerForm");
-    const profile = document.getElementById("playerProfile");
-
-    form.onsubmit = async (e) => {
-        e.preventDefault();
-
-        const name = new FormData(form).get("name");
-
-        const res = await fetch(`${API}/stats/player/${name}`);
-        const data = await res.json();
-
-        const profitColor =
-            data.profit > 0 ? "#0f7a0f" :
-            data.profit < 0 ? "#7a0f0f" :
-            "#555";
-
-        const formBadges = data.recent_form.map(r => {
-            const cls =
-                r === "W" ? "form-win" :
-                r === "P" ? "form-place" :
-                r === "L" ? "form-lose" :
-                "form-nr";
-            return `<span class="${cls}">${r}</span>`;
-        }).join("");
-
-        profile.innerHTML = `
-            <div class="profile-header">${data.player}</div>
-
-            <div class="profile-section" style="border-left: 6px solid ${profitColor}">
-                <h3>Overall Performance</h3>
-                Wins: ${data.wins}<br>
-                Places: ${data.places}<br>
-                Loses: ${data.loses}<br>
-                NR: ${data.nr}<br>
-                Win Rate: ${(data.win_rate * 100).toFixed(1)}%
-            </div>
-
-            <div class="profile-section">
-                <h3>Biggest Priced Winner</h3>
-                ${data.biggest_winner ? `
-                    ${data.biggest_winner.horse_name} (${data.biggest_winner.odds_fraction})
-                ` : "No wins yet."}
-            </div>
-
-            <div class="profile-section">
-                <h3>Recent Form</h3>
-                <div class="recent-form">${formBadges}</div>
-            </div>
-        `;
-    };
-}
-
 /* ============================================================
    RACE DAY — FORM SETUP
    ============================================================ */
@@ -786,173 +469,352 @@ async function loadRaceStats() {
 }
 
 
-
 /* ============================================================
-   RACE DAY — COMPLETE DAY BUTTON
+   RACE DAY — COMPLETE DAY BUTTON (SAFE WRAPPER)
    ============================================================ */
 
-document.getElementById("completeDayBtn").onclick = async () => {
+const completeDayBtn = document.getElementById("completeDayBtn");
+if (completeDayBtn) {
+    completeDayBtn.onclick = async () => {
 
-    if (!confirm("Are you sure you want to complete the day?")) {
+        if (!confirm("Are you sure you want to complete the day?")) {
+            return;
+        }
+
+        const res = await fetch(`${API}/api/raceday/complete`, {
+            method: "POST"
+        });
+
+        const data = await res.json();
+
+        alert(
+            `Race Day Completed!\n\n` +
+            `Total Stake: £${data.group.total_stake.toFixed(2)}\n` +
+            `Total Return: £${data.group.total_return.toFixed(2)}\n` +
+            `Profit: £${data.group.profit.toFixed(2)}`
+        );
+
+        window.location.href = "/stats";
+    };
+}
+/* ============================================================
+   STATS PAGE
+   ============================================================ */
+
+
+/* ============================================================
+   DASHBOARD LOADER (month + year)
+   ============================================================ */
+async function loadStatsDashboard(month, year) {
+    try {
+        const res = await fetch(`${API}/stats/dashboard?month=${month}&year=${year}`);
+        if (!res.ok) {
+            console.error("Failed to load stats dashboard", res.status);
+            return;
+        }
+
+        const data = await res.json();
+        renderPlayerTiles(data.players || []);
+    } catch (err) {
+        console.error("Error loading stats dashboard", err);
+    }
+}
+
+
+/* ============================================================
+   PLAYER TILES — NEW PREMIUM LAYOUT
+   ============================================================ */
+function renderPlayerTiles(players) {
+    const container = document.getElementById("playerStatsContainer");
+    container.innerHTML = "";
+
+    players.forEach(p => {
+        const tile = document.createElement("div");
+        tile.className = "player-tile";
+
+        tile.innerHTML = `
+            <div class="player-header">
+                <h3>${p.player}</h3>
+                <p class="month-wins">Month Wins: ${p.wins}</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box wins">
+                    <span class="stat-label">WINS</span>
+                    <span class="stat-value">${p.wins}</span>
+                </div>
+
+                <div class="stat-box places">
+                    <span class="stat-label">PLACES</span>
+                    <span class="stat-value">${p.places}</span>
+                </div>
+
+                <div class="stat-box losses">
+                    <span class="stat-label">LOSSES</span>
+                    <span class="stat-value">${p.loses}</span>
+                </div>
+
+                <div class="stat-box nr">
+                    <span class="stat-label">NR</span>
+                    <span class="stat-value">${p.nr}</span>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(tile);
+    });
+}
+
+
+/* ============================================================
+   COMPLETED ACCAS — PREMIUM BOOKMAKER LAYOUT
+   ============================================================ */
+function renderAccaHistory(grouped) {
+    const container = document.getElementById("accaHistoryContainer");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    const dates = Object.keys(grouped);
+    if (!dates.length) {
+        container.innerHTML = `<p>No completed accumulators yet.</p>`;
         return;
     }
 
-    const res = await fetch(`${API}/api/raceday/complete`, {
-        method: "POST"
+    dates.forEach(date => {
+        const accas = grouped[date];
+
+        container.innerHTML += `
+            <h3 class="font-serif text-muted" style="margin-top:1.5rem;">${date}</h3>
+        `;
+
+        accas.forEach(a => {
+            const statusClass =
+                a.status === "win" ? "acca-card-win" :
+                a.status === "place" ? "acca-card-place" :
+                "acca-card-lose";
+
+            const badgeClass =
+                a.status === "win" ? "acca-badge-win" :
+                a.status === "place" ? "acca-badge-place" :
+                "acca-badge-lose";
+
+            const oddsFraction = (a.combined_decimal_odds != null)
+                ? `${(a.combined_decimal_odds - 1).toFixed(2)}/1`
+                : "—";
+
+            const picks = a.picks_json || [];
+
+            container.innerHTML += `
+                <div class="acca-card ${statusClass}">
+                    <div class="acca-header">
+                        <div>
+                            <div class="acca-date">
+                                ${new Date(a.created_at).toLocaleDateString("en-GB", {
+                                    weekday: "long",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric"
+                                })}
+                            </div>
+
+                            <div class="acca-sub">
+                                Stake: £${(a.stake ?? 5).toFixed(2)} (E/W) • 
+                                Odds: ${oddsFraction}
+                            </div>
+                        </div>
+
+                        <div class="acca-returns">
+                            <p class="returns-label">Returns</p>
+                            <p class="returns-value ${a.status}">
+                                £${(a.total_return ?? 0).toFixed(2)}
+                            </p>
+
+                            <span class="acca-status-badge ${badgeClass}">
+                                ${a.status === "win" ? "WINNER" :
+                                  a.status === "lose" ? "BUSTED" :
+                                  a.status.toUpperCase()}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="acca-picks-grid">
+                        ${picks.map(p => `
+                            <div class="pick-tile">
+                                <div class="pick-header">
+                                    <span class="pick-player">${p.player}</span>
+                                    <span class="pick-badge ${p.result.toLowerCase()}">${p.result}</span>
+                                </div>
+
+                                <div class="pick-course">${p.course}</div>
+
+                                <div class="pick-horse">
+                                    ${p.horse_number ? `(${p.horse_number}) ` : ""}${p.horse}
+                                </div>
+
+                                <div class="pick-odds">@${p.odds}</div>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+            `;
+        });
     });
-
-    const data = await res.json();
-
-    alert(
-        `Race Day Completed!\n\n` +
-        `Total Stake: £${data.group.total_stake.toFixed(2)}\n` +
-        `Total Return: £${data.group.total_return.toFixed(2)}\n` +
-        `Profit: £${data.group.profit.toFixed(2)}`
-    );
-
-    window.location.href = "/stats";
-};
+}
 
 
 /* ============================================================
-   STATS PAGE — SUMMARY TILES
+   STATS PAGE — LOAD LAST 5 COMPLETED ACCAS
    ============================================================ */
+async function loadStatsPageHistory() {
+    try {
+        const container = document.getElementById("accaHistoryContainer");
+        if (!container) return;
 
-function renderStatsSummary(stats) {
-    const box = document.getElementById("statsSummary");
-    if (!box) return;
+        const res = await fetch(`${API}/accumulator/history`);
+        let data = await res.json();
 
-    box.innerHTML = `
-        <div class="summary-tile">
-            <div class="label">Accas</div>
-            <div class="value">${stats.totalAccas}</div>
+        data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        data = data.slice(0, 5);
+
+        const grouped = {};
+        data.forEach(h => {
+            const date = new Date(h.created_at).toLocaleDateString();
+            if (!grouped[date]) grouped[date] = [];
+            grouped[date].push(h);
+        });
+
+        renderAccaHistory(grouped);
+
+    } catch (err) {
+        console.error("Failed to load stats history", err);
+    }
+}
+
+
+/* ============================================================
+   MONTHLY OVERVIEW (TOP BOX)
+   ============================================================ */
+async function loadMonthlyOverview() {
+    const month = Number(document.getElementById("statsMonth").value);
+    const year = Number(document.getElementById("statsYear").value);
+
+    const res = await fetch(`${API}/accumulator/history`);
+    const accas = await res.json();
+
+    let total = 0;
+    let wins = 0;
+    let places = 0;
+    let losses = 0;
+    let profit = 0;
+
+    accas.forEach(a => {
+        const d = new Date(a.created_at);
+        if (d.getMonth() + 1 !== month || d.getFullYear() !== year) return;
+
+        total++;
+
+        if (a.status === "win") wins++;
+        if (a.status === "place") places++;
+        if (a.status === "lose") losses++;
+
+        const stake = Number(a.stake || 0);
+        const returns = Number(a.total_return || 0);
+        profit += (returns - stake);
+    });
+
+    const strikeRate = total > 0 ? ((wins / total) * 100).toFixed(1) : "0.0";
+
+    document.getElementById("monthlyOverview").innerHTML = `
+        <div>
+            <div class="stat-label">Total Accas</div>
+            <div class="stat-value">${total}</div>
         </div>
 
-        <div class="summary-tile">
-            <div class="label">Wins</div>
-            <div class="value" style="color:#0a4">${stats.wins}</div>
+        <div>
+            <div class="stat-label">Wins</div>
+            <div class="stat-value">${wins}</div>
         </div>
 
-        <div class="summary-tile">
-            <div class="label">Places</div>
-            <div class="value" style="color:#06c">${stats.places}</div>
+        <div>
+            <div class="stat-label">Places</div>
+            <div class="stat-value">${places}</div>
         </div>
 
-        <div class="summary-tile">
-            <div class="label">Busted</div>
-            <div class="value" style="color:#900">${stats.busted}</div>
+        <div>
+            <div class="stat-label">Losses</div>
+            <div class="stat-value">${losses}</div>
         </div>
 
-        <div class="summary-tile">
-            <div class="label">Staked</div>
-            <div class="value">£${stats.totalStaked.toFixed(2)}</div>
+        <div>
+            <div class="stat-label">Strike Rate</div>
+            <div class="stat-value">${strikeRate}%</div>
         </div>
 
-        <div class="summary-tile">
-            <div class="label">Returned</div>
-            <div class="value">£${stats.totalReturned.toFixed(2)}</div>
-        </div>
-
-        <div class="summary-tile">
-            <div class="label">Profit</div>
-            <div class="value" style="color:${stats.profit >= 0 ? '#0a4' : '#900'}">
-                £${stats.profit.toFixed(2)}
-            </div>
+        <div>
+            <div class="stat-label">Profit</div>
+            <div class="stat-value">£${profit.toFixed(2)}</div>
         </div>
     `;
 }
 
+
 /* ============================================================
-   STATS PAGE — PLAYER PERFORMANCE TILES (NEW PREMIUM LAYOUT)
+   PLAYER DETAILS (unchanged)
    ============================================================ */
+function setupPlayerDetailsForm() {
+    const form = document.getElementById("playerForm");
+    const profile = document.getElementById("playerProfile");
 
-async function loadPlayerStats() {
-    const container = document.getElementById("playerStatsContainer");
-    if (!container) return;
+    form.onsubmit = async (e) => {
+        e.preventDefault();
 
-    const month = Number(document.getElementById("statsMonth").value);
-    const year = Number(document.getElementById("statsYear").value);
+        const name = new FormData(form).get("name");
 
-    // Static player list
-    const PLAYERS = ["Craig", "Donald", "Miller", "Nick", "Josh"];
+        const res = await fetch(`${API}/stats/player/${name}`);
+        const data = await res.json();
 
-    // Initialise stats
-    const stats = {};
-    PLAYERS.forEach(p => {
-        stats[p] = {
-            monthWins: 0,
-            wins: 0,
-            places: 0,
-            losses: 0,
-            nr: 0
-        };
-    });
+        const profitColor =
+            data.profit > 0 ? "#0f7a0f" :
+            data.profit < 0 ? "#7a0f0f" :
+            "#555";
 
-    // Fetch completed accas
-    const res = await fetch(`${API}/accumulator/history`);
-    const accas = await res.json();
+        const formBadges = data.recent_form.map(r => {
+            const cls =
+                r === "W" ? "form-win" :
+                r === "P" ? "form-place" :
+                r === "L" ? "form-lose" :
+                "form-nr";
+            return `<span class="${cls}">${r}</span>`;
+        }).join("");
 
-    accas.forEach(a => {
-        const d = new Date(a.created_at);
-        const aMonth = d.getMonth() + 1;
-        const aYear = d.getFullYear();
+        profile.innerHTML = `
+            <div class="profile-header">${data.player}</div>
 
-        a.picks.forEach(p => {
-            if (!stats[p.player]) return;
+            <div class="profile-section" style="border-left: 6px solid ${profitColor}">
+                <h3>Overall Performance</h3>
+                Wins: ${data.wins}<br>
+                Places: ${data.places}<br>
+                Loses: ${data.loses}<br>
+                NR: ${data.nr}<br>
+                Win Rate: ${(data.win_rate * 100).toFixed(1)}%
+            </div>
 
-            const result = p.result.toLowerCase();
+            <div class="profile-section">
+                <h3>Biggest Priced Winner</h3>
+                ${data.biggest_winner ? `
+                    ${data.biggest_winner.horse_name} (${data.biggest_winner.odds_fraction})
+                ` : "No wins yet."}
+            </div>
 
-            // Lifetime totals
-            if (result === "win") stats[p.player].wins++;
-            if (result === "place") stats[p.player].places++;
-            if (result === "lose") stats[p.player].losses++;
-            if (result === "nr") stats[p.player].nr++;
-
-            // Month wins
-            if (aMonth === month && aYear === year && result === "win") {
-                stats[p.player].monthWins++;
-            }
-        });
-    });
-
-    // Render tiles using the new premium layout
-    container.innerHTML = PLAYERS.map(p => {
-        const s = stats[p];
-
-        return `
-            <div class="player-tile">
-
-                <div class="player-header">
-                    <h3>${p}</h3>
-                    <p class="month-wins">Month Wins: ${s.monthWins}</p>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-box wins">
-                        <span class="stat-label">WINS</span>
-                        <span class="stat-value">${s.wins}</span>
-                    </div>
-
-                    <div class="stat-box places">
-                        <span class="stat-label">PLACES</span>
-                        <span class="stat-value">${s.places}</span>
-                    </div>
-
-                    <div class="stat-box losses">
-                        <span class="stat-label">LOSSES</span>
-                        <span class="stat-value">${s.losses}</span>
-                    </div>
-
-                    <div class="stat-box nr">
-                        <span class="stat-label">NR</span>
-                        <span class="stat-value">${s.nr}</span>
-                    </div>
-                </div>
-
+            <div class="profile-section">
+                <h3>Recent Form</h3>
+                <div class="recent-form">${formBadges}</div>
             </div>
         `;
-    }).join("");
+    };
 }
+
 
 /* ============================================================
    STATS PAGE — GROUP PERFORMANCE SUMMARY
@@ -1028,181 +890,83 @@ async function loadGroupSummary() {
         </div>
     `;
 }
-
-
 /* ============================================================
-   STATS PAGE — MAIN DASHBOARD LOADER
+   NEW — RACE DAY SUMMARY LOADER
+   Ensures summary tiles load even when Race Day is opened directly
    ============================================================ */
 
-async function loadStatsDashboard(month, year) {
+async function loadRaceDaySummary() {
     try {
-        const res = await fetch(`${API}/api/stats/${year}/${month}`);
-        const stats = await res.json();
+        const statsRes = await fetch(`${API}/api/raceday/stats`);
+        const stats = await statsRes.json();
 
-        renderStatsSummary({
-            totalAccas: stats.total_accas,
-            wins: stats.wins,
-            places: stats.places,
-            busted: stats.busted,
-            totalStaked: stats.total_staked,
-            totalReturned: stats.total_returned,
-            profit: stats.profit
-        });
+        const group = stats.group || { total_stake: 0, total_return: 0, profit: 0 };
+        const players = stats.players || [];
 
-        const container = document.getElementById("playerStatsContainer");
-        if (container) {
-            container.innerHTML = "";
+        // Basic totals
+        const stake = group.total_stake || 0;
+        const returns = group.total_return || 0;
+        const profit = group.profit || 0;
 
-            stats.players.forEach(p => {
-                const profitColor =
-                    p.profit > 0 ? "stat-wins" :
-                    p.profit < 0 ? "stat-loses" :
-                    "stat-nr";
-
-                container.innerHTML += `
-                    <div class="card">
-                        <h3 class="font-serif text-lg mb-2">${p.player}</h3>
-
-                        <div class="stat-block ${profitColor}">
-                            <p>Profit: £${p.profit.toFixed(2)}</p>
-                        </div>
-
-                        <div class="mt-2 text-small text-muted">
-                            Stake: £${p.total_stake.toFixed(2)}<br>
-                            Return: £${p.total_return.toFixed(2)}<br>
-                            Wins: ${p.wins} • Places: ${p.places} • Busted: ${p.busted}
-                        </div>
-                    </div>
-                `;
-            });
+        // Inject values if tiles exist
+        if (document.getElementById("gsStake")) {
+            document.getElementById("gsStake").textContent = "£" + stake.toFixed(2);
+            document.getElementById("gsReturns").textContent = "£" + returns.toFixed(2);
+            document.getElementById("gsProfit").textContent = "£" + profit.toFixed(2);
         }
 
-        loadStatsPageHistory();
+        // ROI
+        if (document.getElementById("gsROI")) {
+            const roi = stake > 0 ? ((profit / stake) * 100).toFixed(1) : 0;
+            document.getElementById("gsROI").textContent = roi + "%";
+        }
+
+        // Profit box colour
+        const profitBox = document.getElementById("gsProfitBox");
+        if (profitBox) {
+            profitBox.style.borderColor =
+                profit > 0 ? "#00c853" :
+                profit < 0 ? "#ff4a4a" :
+                "rgba(247,198,0,0.25)";
+        }
+
     } catch (err) {
-        console.error("Error loading stats dashboard:", err);
+        console.error("Failed to load Race Day summary", err);
     }
 }
 
 
 /* ============================================================
-   STATS PAGE — COMPLETED ACCA HISTORY (REPLIT-STYLE TILES)
+   NEW — FULL STATS PAGE LOADER
+   Ensures ALL Stats Page sections load together
    ============================================================ */
 
-async function loadStatsPageHistory() {
+async function loadFullStatsPage() {
     try {
-        const container = document.getElementById("accaHistoryContainer");
-        if (!container) return;
-
-        const res = await fetch(`${API}/accumulator/history`);
-        const data = await res.json();
-
-        if (!data.length) {
-            container.innerHTML = "<p>No completed accumulators yet.</p>";
-            return;
+        // Monthly Overview
+        if (document.getElementById("monthlyOverview")) {
+            await loadMonthlyOverview();
         }
 
-        const grouped = {};
+        // Group Summary
+        if (document.getElementById("groupSummary")) {
+            await loadGroupSummary();
+        }
 
-        data.forEach(a => {
-            const d = new Date(a.created_at);
-            const dateKey = d.toLocaleDateString("en-GB");
-            if (!grouped[dateKey]) grouped[dateKey] = [];
-            grouped[dateKey].push(a);
-        });
+        // Player Stats
+        if (document.getElementById("playerStatsContainer")) {
+            await loadPlayerStats();
+        }
 
-        const dates = Object.keys(grouped).sort((a, b) => {
-            const da = new Date(a.split("/").reverse().join("-"));
-            const db = new Date(b.split("/").reverse().join("-"));
-            return db - da;
-        });
+        // Completed Acca History
+        if (document.getElementById("accaHistoryContainer")) {
+            await loadStatsPageHistory();
+        }
 
-        container.innerHTML = "";
-
-        dates.forEach(date => {
-            const accas = grouped[date];
-
-            container.innerHTML += `
-                <h3 class="font-serif text-muted" style="margin-top:1.5rem;">${date}</h3>
-            `;
-
-            accas.forEach(a => {
-                const statusClass =
-                    a.status === "win" ? "acca-card-win" :
-                    a.status === "place" ? "acca-card-place" :
-                    "acca-card-lose";
-
-                const badgeClass =
-                    a.status === "win" ? "acca-badge-win" :
-                    a.status === "place" ? "acca-badge-place" :
-                    "acca-badge-lose";
-
-                const oddsFraction = (a.combined_decimal_odds != null)
-                    ? `${(a.combined_decimal_odds - 1).toFixed(2)}/1`
-                    : "—";
-
-                const picks = a.picks || [];
-
-                container.innerHTML += `
-                    <div class="acca-card ${statusClass}">
-                        <div class="acca-header">
-                            <div>
-                                <div class="acca-date">
-                                    ${new Date(a.created_at).toLocaleDateString("en-GB", {
-                                        weekday: "long",
-                                        year: "numeric",
-                                        month: "long",
-                                        day: "numeric"
-                                    })}
-                                </div>
-
-                                <div class="acca-sub">
-                                    Stake: £${(a.stake ?? 5).toFixed(2)} (E/W) • 
-                                    Odds: ${oddsFraction}
-                                </div>
-                            </div>
-
-                            <div class="acca-returns">
-                                <p class="returns-label">Returns</p>
-                                <p class="returns-value ${a.status}">
-                                    £${(a.total_return ?? 0).toFixed(2)}
-                                </p>
-
-                                <span class="acca-status-badge ${badgeClass}">
-                                    ${a.status === "win" ? "WINNER" :
-                                      a.status === "lose" ? "BUSTED" :
-                                      a.status.toUpperCase()}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="acca-picks-grid">
-                            ${picks.map(p => `
-                                <div class="pick-tile">
-                                    <div class="pick-header">
-                                        <span class="pick-player">${p.player}</span>
-                                        <span class="pick-badge ${p.result.toLowerCase()}">${p.result}</span>
-                                    </div>
-
-                                    <div class="pick-course">${p.course}</div>
-
-                                    <div class="pick-horse">
-                                        ${p.horse}
-                                    </div>
-
-                                    <div class="pick-odds">@${p.odds}</div>
-                                </div>
-                            `).join("")}
-                        </div>
-                    </div>
-                `;
-            });
-        });
     } catch (err) {
-        console.error("Error loading stats page history:", err);
+        console.error("Failed to load full stats page", err);
     }
 }
-
-
 /* ============================================================
    RECENT ACTIVITY
    ============================================================ */
@@ -1321,7 +1085,7 @@ function renderFilteredBets() {
                     <div class="player-bet-inner">
                         ${playerGroups[player]
                             .sort((a, b) => a.race_time.localeCompare(b.race_time))
-                            .map(b => renderRaceCard(b))   // <-- now supports E/W stake display
+                            .map(b => renderRaceCard(b))
                             .join("")}
                     </div>
 
@@ -1479,7 +1243,6 @@ async function loadAccaPicks() {
 
     </div>
 `;
-
         });
 
     } catch (err) {
