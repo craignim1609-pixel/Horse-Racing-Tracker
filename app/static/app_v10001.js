@@ -1256,9 +1256,15 @@ function filterAll() {
     renderFilteredBets();
 }
 
+
+/* ============================================================
+   RENDER FILTERED BETS (PLAYER-GROUPED)
+   ============================================================ */
+
 function renderFilteredBets() {
     const list = document.getElementById("raceList");
 
+    // If no filters active → reload full Race Day
     if (!FILTERED_BETS || FILTERED_BETS.length === 0) {
         loadRaceStats();
         return;
@@ -1279,12 +1285,14 @@ function renderFilteredBets() {
                 
                 <div class="player-bet-block">
 
-                    <h2 class="player-bet-header">${player}</h2>
+                    <h2 class="player-bet-header collapsible-header" data-player="${player}">
+                        <span class="chevron">▼</span> ${player}
+                    </h2>
 
                     <div class="player-bet-inner">
                         ${playerGroups[player]
                             .sort((a, b) => a.race_time.localeCompare(b.race_time))
-                            .map(b => renderRaceCard(b))
+                            .map(b => renderRaceCard(b))   // <-- now supports E/W stake display
                             .join("")}
                     </div>
 
@@ -1293,6 +1301,14 @@ function renderFilteredBets() {
             `).join("")}
         </div>
     `;
+
+    // Enable collapsible behaviour
+    document.querySelectorAll(".collapsible-header").forEach(header => {
+        header.addEventListener("click", () => {
+            const block = header.closest(".player-bet-block");
+            block.classList.toggle("collapsed");
+        });
+    });
 }
 
 
