@@ -1,14 +1,13 @@
 console.log("APP.JS VERSION: 10001");
 console.log("History containers:", document.querySelectorAll("#accaHistory").length);
 
-let FILTERED_BETS = [];
-
 /* ============================================================
    GLOBALS + HELPERS
    ============================================================ */
 
 const API = "https://horse-racing-tracker-production.up.railway.app";
 
+let FILTERED_BETS = [];
 let PLAYER_MAP = {};
 let ALL_BETS = [];
 let FILTER_MODE = "all"; // "all" or "today"
