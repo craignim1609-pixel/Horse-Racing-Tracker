@@ -30,7 +30,7 @@ class PickBase(BaseModel):
 
 class PickCreate(PickBase):
     player_id: int
-    status: str   # <-- REQUIRED for New Pick form
+    status: str   # REQUIRED for New Pick form
 
 
 class PickUpdateStatus(BaseModel):
@@ -88,13 +88,22 @@ class RaceDayBase(BaseModel):
     odds_fraction: str
     race_time: str
     amount_bet: float
-    each_way: bool = False 
+    each_way: bool = False
+
+
+class RaceDayCreate(RaceDayBase):
+    pass
+
+
+class RaceDayResultUpdate(BaseModel):
+    result: str
 
 
 class RaceDayOut(RaceDayBase):
     id: int
     result: str
-    each_way: bool = False 
+    total_stake: float
+    return_amount: float
     player: PlayerOut
 
     class Config:
@@ -109,14 +118,6 @@ class RaceDayPlayerStats(BaseModel):
     total_stake: float
     total_return: float
     profit: float
-    
-
-class RaceDayCreate(RaceDayBase):
-    pass
-
-
-class RaceDayResultUpdate(BaseModel):
-    result: str
 
 
 class RaceDayGroupStats(BaseModel):
