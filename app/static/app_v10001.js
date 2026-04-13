@@ -697,9 +697,7 @@ async function loadRaceStats() {
         </div>
     `;
 
-    /* ------------------------------------------------------------
-       4B. ENABLE STATUS BUTTONS (Win / Place / Lose / NR)
-       ------------------------------------------------------------ */
+    /* 4B. Enable status buttons */
     document.querySelectorAll(".pick-status-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
             const pickId = btn.dataset.id;
@@ -711,7 +709,7 @@ async function loadRaceStats() {
                 body: JSON.stringify({ result: status })
             });
 
-            loadRaceStats(); // refresh UI
+            loadRaceStats();
         });
     });
 
@@ -726,11 +724,19 @@ async function loadRaceStats() {
     const losses = bets.filter(b => b.result === "Lose").length;
     const nr = bets.filter(b => b.result === "NR").length;
 
-    const activePlayers = stats.players.length;
-
     const stake = stats.group.total_stake;
     const returns = stats.group.total_return;
     const profit = stats.group.profit;
+
+    const strikeRate = totalBets ? ((wins / totalBets) * 100).toFixed(1) : 0;
+    const roi = stake > 0 ? ((profit / stake) * 100).toFixed(1) : 0;
+
+    const highestReturn = Math.max(...bets.map(b => b.return_amount || 0));
+
+    const topPlayerObj = stats.players.reduce((best, p) =>
+        p.profit > best.profit ? p : best,
+        { profit: -Infinity, player: { name: "—" } }
+    );
 
     /* 7. Inject values into new Group Summary tiles */
 
@@ -744,6 +750,7 @@ async function loadRaceStats() {
     document.getElementById("gsStake").textContent = "£" + stake.toFixed(2);
     document.getElementById("gsReturns").textContent = "£" + returns.toFixed(2);
     document.getElementById("gsProfit").textContent = "£" + profit.toFixed(2);
+    document.getElementById("gsROI").textContent = roi + "%";
 
     // Profit colour coding
     const profitBox = document.getElementById("gsProfitBox");
@@ -754,7 +761,9 @@ async function loadRaceStats() {
 
     // Activity summary
     document.getElementById("gsTotalBets").textContent = totalBets;
-    document.getElementById("gsActivePlayers").textContent = activePlayers;
+    document.getElementById("gsStrikeRate").textContent = strikeRate + "%";
+    document.getElementById("gsHighestReturn").textContent = "£" + highestReturn.toFixed(2);
+    document.getElementById("gsTopPlayer").textContent = topPlayerObj.player.name;
 
     /* 8. Apply filters if active */
     if (FILTERED_BETS && FILTERED_BETS.length > 0) {
