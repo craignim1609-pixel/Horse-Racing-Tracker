@@ -430,6 +430,28 @@ button:active,
    - 160px = more tiles per row (smaller)
    - 220px = fewer tiles per row (larger)
 */
+/* COLLAPSIBLE PLAYER SECTIONS */
+.collapsible-header {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+}
+
+.collapsible-header .chevron {
+    transition: transform 0.25s ease;
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.player-bet-block.collapsed .chevron {
+    transform: rotate(-90deg);
+}
+
+.player-bet-block.collapsed .player-bet-inner {
+    display: none;
+}
 
 /* ========================================= */
 /* TODAY'S BETS — PREMIUM ACCA STYLE         */
