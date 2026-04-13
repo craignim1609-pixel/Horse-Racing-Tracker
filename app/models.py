@@ -4,6 +4,7 @@ from sqlalchemy.dialects.postgresql import JSON
 from app.database import Base
 from datetime import datetime
 
+
 # -----------------------------
 # PLAYER
 # -----------------------------
@@ -82,5 +83,5 @@ class AccaHistory(Base):
     total_return = Column(Float, nullable=False)
     status = Column(String, nullable=False)               # win / place / lose
 
-    # Full pick list stored as JSON (matches your screenshot layout)
+    # Full pick list stored as JSON
     picks_json = Column(JSON, nullable=False)
