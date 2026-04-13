@@ -75,7 +75,6 @@ def add_race_day_bet(data: schemas.RaceDayCreate, db: Session = Depends(get_db))
     if not player:
         raise HTTPException(status_code=400, detail="Player not found")
 
-    # Calculate total stake (E/W doubles it)
     total_stake = data.amount_bet * (2 if data.each_way else 1)
 
     bet = models.RaceDay(
@@ -89,7 +88,6 @@ def add_race_day_bet(data: schemas.RaceDayCreate, db: Session = Depends(get_db))
     db.commit()
     db.refresh(bet)
 
-    # Reload with player relationship
     bet = (
         db.query(models.RaceDay)
         .options(joinedload(models.RaceDay.player))
@@ -146,7 +144,6 @@ def update_race_result(
 
     db.commit()
 
-    # Reload with player relationship
     bet = (
         db.query(models.RaceDay)
         .options(joinedload(models.RaceDay.player))
@@ -158,7 +155,43 @@ def update_race_result(
 
 
 # ------------------------------------------------------------
-# COMPLETE RACE DAY — RETURN FULL STATS
+# GROUP + PLAYER STATS  (GET FIRST — IMPORTANT)
+# ------------------------------------------------------------
+@router.get("/stats", response_model=schemas.RaceDayStatsOut)
+def race_day_stats(db: Session = Depends(get_db)):
+    players = db.query(models.Player).all()
+    player_stats = []
+
+    for p in players:
+        bets = db.query(models.RaceDay).filter(models.RaceDay.player_id == p.id).all()
+
+        total_stake = sum(float(b.total_stake) for b in bets)
+        total_return = sum(float(b.return_amount) for b in bets)
+        profit = total_return - total_stake
+
+        player_stats.append({
+            "player": {"name": p.name},
+            "total_stake": total_stake,
+            "total_return": total_return,
+            "profit": profit,
+        })
+
+    group_stake = sum(p["total_stake"] for p in player_stats)
+    group_return = sum(p["total_return"] for p in player_stats)
+    group_profit = group_return - group_stake
+
+    return {
+        "players": player_stats,
+        "group": {
+            "total_stake": group_stake,
+            "total_return": group_return,
+            "profit": group_profit,
+        }
+    }
+
+
+# ------------------------------------------------------------
+# COMPLETE RACE DAY — RETURN FULL STATS (POST SECOND)
 # ------------------------------------------------------------
 @router.post("/complete", response_model=schemas.RaceDayStatsOut)
 def complete_race_day(db: Session = Depends(get_db)):
@@ -167,12 +200,10 @@ def complete_race_day(db: Session = Depends(get_db)):
     if not bets:
         raise HTTPException(status_code=400, detail="No bets to complete")
 
-    # Group totals
     total_stake = sum(float(b.total_stake) for b in bets)
     total_return = sum(float(b.return_amount) for b in bets)
     profit = total_return - total_stake
 
-    # Player stats
     players = db.query(models.Player).all()
     player_stats = []
 
