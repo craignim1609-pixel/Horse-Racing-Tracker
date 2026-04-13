@@ -1,6 +1,7 @@
 console.log("APP.JS VERSION: 10001");
 console.log("History containers:", document.querySelectorAll("#accaHistory").length);
 
+let FILTERED_BETS = [];
 
 /* ============================================================
    GLOBALS + HELPERS
