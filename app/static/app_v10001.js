@@ -653,11 +653,19 @@ async function setupRaceForm() {
    ============================================================ */
 
 async function updateRaceResult(id, result) {
+    if (!id) {
+        console.error("updateRaceResult called with undefined ID");
+        return;
+    }
+
     await fetch(`${API}/api/raceday/${id}/result`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ result })
     });
+
+    // Refresh the Race Day list so the updated result appears immediately
+    loadRaceStats();
 }
 
 
