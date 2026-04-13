@@ -441,8 +441,6 @@ button:active,
 
 .collapsible-header .chevron {
     transition: transform 0.25s ease;
-    font-size: 1rem;
-    opacity: 0.8;
 }
 
 .player-bet-block.collapsed .chevron {
@@ -451,6 +449,18 @@ button:active,
 
 .player-bet-block.collapsed .player-bet-inner {
     display: none;
+}
+/* Smooth slide animation for collapsible sections */
+.player-bet-inner {
+    overflow: hidden;
+    max-height: 1000px; /* large enough to fit content */
+    transition: max-height 0.35s ease, opacity 0.25s ease;
+    opacity: 1;
+}
+
+.player-bet-block.collapsed .player-bet-inner {
+    max-height: 0;
+    opacity: 0;
 }
 
 /* ========================================= */
