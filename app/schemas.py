@@ -113,8 +113,13 @@ class RaceDayOut(RaceDayBase):
 # -----------------------------
 # RACE DAY STATS
 # -----------------------------
+
+class RaceDayPlayerName(BaseModel):
+    name: str
+
+
 class RaceDayPlayerStats(BaseModel):
-    player: str
+    player: RaceDayPlayerName   # <-- FIXED (was str)
     total_stake: float
     total_return: float
     profit: float
