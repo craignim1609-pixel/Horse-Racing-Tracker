@@ -220,12 +220,32 @@ h2 {
     font-size: 1rem;
 }
 
+/* FIX: Horse number + horse name fields */
+.horse-group input {
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* FIX: Dropdown background + text colour */
+select {
+    background: rgba(255,255,255,0.05) !important;
+    color: #fff !important;
+}
+
+/* FIX: Dropdown option styling */
+select option {
+    background: #0b1915;
+    color: #fff;
+}
+
 .form-row input:focus,
 .form-row select:focus {
     outline: none;
     border-color: rgba(247,198,0,0.6);
     box-shadow: 0 0 6px rgba(247,198,0,0.4);
 }
+
 
 /* ========================================= */
 /* 6. BUTTONS + INTERACTIONS                 */
@@ -357,6 +377,12 @@ button:active,
 .horse-pick-btn:hover {
     transform: scale(1.05);
     opacity: 0.9;
+}
+
+.horse-group input {
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
 }
 
 /* ========================================= */
