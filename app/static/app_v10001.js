@@ -697,6 +697,24 @@ async function loadRaceStats() {
         </div>
     `;
 
+    /* ------------------------------------------------------------
+       4B. ENABLE STATUS BUTTONS (Win / Place / Lose / NR)
+       ------------------------------------------------------------ */
+    document.querySelectorAll(".pick-status-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const pickId = btn.dataset.id;
+            const status = btn.dataset.status;
+
+            await fetch(`${API}/api/raceday/update/${pickId}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ result: status })
+            });
+
+            loadRaceStats(); // refresh UI
+        });
+    });
+
     /* 5. Fetch group stats */
     const statsRes = await fetch(`${API}/api/raceday/stats`);
     const stats = await statsRes.json();
@@ -746,6 +764,7 @@ async function loadRaceStats() {
     /* 9. Load recent activity */
     loadRecentActivity();
 }
+
 
 
 /* ============================================================
