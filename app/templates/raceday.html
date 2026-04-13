@@ -11,8 +11,58 @@
 
     <h2 class="section-title" style="margin-top:0;">Group Summary</h2>
 
-    <div id="raceStats" class="monthly-overview-box">
-        <!-- JS loads group summary here -->
+    <!-- PERFORMANCE SNAPSHOT -->
+    <div id="gsPerformance" class="monthly-overview-box">
+        <div class="stat-box wins">
+            <div class="stat-label">Wins</div>
+            <div class="stat-value" id="gsWins">0</div>
+        </div>
+
+        <div class="stat-box places">
+            <div class="stat-label">Places</div>
+            <div class="stat-value" id="gsPlaces">0</div>
+        </div>
+
+        <div class="stat-box losses">
+            <div class="stat-label">Losses</div>
+            <div class="stat-value" id="gsLosses">0</div>
+        </div>
+
+        <div class="stat-box nr">
+            <div class="stat-label">NR</div>
+            <div class="stat-value" id="gsNR">0</div>
+        </div>
+    </div>
+
+    <!-- FINANCIAL OVERVIEW -->
+    <div id="gsFinancial" class="monthly-overview-box">
+        <div class="stat-box">
+            <div class="stat-label">Total Stake</div>
+            <div class="stat-value" id="gsStake">£0.00</div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-label">Total Returns</div>
+            <div class="stat-value" id="gsReturns">£0.00</div>
+        </div>
+
+        <div class="stat-box" id="gsProfitBox">
+            <div class="stat-label">Profit</div>
+            <div class="stat-value" id="gsProfit">£0.00</div>
+        </div>
+    </div>
+
+    <!-- ACTIVITY SUMMARY -->
+    <div id="gsActivity" class="monthly-overview-box">
+        <div class="stat-box">
+            <div class="stat-label">Total Bets</div>
+            <div class="stat-value" id="gsTotalBets">0</div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-label">Active Players</div>
+            <div class="stat-value" id="gsActivePlayers">0</div>
+        </div>
     </div>
 
 </div>
