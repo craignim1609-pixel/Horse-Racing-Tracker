@@ -640,6 +640,9 @@ async function setupRaceForm() {
             message = `${playerName}'s bet has been added!`;
         } catch {}
 
+        // ⭐⭐⭐ THE FIX — refresh Race Day immediately ⭐⭐⭐
+        loadRaceStats();
+
         resultBox.style.display = "block";
         resultBox.innerText = message;
 
