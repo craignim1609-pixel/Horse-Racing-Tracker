@@ -612,9 +612,8 @@ async function setupRaceForm() {
         e.preventDefault();
 
         const body = Object.fromEntries(new FormData(form).entries());
-        
-       body.each_way = document.getElementById("eachWay").checked;
-       
+        body.each_way = document.getElementById("eachWay").checked;
+
         const submitRes = await fetch(`${API}/api/raceday/`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -633,9 +632,10 @@ async function setupRaceForm() {
         resultBox.innerText = message;
 
         form.reset();
-        ;
     };
 }
+
+
 /* ============================================================
    RACE DAY — UPDATE RESULT
    ============================================================ */
@@ -646,9 +646,9 @@ async function updateRaceResult(id, result) {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ result })
     });
-
-    ;
 }
+
+
 /* ============================================================
    RACE DAY — LOAD STATS + CARDS (WITH NEW GROUP SUMMARY TILE)
    ============================================================ */
@@ -677,13 +677,15 @@ async function loadRaceStats() {
         playerGroups[playerName].push(b);
     });
 
-    /* 4. Render grouped Race Day list */
+    /* 4. Render grouped Race Day list (with collapsible headers) */
     list.innerHTML = `
         <div class="player-bets-wrapper">
             ${Object.keys(playerGroups).map(player => `
                 <div class="player-bet-block">
 
-                    <h2 class="player-bet-header">${player}</h2>
+                    <h2 class="player-bet-header collapsible-header" data-player="${player}">
+                        <span class="chevron">▼</span> ${player}
+                    </h2>
 
                     <div class="player-bet-inner">
                         ${playerGroups[player]
@@ -697,7 +699,15 @@ async function loadRaceStats() {
         </div>
     `;
 
-    /* 4B. Enable status buttons */
+    /* 4B. Enable collapsible player sections */
+    document.querySelectorAll(".collapsible-header").forEach(header => {
+        header.addEventListener("click", () => {
+            const block = header.closest(".player-bet-block");
+            block.classList.toggle("collapsed");
+        });
+    });
+
+    /* 4C. Enable status buttons */
     document.querySelectorAll(".pick-status-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
             const pickId = btn.dataset.id;
@@ -773,7 +783,6 @@ async function loadRaceStats() {
     /* 9. Load recent activity */
     loadRecentActivity();
 }
-
 
 
 /* ============================================================
