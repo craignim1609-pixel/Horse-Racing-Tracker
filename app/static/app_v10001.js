@@ -811,6 +811,7 @@ document.getElementById("completeDayBtn").onclick = async () => {
     );
 
     window.location.href = "/stats.html";
+
 };
 
 
