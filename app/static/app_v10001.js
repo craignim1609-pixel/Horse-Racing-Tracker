@@ -633,7 +633,7 @@ async function setupRaceForm() {
         resultBox.innerText = message;
 
         form.reset();
-        loadRaceStats();
+        ;
     };
 }
 /* ============================================================
@@ -647,35 +647,29 @@ async function updateRaceResult(id, result) {
         body: JSON.stringify({ result })
     });
 
-    loadRaceStats();
+    ;
 }
 /* ============================================================
-   RACE DAY — LOAD STATS + CARDS
+   RACE DAY — LOAD STATS + CARDS (WITH NEW GROUP SUMMARY TILE)
    ============================================================ */
 
 async function loadRaceStats() {
 
-    /* ------------------------------------------------------------
-       1. Ensure PLAYER_MAP is populated BEFORE grouping
-       ------------------------------------------------------------ */
+    /* 1. Ensure PLAYER_MAP is populated */
     if (Object.keys(PLAYER_MAP).length === 0) {
         const res = await fetch(`${API}/players/`);
         const players = await res.json();
         players.forEach(p => PLAYER_MAP[p.id] = p.name);
     }
 
-    /* ------------------------------------------------------------
-       2. Fetch all bets
-       ------------------------------------------------------------ */
+    /* 2. Fetch all bets */
     const listRes = await fetch(`${API}/api/raceday/`);
     ALL_BETS = await listRes.json();
     const bets = [...ALL_BETS];
 
     const list = document.getElementById("raceList");
 
-    /* ------------------------------------------------------------
-       3. Group bets by player (no sorting — Option A)
-       ------------------------------------------------------------ */
+    /* 3. Group bets by player */
     const playerGroups = {};
     bets.forEach(b => {
         const playerName = PLAYER_MAP[b.player_id] || "Unknown";
@@ -683,9 +677,7 @@ async function loadRaceStats() {
         playerGroups[playerName].push(b);
     });
 
-    /* ------------------------------------------------------------
-       4. Build player‑grouped Race Day list
-       ------------------------------------------------------------ */
+    /* 4. Render grouped Race Day list */
     list.innerHTML = `
         <div class="player-bets-wrapper">
             ${Object.keys(playerGroups).map(player => `
@@ -705,60 +697,53 @@ async function loadRaceStats() {
         </div>
     `;
 
-    /* ------------------------------------------------------------
-       5. Fetch group stats
-       ------------------------------------------------------------ */
+    /* 5. Fetch group stats */
     const statsRes = await fetch(`${API}/api/raceday/stats`);
     const stats = await statsRes.json();
 
-    const box = document.getElementById("raceStats");
-
-    /* ------------------------------------------------------------
-       6. Calculate summary values
-       ------------------------------------------------------------ */
+    /* 6. Calculate summary values */
     const totalBets = bets.length;
     const wins = bets.filter(b => b.result === "Win").length;
-    const strikeRate = totalBets ? (wins / totalBets * 100).toFixed(1) : 0;
+    const places = bets.filter(b => b.result === "Place").length;
+    const losses = bets.filter(b => b.result === "Lose").length;
+    const nr = bets.filter(b => b.result === "NR").length;
 
-    /* ------------------------------------------------------------
-       7. Render existing Group Summary (will be replaced with new layout)
-       ------------------------------------------------------------ */
-    box.innerHTML = `
-        <h3>Group Summary</h3>
-        Total Bets: ${totalBets}<br>
-        Strike Rate: ${strikeRate}%<br>
-        Total Stake: £${stats.group.total_stake.toFixed(2)}<br>
-        Total Return: £${stats.group.total_return.toFixed(2)}<br>
-        Profit: £${stats.group.profit.toFixed(2)}<br><br>
+    const activePlayers = stats.players.length;
 
-        <h3>Players</h3>
-        ${stats.players.map(p => {
-            const profitColor =
-                p.profit > 0 ? "#0f7a0f" :
-                p.profit < 0 ? "#7a0f0f" :
-                "#555";
+    const stake = stats.group.total_stake;
+    const returns = stats.group.total_return;
+    const profit = stats.group.profit;
 
-            return `
-                <div class="profile-section" style="border-left: 6px solid ${profitColor}; padding-left: 10px;">
-                    <strong>${p.player.name}</strong><br>
-                    Stake: £${p.total_stake.toFixed(2)}<br>
-                    Return: £${p.total_return.toFixed(2)}<br>
-                    Profit: £${p.profit.toFixed(2)}
-                </div>
-            `;
-        }).join("")}
-    `;
+    /* 7. Inject values into new Group Summary tiles */
 
-    /* ------------------------------------------------------------
-       8. Apply filters if active
-       ------------------------------------------------------------ */
+    // Performance snapshot
+    document.getElementById("gsWins").textContent = wins;
+    document.getElementById("gsPlaces").textContent = places;
+    document.getElementById("gsLosses").textContent = losses;
+    document.getElementById("gsNR").textContent = nr;
+
+    // Financial overview
+    document.getElementById("gsStake").textContent = "£" + stake.toFixed(2);
+    document.getElementById("gsReturns").textContent = "£" + returns.toFixed(2);
+    document.getElementById("gsProfit").textContent = "£" + profit.toFixed(2);
+
+    // Profit colour coding
+    const profitBox = document.getElementById("gsProfitBox");
+    profitBox.style.borderColor =
+        profit > 0 ? "#00c853" :
+        profit < 0 ? "#ff4a4a" :
+        "rgba(247,198,0,0.25)";
+
+    // Activity summary
+    document.getElementById("gsTotalBets").textContent = totalBets;
+    document.getElementById("gsActivePlayers").textContent = activePlayers;
+
+    /* 8. Apply filters if active */
     if (FILTERED_BETS && FILTERED_BETS.length > 0) {
         renderFilteredBets();
     }
 
-    /* ------------------------------------------------------------
-       9. Load recent activity (safe-guarded inside function)
-       ------------------------------------------------------------ */
+    /* 9. Load recent activity */
     loadRecentActivity();
 }
 
