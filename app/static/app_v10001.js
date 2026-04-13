@@ -730,21 +730,6 @@ async function loadRaceStats() {
         });
     });
 
-    /* 4C. Enable status buttons */
-    document.querySelectorAll(".pick-status-btn").forEach(btn => {
-        btn.addEventListener("click", async () => {
-            const pickId = btn.dataset.id;
-            const status = btn.dataset.status;
-
-            await fetch(`${API}/api/raceday/update/${pickId}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ result: status })
-            });
-
-            loadRaceStats();
-        });
-    });
 
     /* 5. Fetch group stats */
     const statsRes = await fetch(`${API}/api/raceday/stats`);
