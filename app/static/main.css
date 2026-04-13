@@ -405,15 +405,15 @@ button:active,
     width: 20px;
     height: 20px;
     appearance: none;
-    border: 2px solid #0a4d2a; /* dark green border */
-    background-color: #0f6b3b; /* green fill */
+    border: 2px solid #0a4d2a;
+    background-color: #0f6b3b;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 #eachWay:checked {
-    background-color: #14a35a; /* brighter green when checked */
+    background-color: #14a35a;
     border-color: #14a35a;
 }
 
@@ -440,14 +440,14 @@ button:active,
 }
 
 /* ========================================= */
-/* PLAYER GROUP TILES */
+/* PLAYER GROUP TILES                        */
 /* ========================================= */
+
 .player-bet-inner {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 16px;
 
-    /* Smooth slide animation */
     overflow: hidden;
     max-height: 1000px;
     opacity: 1;
@@ -455,13 +455,11 @@ button:active,
                 opacity 0.5s ease;
 }
 
-/* Collapsed state */
 .player-bet-block.collapsed .player-bet-inner {
     max-height: 0;
     opacity: 0;
 }
 
-/* Collapsible header */
 .collapsible-header {
     cursor: pointer;
     display: flex;
@@ -476,6 +474,28 @@ button:active,
 
 .player-bet-block.collapsed .chevron {
     transform: rotate(-90deg);
+}
+
+/* ========================================= */
+/* COMPLETE DAY BUTTON                       */
+/* ========================================= */
+
+.complete-day-btn {
+    background: #0f6b3b;
+    color: white;
+    padding: 14px 22px;
+    border-radius: 8px;
+    border: none;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 20px;
+    transition: background 0.2s ease;
+}
+
+.complete-day-btn:hover {
+    background: #14a35a;
 }
 
 /* ========================================= */
