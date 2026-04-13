@@ -170,7 +170,7 @@ def race_day_stats(db: Session = Depends(get_db)):
         profit = total_return - total_stake
 
         player_stats.append({
-            "player": {"name": p.name},
+            "player": {"name": p.name},   # ← FIXED (matches frontend)
             "total_stake": total_stake,
             "total_return": total_return,
             "profit": profit,
@@ -214,7 +214,7 @@ def complete_race_day(db: Session = Depends(get_db)):
         p_profit = p_return - p_stake
 
         player_stats.append({
-            "player": p.name,
+            "player": {"name": p.name},   # ← FIXED (matches frontend)
             "total_stake": p_stake,
             "total_return": p_return,
             "profit": p_profit
