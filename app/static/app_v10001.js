@@ -1136,10 +1136,11 @@ async function loadStatsPageHistory() {
    ============================================================ */
 
 async function loadRecentActivity() {
+    const box = document.getElementById("recentActivity");
+    if (!box) return; // Prevent crash if container doesn't exist
+
     const res = await fetch(`${API}/api/raceday/recent`);
     const items = await res.json();
-
-    const box = document.getElementById("recentActivity");
 
     if (!items.length) {
         box.innerHTML = "No race day bets recorded yet.";
@@ -1149,8 +1150,8 @@ async function loadRecentActivity() {
     const icons = getIcons();
 
     box.innerHTML = items.map(a => {
-        const winnings = calculateWinnings(a);
         const stake = parseFloat(a.amount_bet || 0);
+        const winnings = calculateWinnings(a);
         const profit = winnings - stake;
 
         return `
@@ -1171,7 +1172,7 @@ async function loadRecentActivity() {
                     </div>
 
                     <div class="meta-line">
-                        <span class="meta-player">${PLAYER_MAP[a.player_id]}</span>
+                        <span class="meta-player">${PLAYER_MAP[a.player_id] || "Unknown"}</span>
                         <span>${a.course}</span>
                         <span>${a.race_time}</span>
                     </div>
