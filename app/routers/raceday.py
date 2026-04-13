@@ -158,38 +158,44 @@ def update_race_result(
 
 
 # ------------------------------------------------------------
-# GROUP + PLAYER STATS
+# COMPLETE RACE DAY — RETURN FULL STATS
 # ------------------------------------------------------------
-@router.get("/stats")
-def race_day_stats(db: Session = Depends(get_db)):
+@router.post("/complete", response_model=schemas.RaceDayStatsOut)
+def complete_race_day(db: Session = Depends(get_db)):
+    bets = db.query(models.RaceDay).all()
+
+    if not bets:
+        raise HTTPException(status_code=400, detail="No bets to complete")
+
+    # Group totals
+    total_stake = sum(float(b.total_stake) for b in bets)
+    total_return = sum(float(b.return_amount) for b in bets)
+    profit = total_return - total_stake
+
+    # Player stats
     players = db.query(models.Player).all()
     player_stats = []
 
     for p in players:
-        bets = db.query(models.RaceDay).filter(models.RaceDay.player_id == p.id).all()
-
-        total_stake = sum(float(b.total_stake) for b in bets)
-        total_return = sum(float(b.return_amount) for b in bets)
-        profit = total_return - total_stake
+        pbets = db.query(models.RaceDay).filter(models.RaceDay.player_id == p.id).all()
+        p_stake = sum(float(b.total_stake) for b in pbets)
+        p_return = sum(float(b.return_amount) for b in pbets)
+        p_profit = p_return - p_stake
 
         player_stats.append({
-            "player": {"name": p.name},
-            "total_stake": total_stake,
-            "total_return": total_return,
-            "profit": profit,
+            "player": p.name,
+            "total_stake": p_stake,
+            "total_return": p_return,
+            "profit": p_profit
         })
 
-    group_stake = sum(p["total_stake"] for p in player_stats)
-    group_return = sum(p["total_return"] for p in player_stats)
-    group_profit = group_return - group_stake
-
     return {
-        "players": player_stats,
         "group": {
-            "total_stake": group_stake,
-            "total_return": group_return,
-            "profit": group_profit,
-        }
+            "total_stake": total_stake,
+            "total_return": total_return,
+            "profit": profit
+        },
+        "players": player_stats
     }
 
 
