@@ -640,7 +640,7 @@ async function setupRaceForm() {
             message = `${playerName}'s bet has been added!`;
         } catch {}
 
-        // ⭐⭐⭐ THE FIX — refresh Race Day immediately ⭐⭐⭐
+        // Refresh Race Day immediately
         loadRaceStats();
 
         resultBox.style.display = "block";
@@ -667,7 +667,6 @@ async function updateRaceResult(id, result) {
         body: JSON.stringify({ result })
     });
 
-    // Refresh the Race Day list so the updated result appears immediately
     loadRaceStats();
 }
 
@@ -678,21 +677,21 @@ async function updateRaceResult(id, result) {
 
 async function loadRaceStats() {
 
-    /* 1. Ensure PLAYER_MAP is populated */
+    // 1. Ensure PLAYER_MAP is populated
     if (Object.keys(PLAYER_MAP).length === 0) {
         const res = await fetch(`${API}/players/`);
         const players = await res.json();
         players.forEach(p => PLAYER_MAP[p.id] = p.name);
     }
 
-    /* 2. Fetch all bets */
+    // 2. Fetch all bets
     const listRes = await fetch(`${API}/api/raceday/`);
     ALL_BETS = await listRes.json();
     const bets = [...ALL_BETS];
 
     const list = document.getElementById("raceList");
 
-    /* 3. Group bets by player */
+    // 3. Group bets by player
     const playerGroups = {};
     bets.forEach(b => {
         const playerName = PLAYER_MAP[b.player_id] || "Unknown";
@@ -700,7 +699,7 @@ async function loadRaceStats() {
         playerGroups[playerName].push(b);
     });
 
-    /* 4. Render grouped Race Day list (with collapsible headers) */
+    // 4. Render grouped Race Day list
     list.innerHTML = `
         <div class="player-bets-wrapper">
             ${Object.keys(playerGroups).map(player => `
@@ -722,7 +721,7 @@ async function loadRaceStats() {
         </div>
     `;
 
-    /* 4B. Enable collapsible player sections */
+    // 4B. Enable collapsible sections
     document.querySelectorAll(".collapsible-header").forEach(header => {
         header.addEventListener("click", () => {
             const block = header.closest(".player-bet-block");
@@ -730,12 +729,11 @@ async function loadRaceStats() {
         });
     });
 
-
-    /* 5. Fetch group stats */
+    // 5. Fetch group stats
     const statsRes = await fetch(`${API}/api/raceday/stats`);
     const stats = await statsRes.json();
 
-    /* 6. Calculate summary values */
+    // 6. Calculate summary values
     const totalBets = bets.length;
     const wins = bets.filter(b => b.result === "Win").length;
     const places = bets.filter(b => b.result === "Place").length;
@@ -756,41 +754,63 @@ async function loadRaceStats() {
         { profit: -Infinity, player: { name: "—" } }
     );
 
-    /* 7. Inject values into new Group Summary tiles */
-
-    // Performance snapshot
+    // 7. Inject values into Group Summary tiles
     document.getElementById("gsWins").textContent = wins;
     document.getElementById("gsPlaces").textContent = places;
     document.getElementById("gsLosses").textContent = losses;
     document.getElementById("gsNR").textContent = nr;
 
-    // Financial overview
     document.getElementById("gsStake").textContent = "£" + stake.toFixed(2);
     document.getElementById("gsReturns").textContent = "£" + returns.toFixed(2);
     document.getElementById("gsProfit").textContent = "£" + profit.toFixed(2);
     document.getElementById("gsROI").textContent = roi + "%";
 
-    // Profit colour coding
     const profitBox = document.getElementById("gsProfitBox");
     profitBox.style.borderColor =
         profit > 0 ? "#00c853" :
         profit < 0 ? "#ff4a4a" :
         "rgba(247,198,0,0.25)";
 
-    // Activity summary
     document.getElementById("gsTotalBets").textContent = totalBets;
     document.getElementById("gsStrikeRate").textContent = strikeRate + "%";
     document.getElementById("gsHighestReturn").textContent = "£" + highestReturn.toFixed(2);
     document.getElementById("gsTopPlayer").textContent = topPlayerObj.player.name;
 
-    /* 8. Apply filters if active */
+    // 8. Apply filters if active
     if (FILTERED_BETS && FILTERED_BETS.length > 0) {
         renderFilteredBets();
     }
 
-    /* 9. Load recent activity */
+    // 9. Load recent activity
     loadRecentActivity();
 }
+
+
+/* ============================================================
+   RACE DAY — COMPLETE DAY BUTTON
+   ============================================================ */
+
+document.getElementById("completeDayBtn").onclick = async () => {
+
+    if (!confirm("Are you sure you want to complete the day?")) {
+        return;
+    }
+
+    const res = await fetch(`${API}/api/raceday/complete`, {
+        method: "POST"
+    });
+
+    const data = await res.json();
+
+    alert(
+        `Race Day Completed!\n\n` +
+        `Total Stake: £${data.group.total_stake.toFixed(2)}\n` +
+        `Total Return: £${data.group.total_return.toFixed(2)}\n` +
+        `Profit: £${data.group.profit.toFixed(2)}`
+    );
+
+    window.location.href = "/stats.html";
+};
 
 
 /* ============================================================
