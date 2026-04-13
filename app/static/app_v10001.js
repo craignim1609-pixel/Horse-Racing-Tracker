@@ -891,6 +891,98 @@ async function loadGroupSummary() {
     `;
 }
 /* ============================================================
+   STATS PAGE — PLAYER PERFORMANCE TILES (NEW PREMIUM LAYOUT)
+   ============================================================ */
+
+async function loadPlayerStats() {
+    const container = document.getElementById("playerStatsContainer");
+    if (!container) return;
+
+    const month = Number(document.getElementById("statsMonth").value);
+    const year = Number(document.getElementById("statsYear").value);
+
+    // Static player list
+    const PLAYERS = ["Craig", "Donald", "Miller", "Nick", "Josh"];
+
+    // Initialise stats
+    const stats = {};
+    PLAYERS.forEach(p => {
+        stats[p] = {
+            monthWins: 0,
+            wins: 0,
+            places: 0,
+            losses: 0,
+            nr: 0
+        };
+    });
+
+    // Fetch completed accas
+    const res = await fetch(`${API}/accumulator/history`);
+    const accas = await res.json();
+
+    accas.forEach(a => {
+        const d = new Date(a.created_at);
+        const aMonth = d.getMonth() + 1;
+        const aYear = d.getFullYear();
+
+        a.picks.forEach(p => {
+            if (!stats[p.player]) return;
+
+            const result = p.result.toLowerCase();
+
+            // Lifetime totals
+            if (result === "win") stats[p.player].wins++;
+            if (result === "place") stats[p.player].places++;
+            if (result === "lose") stats[p.player].losses++;
+            if (result === "nr") stats[p.player].nr++;
+
+            // Month wins
+            if (aMonth === month && aYear === year && result === "win") {
+                stats[p.player].monthWins++;
+            }
+        });
+    });
+
+    // Render tiles using the new premium layout
+    container.innerHTML = PLAYERS.map(p => {
+        const s = stats[p];
+
+        return `
+            <div class="player-tile">
+
+                <div class="player-header">
+                    <h3>${p}</h3>
+                    <p class="month-wins">Month Wins: ${s.monthWins}</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box wins">
+                        <span class="stat-label">WINS</span>
+                        <span class="stat-value">${s.wins}</span>
+                    </div>
+
+                    <div class="stat-box places">
+                        <span class="stat-label">PLACES</span>
+                        <span class="stat-value">${s.places}</span>
+                    </div>
+
+                    <div class="stat-box losses">
+                        <span class="stat-label">LOSSES</span>
+                        <span class="stat-value">${s.losses}</span>
+                    </div>
+
+                    <div class="stat-box nr">
+                        <span class="stat-label">NR</span>
+                        <span class="stat-value">${s.nr}</span>
+                    </div>
+                </div>
+
+            </div>
+        `;
+    }).join("");
+}
+
+/* ============================================================
    NEW — RACE DAY SUMMARY LOADER
    Ensures summary tiles load even when Race Day is opened directly
    ============================================================ */
