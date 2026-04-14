@@ -85,3 +85,58 @@ class AccaHistory(Base):
 
     # Full pick list stored as JSON
     picks_json = Column(JSON, nullable=False)
+# ------------------------------------
+# COMPLETED RACE DAY (History)
+# ------------------------------------
+class CompletedRaceDay(Base):
+    __tablename__ = "completed_racedays"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # The date the Race Day occurred
+    date = Column(DateTime, default=datetime.utcnow)
+
+    # Summary fields
+    total_stake = Column(Float, default=0)
+    total_return = Column(Float, default=0)
+    profit = Column(Float, default=0)
+
+    # Optional JSON summary (per-player stats, totals, etc.)
+    summary_json = Column(JSON, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relationship
+    bets = relationship(
+        "CompletedRaceDayBet",
+        back_populates="raceday",
+        cascade="all, delete-orphan"
+    )
+
+
+# ------------------------------------
+# COMPLETED RACE DAY BETS (History)
+# ------------------------------------
+class CompletedRaceDayBet(Base):
+    __tablename__ = "completed_raceday_bets"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    raceday_id = Column(Integer, ForeignKey("completed_racedays.id"))
+    raceday = relationship("CompletedRaceDay", back_populates="bets")
+
+    # Player info
+    player_id = Column(Integer)
+    player_name = Column(String)
+
+    # Bet info
+    course = Column(String)
+    race_time = Column(String)
+    horse_name = Column(String)
+    horse_number = Column(Integer, nullable=True)
+    odds_fraction = Column(String)
+    result = Column(String)
+
+    # Money
+    stake = Column(Float)
+    winnings = Column(Float)
