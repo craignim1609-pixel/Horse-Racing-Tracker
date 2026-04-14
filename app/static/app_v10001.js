@@ -766,6 +766,48 @@ async function loadMonthlyOverview() {
 
 
 /* ============================================================
+   COMPLETED RACE DAYS (NEW)
+   ============================================================ */
+async function loadCompletedRaceDays() {
+    const container = document.getElementById("completedRaceDays");
+    if (!container) return;
+
+    const res = await fetch(`${API}/api/stats/racedays`);
+    const days = await res.json();
+
+    if (!days.length) {
+        container.innerHTML = "<p>No completed Race Days yet.</p>";
+        return;
+    }
+
+    container.innerHTML = days.map(day => `
+        <div class="completed-day">
+            <h3>Race Day — ${new Date(day.date).toLocaleDateString()}</h3>
+            <p><strong>Total Stake:</strong> £${day.total_stake.toFixed(2)}</p>
+            <p><strong>Total Return:</strong> £${day.total_return.toFixed(2)}</p>
+            <p><strong>Profit:</strong> £${day.profit.toFixed(2)}</p>
+
+            <details>
+                <summary>View Bets</summary>
+                <ul>
+                    ${day.bets.map(b => `
+                        <li>
+                            <strong>${b.player_name}</strong> — 
+                            ${b.horse_name} (${b.odds_fraction})  
+                            @ ${b.course} ${b.race_time}  
+                            — Result: ${b.result}  
+                            — Stake: £${b.stake.toFixed(2)}  
+                            — Winnings: £${b.winnings.toFixed(2)}
+                        </li>
+                    `).join("")}
+                </ul>
+            </details>
+        </div>
+    `).join("");
+}
+
+
+/* ============================================================
    PLAYER DETAILS (unchanged)
    ============================================================ */
 function setupPlayerDetailsForm() {
