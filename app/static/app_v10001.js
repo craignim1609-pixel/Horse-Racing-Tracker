@@ -772,7 +772,7 @@ async function loadCompletedRaceDays() {
     const container = document.getElementById("completedRaceDays");
     if (!container) return;
 
-    const res = await fetch(`${API}/api/stats/racedays`);
+    const res = await fetch(`${API}/stats/racedays`);
     const days = await res.json();
 
     if (!days.length) {
