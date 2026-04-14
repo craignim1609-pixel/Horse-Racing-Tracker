@@ -90,6 +90,14 @@
 
 
 <!-- ========================= -->
+<!-- COMPLETED RACE DAYS (NEW) -->
+<!-- ========================= -->
+<h2 class="section-title">Completed Race Days</h2>
+
+<div id="completedRaceDays"></div>
+
+
+<!-- ========================= -->
 <!-- JS LOADER                 -->
 <!-- ========================= -->
 <script src="/static/app_v10001.js"></script>
@@ -98,10 +106,11 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     async function loadFullStatsPage() {
-        await loadRaceDaySummary();   // NEW
-        await loadMonthlyOverview();  // Existing
-        await loadPlayerStats();      // Existing
-        await loadStatsPageHistory(); // Existing
+        await loadRaceDaySummary();      // Today's summary
+        await loadMonthlyOverview();     // Monthly overview
+        await loadPlayerStats();         // Player performance
+        await loadStatsPageHistory();    // Completed accas
+        await loadCompletedRaceDays();   // NEW — Completed Race Days
     }
 
     const monthSelect = document.getElementById("statsMonth");
