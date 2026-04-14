@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
+from datetime import datetime
 
 from app.database import get_db
 from app import models
@@ -11,7 +12,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 
 # ------------------------------------------------------------
-# STATS PAGE (HTML) — FIXED WITH ACTIVE PAGE HIGHLIGHT
+# STATS PAGE (HTML)
 # ------------------------------------------------------------
 @router.get("")
 def stats_home(request: Request):
@@ -105,7 +106,7 @@ def player_details(name: str, db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------------------
-# ACCA PERFORMANCE CENTER (UPDATED FOR NEW MODEL)
+# ACCA PERFORMANCE CENTER
 # ------------------------------------------------------------
 @router.get("/acca")
 def acca_stats(db: Session = Depends(get_db)):
@@ -224,3 +225,44 @@ def stats_dashboard(db: Session = Depends(get_db)):
         "players": player_stats_list,
         "accas": grouped
     }
+
+
+# ------------------------------------------------------------
+# COMPLETED RACE DAY HISTORY (NEW)
+# ------------------------------------------------------------
+@router.get("/racedays")
+def get_completed_racedays(db: Session = Depends(get_db)):
+    racedays = (
+        db.query(models.CompletedRaceDay)
+        .options(joinedload(models.CompletedRaceDay.bets))
+        .order_by(models.CompletedRaceDay.date.desc())
+        .all()
+    )
+
+    result = []
+
+    for rd in racedays:
+        result.append({
+            "id": rd.id,
+            "date": rd.date,
+            "total_stake": rd.total_stake,
+            "total_return": rd.total_return,
+            "profit": rd.profit,
+            "bets": [
+                {
+                    "player_id": b.player_id,
+                    "player_name": b.player_name,
+                    "course": b.course,
+                    "race_time": b.race_time,
+                    "horse_name": b.horse_name,
+                    "horse_number": b.horse_number,
+                    "odds_fraction": b.odds_fraction,
+                    "result": b.result,
+                    "stake": b.stake,
+                    "winnings": b.winnings
+                }
+                for b in rd.bets
+            ]
+        })
+
+    return result
