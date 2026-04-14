@@ -13,6 +13,7 @@ from app.routers import picks, accumulator, raceday, players, stats
 from app.routers.players import seed_players
 
 
+
 app = FastAPI()
 
 # -----------------------------------------
