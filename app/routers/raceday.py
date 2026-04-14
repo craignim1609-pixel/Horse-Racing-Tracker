@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 from typing import List
+from datetime import datetime
 
 from app.database import get_db
 from app import models, schemas
@@ -155,7 +156,7 @@ def update_race_result(
 
 
 # ------------------------------------------------------------
-# GROUP + PLAYER STATS  (GET FIRST — IMPORTANT)
+# CURRENT DAY STATS (KEEPING THIS)
 # ------------------------------------------------------------
 @router.get("/stats", response_model=schemas.RaceDayStatsOut)
 def race_day_stats(db: Session = Depends(get_db)):
@@ -170,7 +171,7 @@ def race_day_stats(db: Session = Depends(get_db)):
         profit = total_return - total_stake
 
         player_stats.append({
-            "player": {"name": p.name},   # ← FIXED (matches frontend)
+            "player": {"name": p.name},
             "total_stake": total_stake,
             "total_return": total_return,
             "profit": profit,
@@ -191,42 +192,64 @@ def race_day_stats(db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------------------
-# COMPLETE RACE DAY — RETURN FULL STATS (POST SECOND)
+# COMPLETE RACE DAY — SAVE HISTORY + RESET
 # ------------------------------------------------------------
-@router.post("/complete", response_model=schemas.RaceDayStatsOut)
+@router.post("/complete")
 def complete_race_day(db: Session = Depends(get_db)):
     bets = db.query(models.RaceDay).all()
-
     if not bets:
         raise HTTPException(status_code=400, detail="No bets to complete")
 
+    # Totals
     total_stake = sum(float(b.total_stake) for b in bets)
     total_return = sum(float(b.return_amount) for b in bets)
     profit = total_return - total_stake
 
-    players = db.query(models.Player).all()
-    player_stats = []
+    # Create CompletedRaceDay
+    completed = models.CompletedRaceDay(
+        date=datetime.utcnow(),
+        total_stake=total_stake,
+        total_return=total_return,
+        profit=profit,
+        summary_json=None
+    )
+    db.add(completed)
+    db.commit()
+    db.refresh(completed)
 
-    for p in players:
-        pbets = db.query(models.RaceDay).filter(models.RaceDay.player_id == p.id).all()
-        p_stake = sum(float(b.total_stake) for b in pbets)
-        p_return = sum(float(b.return_amount) for b in pbets)
-        p_profit = p_return - p_stake
+    # Save each bet
+    for b in bets:
+        player = db.query(models.Player).filter(models.Player.id == b.player_id).first()
 
-        player_stats.append({
-            "player": {"name": p.name},   # ← FIXED (matches frontend)
-            "total_stake": p_stake,
-            "total_return": p_return,
-            "profit": p_profit
-        })
+        entry = models.CompletedRaceDayBet(
+            raceday_id=completed.id,
+            player_id=b.player_id,
+            player_name=player.name if player else "Unknown",
+            course=b.course,
+            race_time=b.race_time,
+            horse_name=b.horse_name,
+            horse_number=b.horse_number,
+            odds_fraction=b.odds_fraction,
+            result=b.result,
+            stake=b.total_stake,
+            winnings=b.return_amount
+        )
+        db.add(entry)
+
+    db.commit()
+
+    # Reset Race Day
+    db.query(models.RaceDay).delete()
+    db.commit()
 
     return {
-        "group": {
+        "message": "Race Day completed and archived.",
+        "raceday_id": completed.id,
+        "summary": {
             "total_stake": total_stake,
             "total_return": total_return,
             "profit": profit
-        },
-        "players": player_stats
+        }
     }
 
 
