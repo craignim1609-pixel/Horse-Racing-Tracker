@@ -487,16 +487,22 @@ if (completeDayBtn) {
 
         const data = await res.json();
 
+        // NEW JSON SHAPE — FIXED
+        const stake = data.summary.total_stake;
+        const returns = data.summary.total_return;
+        const profit = data.summary.profit;
+
         alert(
             `Race Day Completed!\n\n` +
-            `Total Stake: £${data.group.total_stake.toFixed(2)}\n` +
-            `Total Return: £${data.group.total_return.toFixed(2)}\n` +
-            `Profit: £${data.group.profit.toFixed(2)}`
+            `Total Stake: £${stake.toFixed(2)}\n` +
+            `Total Return: £${returns.toFixed(2)}\n` +
+            `Profit: £${profit.toFixed(2)}`
         );
 
         window.location.href = "/stats";
     };
 }
+
 /* ============================================================
    STATS PAGE
    ============================================================ */
