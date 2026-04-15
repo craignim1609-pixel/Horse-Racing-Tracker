@@ -1093,7 +1093,7 @@ async function loadFullStatsPage() {
             await loadGroupSummary();
         }
 
-        // Player Stats
+        // Player Stats (Acca)
         if (document.getElementById("playerStatsContainer")) {
             await loadPlayerStats();
         }
@@ -1103,10 +1103,26 @@ async function loadFullStatsPage() {
             await loadStatsPageHistory();
         }
 
+        // Today's Race Day Summary (NEW)
+        if (document.getElementById("raceDaySummary")) {
+            await loadRaceDaySummary();
+        }
+
+        // Race Day Player Performance (NEW)
+        if (document.getElementById("raceDayPlayerStatsContainer")) {
+            await loadRaceDayPlayerStats();
+        }
+
+        // Completed Race Days (NEW)
+        if (document.getElementById("completedRaceDays")) {
+            await loadCompletedRaceDays();
+        }
+
     } catch (err) {
         console.error("Failed to load full stats page", err);
     }
 }
+
 /* ============================================================
    RECENT ACTIVITY
    ============================================================ */
@@ -1164,6 +1180,71 @@ async function loadRecentActivity() {
             </div>
         `;
     }).join("");
+}
+
+/* ============================================================
+   RACE DAY PLAYER PERFORMANCE (NEW)
+   ============================================================ */
+
+async function loadRaceDayPlayerStats() {
+    const container = document.getElementById("raceDayPlayerStatsContainer");
+    if (!container) return;
+
+    const res = await fetch(`${API}/stats/raceday/players`);
+    const players = await res.json();
+
+    renderRaceDayPlayerTiles(players);
+}
+
+
+/* ============================================================
+   RACE DAY PLAYER TILES (NEW)
+   ============================================================ */
+
+function renderRaceDayPlayerTiles(players) {
+    const container = document.getElementById("raceDayPlayerStatsContainer");
+    container.innerHTML = "";
+
+    players.forEach(p => {
+        const tile = document.createElement("div");
+        tile.className = "player-tile";
+
+        tile.innerHTML = `
+            <div class="player-header">
+                <h3>${p.player}</h3>
+                <p class="month-wins">Race Day Wins: ${p.wins}</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box wins">
+                    <span class="stat-label">WINS</span>
+                    <span class="stat-value">${p.wins}</span>
+                </div>
+
+                <div class="stat-box places">
+                    <span class="stat-label">PLACES</span>
+                    <span class="stat-value">${p.places}</span>
+                </div>
+
+                <div class="stat-box losses">
+                    <span class="stat-label">LOSSES</span>
+                    <span class="stat-value">${p.loses}</span>
+                </div>
+
+                <div class="stat-box nr">
+                    <span class="stat-label">NR</span>
+                    <span class="stat-value">${p.nr}</span>
+                </div>
+
+                <div class="stat-box profit">
+                    <span class="stat-label">PROFIT</span>
+                    <span class="stat-value">£${p.profit.toFixed(2)}</span>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(tile);
+    });
 }
 
 
