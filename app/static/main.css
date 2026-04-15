@@ -990,6 +990,56 @@ button:active,
     font-weight: 700;
     margin-top: 4px;
 }
+
+/* ========================================= */
+/* Race Day Summary Box                   */
+/* ========================================= */
+.race-day-box {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #0f2a18;
+    border: 1px solid #1d3d26;
+    border-radius: 10px;
+}
+
+/* Race Day Player Tiles */
+.player-tile {
+    background: #0f2a18;
+    border: 1px solid #1d3d26;
+    padding: 1rem;
+    border-radius: 10px;
+}
+
+.player-tile .player-header h3 {
+    margin: 0;
+    color: #ffd700;
+}
+
+.player-tile .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.stat-box {
+    background: #132f1c;
+    padding: 0.75rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #aaa;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+}
+
 /* ========================================= */
 /* 12. ACTIVITY CARDS                        */
 /* ========================================= */
