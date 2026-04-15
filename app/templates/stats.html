@@ -44,6 +44,24 @@
 
 
 <!-- ========================= -->
+<!-- PLAYER PERFORMANCE (ACCA) -->
+<!-- ========================= -->
+<h2 class="section-title">Player Performance</h2>
+
+<div id="playerStatsContainer" class="player-stats-grid">
+    <!-- JS will inject tiles -->
+</div>
+
+
+<!-- ========================= -->
+<!-- COMPLETED ACCAS SECTION   -->
+<!-- ========================= -->
+<h2 class="section-title">Completed Accumulators</h2>
+
+<div id="accaHistoryContainer"></div>
+
+
+<!-- ========================= -->
 <!-- TODAY'S RACE DAY SUMMARY -->
 <!-- ========================= -->
 <h2 class="section-title">Today's Race Day Summary</h2>
@@ -72,25 +90,17 @@
 
 
 <!-- ========================= -->
-<!-- PLAYER PERFORMANCE TILES  -->
+<!-- RACE DAY PLAYER PERFORMANCE -->
 <!-- ========================= -->
-<h2 class="section-title">Player Performance</h2>
+<h2 class="section-title">Race Day Player Performance</h2>
 
-<div id="playerStatsContainer" class="player-stats-grid">
-    <!-- JS will inject tiles -->
+<div id="raceDayPlayerStatsContainer" class="player-stats-grid">
+    <!-- JS injects tiles -->
 </div>
 
 
 <!-- ========================= -->
-<!-- COMPLETED ACCAS SECTION   -->
-<!-- ========================= -->
-<h2 class="section-title">Completed Accumulators</h2>
-
-<div id="accaHistoryContainer"></div>
-
-
-<!-- ========================= -->
-<!-- COMPLETED RACE DAYS (NEW) -->
+<!-- COMPLETED RACE DAYS       -->
 <!-- ========================= -->
 <h2 class="section-title">Completed Race Days</h2>
 
@@ -106,11 +116,13 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     async function loadFullStatsPage() {
-        await loadRaceDaySummary();      // Today's summary
-        await loadMonthlyOverview();     // Monthly overview
-        await loadPlayerStats();         // Player performance
-        await loadStatsPageHistory();    // Completed accas
-        await loadCompletedRaceDays();   // NEW — Completed Race Days
+        await loadMonthlyOverview();        // Monthly overview
+        await loadPlayerStats();            // Acca player stats
+        await loadStatsPageHistory();       // Completed accas
+
+        await loadRaceDaySummary();         // Today's Race Day summary
+        await loadRaceDayPlayerStats();     // NEW — Race Day player tiles
+        await loadCompletedRaceDays();      // Completed Race Days
     }
 
     const monthSelect = document.getElementById("statsMonth");
