@@ -541,7 +541,7 @@ function renderPlayerTiles(players) {
         tile.innerHTML = `
             <div class="player-header">
                 <h3>${p.player}</h3>
-                <p class="month-wins">Month Wins: ${p.wins}</p>
+                <p class="month-wins">Month Wins: ${p.monthWins}</p>
             </div>
 
             <div class="stats-grid">
@@ -563,6 +563,11 @@ function renderPlayerTiles(players) {
                 <div class="stat-box nr">
                     <span class="stat-label">NR</span>
                     <span class="stat-value">${p.nr}</span>
+                </div>
+
+                <div class="stat-box profit">
+                    <span class="stat-label">PROFIT</span>
+                    <span class="stat-value">${p.profit}</span>
                 </div>
             </div>
         `;
