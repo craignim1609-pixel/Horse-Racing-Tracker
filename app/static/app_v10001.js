@@ -1203,9 +1203,8 @@ async function loadRaceDayPlayerStats() {
 
 
 /* ============================================================
-   RACE DAY PLAYER TILES (NEW)
+   RACE DAY PLAYER TILES — NEW PREMIUM LAYOUT
    ============================================================ */
-
 function renderRaceDayPlayerTiles(players) {
     const container = document.getElementById("raceDayPlayerStatsContainer");
     container.innerHTML = "";
@@ -1217,7 +1216,7 @@ function renderRaceDayPlayerTiles(players) {
         tile.innerHTML = `
             <div class="player-header">
                 <h3>${p.player}</h3>
-                <p class="month-wins">Race Day Wins: ${p.wins}</p>
+                <p class="month-wins">Today's Wins: ${p.wins}</p>
             </div>
 
             <div class="stats-grid">
@@ -1243,7 +1242,7 @@ function renderRaceDayPlayerTiles(players) {
 
                 <div class="stat-box profit">
                     <span class="stat-label">PROFIT</span>
-                    <span class="stat-value">£${p.profit.toFixed(2)}</span>
+                    <span class="stat-value">${p.profit}</span>
                 </div>
             </div>
         `;
