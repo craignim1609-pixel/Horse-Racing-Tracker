@@ -266,3 +266,45 @@ def get_completed_racedays(db: Session = Depends(get_db)):
         })
 
     return result
+    
+# ------------------------------------------------------------
+# RACE DAY PLAYER PERFORMANCE (NEW)
+# ------------------------------------------------------------
+@router.get("/raceday/players")
+def raceday_player_stats(db: Session = Depends(get_db)):
+    players = db.query(models.Player).all()
+    racedays = db.query(models.CompletedRaceDay).options(
+        joinedload(models.CompletedRaceDay.bets)
+    ).all()
+
+    # Initialise stats for each player
+    stats = {
+        p.name: {"wins": 0, "places": 0, "loses": 0, "nr": 0, "profit": 0}
+        for p in players
+    }
+
+    # Loop through completed race days and their bets
+    for rd in racedays:
+        for b in rd.bets:
+            name = b.player_name
+            if name not in stats:
+                continue
+
+            # Count results
+            if b.result == "Win":
+                stats[name]["wins"] += 1
+            elif b.result == "Place":
+                stats[name]["places"] += 1
+            elif b.result == "Lose":
+                stats[name]["loses"] += 1
+            elif b.result == "NR":
+                stats[name]["nr"] += 1
+
+            # Profit = winnings - stake
+            stats[name]["profit"] += (b.winnings - b.stake)
+
+    # Convert to list for frontend
+    return [
+        {"player": name, **values}
+        for name, values in stats.items()
+    ]
