@@ -1,27 +1,42 @@
 /* ========================================= */
-/* 1. ROOT VARIABLES (COLOURS, RADII, FONTS) */
+/* GLOBAL DARK RACING THEME — MERGED + CLEAN */
 /* ========================================= */
 
 :root {
+    /* Backgrounds */
     --bg: #0e2412;
-    --card-bg: #0b1915;
-    --card-border: #d4af37;
-    --text-main: #f5f5f5;
-    --text-muted: #ccc;
-    --gold: #d4af37;
-    --gold-soft: #f7c600;
+    --bg-dark: #0d1f14;
+    --bg-panel: #12281a;
+    --bg-tile: #153421;
 
+    /* Borders */
+    --card-border: #d4af37;
+    --border-soft: #1f3d2a;
+
+    /* Text */
+    --text-main: #f5f5f5;
+    --text-light: #e8f5e9;
+    --text-muted: #9bb8a1;
+
+    /* Gold Accents */
+    --gold: #f7c600;
+    --gold-soft: rgba(247,198,0,0.25);
+
+    /* Radii */
     --radius-sm: 4px;
     --radius-md: 6px;
     --radius-lg: 10px;
     --radius-xl: 12px;
 
+    /* Fonts */
     --font-body: 'Inter', sans-serif;
     --font-title: 'Playfair Display', serif;
 
-    --shadow-soft: 0 0 10px rgba(0,0,0,0.25);
+    /* Shadows */
+    --shadow-soft: 0 2px 6px rgba(0,0,0,0.35);
     --shadow-gold: 0 0 12px rgba(247,198,0,0.25);
 }
+
 
 /* ========================================= */
 /* 2. GLOBAL RESET + BASE ELEMENTS           */
@@ -78,13 +93,13 @@ h2 {
 }
 
 .section-title {
-    font-size: 20px;
-    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.6rem;
+    font-weight: 600;
     color: var(--gold);
-    margin-top: 25px;
-    margin-bottom: 10px;
-    border-bottom: 2px solid rgba(247,198,0,0.35);
-    padding-bottom: 6px;
+    border-bottom: 2px solid var(--gold-soft);
+    padding-bottom: 4px;
 }
 
 .label-small {
@@ -670,89 +685,55 @@ button:active,
 }
 
 /* ========================================= */
-/* COMPLETED ACCA CARDS — PREMIUM LAYOUT     */
+/* 6. COMPLETED ACCAS                        */
 /* ========================================= */
 
 .acca-card {
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(247,198,0,0.25);
-    border-radius: var(--radius-lg);
-    padding: 18px 22px;
-    margin: 20px 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    backdrop-filter: blur(6px);
+    background: var(--bg-panel);
+    border-radius: var(--radius-xl);
+    padding: 1.2rem;
+    border: 1px solid var(--border-soft);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-soft);
 }
-
-.acca-card-win { border-color: #00c853; }
-.acca-card-place { border-color: #4aa3ff; }
-.acca-card-lose { border-color: #ff4a4a; }
 
 .acca-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
+    align-items: center;
 }
 
 .acca-date {
-    font-size: 1.1rem;
-    font-weight: 700;
     color: var(--gold);
+    font-weight: 600;
 }
 
 .acca-sub {
+    color: var(--text-muted);
     font-size: 0.9rem;
-    opacity: 0.8;
-    margin-top: 4px;
-}
-
-.acca-returns {
-    text-align: right;
-}
-
-.returns-label {
-    font-size: 0.8rem;
-    opacity: 0.7;
-    margin: 0;
 }
 
 .returns-value {
     font-size: 1.4rem;
     font-weight: 700;
-    margin: 4px 0;
 }
 
-.returns-value.win { color: #00e676; }
-.returns-value.place { color: #4aa3ff; }
-.returns-value.lose { color: #ff4a4a; }
+.returns-value.win { color: #00c853; }
+.returns-value.place { color: #29b6f6; }
+.returns-value.lose { color: #ff5252; }
 
 .acca-status-badge {
-    display: inline-block;
     padding: 4px 10px;
-    border-radius: var(--radius-md);
-    font-size: 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
     font-weight: 700;
-    margin-top: 6px;
-    text-transform: uppercase;
+    color: #000;
 }
 
-.acca-badge-win {
-    background: rgba(0, 200, 83, 0.2);
-    border: 1px solid #00c853;
-    color: #00e676;
-}
+.acca-badge-win { background: #00c853; }
+.acca-badge-place { background: #29b6f6; }
+.acca-badge-lose { background: #ff5252; }
 
-.acca-badge-place {
-    background: rgba(74, 163, 255, 0.2);
-    border: 1px solid #4aa3ff;
-    color: #4aa3ff;
-}
-
-.acca-badge-lose {
-    background: rgba(255, 74, 74, 0.2);
-    border: 1px solid #ff4a4a;
-    color: #ff4a4a;
-}
 
 /* ========================================= */
 /* ACCA PICKS GRID (COMPLETED ACCAS)         */
@@ -827,116 +808,114 @@ button:active,
     opacity: 0.8;
 }
 /* ========================================= */
-/* PLAYER TILES + STATS PAGE GRID            */
+/* 4. PLAYER TILES (ACCA + RACE DAY)         */
 /* ========================================= */
 
 .player-stats-grid {
     display: grid;
-    width: 100%;
-    gap: 16px;
-    margin: 20px 0 35px 0;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 2rem;
 }
 
-/* Desktop: 4 columns */
-@media (min-width: 1100px) {
-    .player-stats-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-    }
-}
-
-/* Medium screens: 3 columns */
-@media (min-width: 800px) and (max-width: 1099px) {
-    .player-stats-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 18px;
-    }
-}
-
-/* Tablets: 2 columns */
-@media (min-width: 600px) and (max-width: 799px) {
-    .player-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-    }
-}
-
-/* Phones: 2 columns */
-@media (max-width: 599px) {
-    .player-stats-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-}
-
-/* Small phones: 1 column */
-@media (max-width: 420px) {
-    .player-stats-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-}
-
-/* Player tile internal layout */
 .player-tile {
-    background: rgba(255,255,255,0.05);
-    padding: 18px;
-    border-radius: var(--radius-lg);
-    border: 3px solid rgba(247,198,0,0.25);
-    color: #fff;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    background: var(--bg-panel);
+    padding: 1.2rem;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.player-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.45);
 }
 
 .player-header h3 {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 6px;
-    letter-spacing: 0.5px;
+    margin: 0;
+    font-size: 1.3rem;
+    color: var(--gold);
 }
 
 .player-header .month-wins {
+    margin-top: 4px;
     font-size: 0.9rem;
-    opacity: 0.8;
-    margin: 0;
+    color: var(--text-muted);
 }
 
-/* Stats inside each player tile */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.6rem;
+    margin-top: 1rem;
 }
 
 .stat-box {
-    background: rgba(255,255,255,0.05);
-    padding: 10px 6px;
+    background: var(--bg-tile);
+    padding: 0.7rem;
     border-radius: var(--radius-md);
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    text-align: center;
+    border: 1px solid var(--border-soft);
 }
 
 .stat-label {
     font-size: 0.75rem;
-    opacity: 0.7;
-    letter-spacing: 0.5px;
+    color: var(--text-muted);
 }
 
 .stat-value {
     font-size: 1.2rem;
     font-weight: 700;
+    color: var(--text-light);
 }
 
-/* Colour coding */
-.stat-box.wins .stat-value { color: #f7c600; }
-.stat-box.places .stat-value { color: #4aa3ff; }
-.stat-box.losses .stat-value { color: #ff4a4a; }
-.stat-box.nr .stat-value { color: #aaa; }
+/* ========================================= */
+/* 5. COMPLETED RACE DAYS                    */
+/* ========================================= */
+
+.completed-day {
+    background: var(--bg-panel);
+    padding: 1.4rem;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-soft);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-soft);
+}
+
+.completed-day h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--gold);
+}
+
+.completed-day p {
+    margin: 0.2rem 0;
+    color: var(--text-light);
+}
+
+.completed-day details {
+    margin-top: 0.8rem;
+    background: var(--bg-tile);
+    padding: 0.8rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-soft);
+}
+
+.completed-day summary {
+    cursor: pointer;
+    color: var(--gold);
+    font-weight: 600;
+}
+
+.completed-day ul {
+    margin-top: 0.6rem;
+    padding-left: 1.2rem;
+}
+
+.completed-day li {
+    margin-bottom: 0.4rem;
+    color: var(--text-muted);
+}
 
 /* ========================================= */
 /* PERFORMANCE CENTRE                        */
@@ -992,52 +971,37 @@ button:active,
 }
 
 /* ========================================= */
-/* Race Day Summary Box                   */
+/* 3. RACE DAY SUMMARY — PREMIUM BOX         */
 /* ========================================= */
-.race-day-box {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background: #0f2a18;
-    border: 1px solid #1d3d26;
-    border-radius: 10px;
-}
 
-/* Race Day Player Tiles */
-.player-tile {
-    background: #0f2a18;
-    border: 1px solid #1d3d26;
-    padding: 1rem;
-    border-radius: 10px;
-}
-
-.player-tile .player-header h3 {
-    margin: 0;
-    color: #ffd700;
-}
-
-.player-tile .stats-grid {
+.race-summary-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0.75rem;
-    margin-top: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    background: var(--bg-panel);
+    padding: 1.5rem;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-soft);
 }
 
-.stat-box {
-    background: #132f1c;
-    padding: 0.75rem;
-    border-radius: 8px;
+.summary-tile {
+    background: var(--bg-tile);
+    padding: 1rem;
+    border-radius: var(--radius-lg);
     text-align: center;
+    border: 1px solid var(--border-soft);
 }
 
-.stat-label {
-    font-size: 0.75rem;
-    color: #aaa;
+.summary-tile .label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
 }
 
-.stat-value {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #fff;
+.summary-tile .value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-light);
 }
 
 /* ========================================= */
