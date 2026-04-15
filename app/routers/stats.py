@@ -266,7 +266,8 @@ def get_completed_racedays(db: Session = Depends(get_db)):
         })
 
     return result
-    
+
+
 # ------------------------------------------------------------
 # RACE DAY PLAYER PERFORMANCE (NEW)
 # ------------------------------------------------------------
