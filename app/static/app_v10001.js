@@ -1265,7 +1265,7 @@ function renderRaceDayPlayerTiles(players) {
 
                 <div class="stat-box profit">
                     <span class="stat-label">PROFIT</span>
-                    <span class="stat-value">${Number(p.profit).toFixed(3)}</span>
+                    <span class="stat-value">${Number(p.profit).toFixed(2)}</span>
 
                 </div>
             </div>
