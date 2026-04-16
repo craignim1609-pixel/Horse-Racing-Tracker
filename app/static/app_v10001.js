@@ -1050,34 +1050,31 @@ async function loadPlayerStats() {
 
 async function loadRaceDaySummary() {
     try {
-        const statsRes = await fetch(`${API}/api/raceday/stats`);
-        const stats = await statsRes.json();
+        // Fetch completed race days (latest first)
+        const res = await fetch(`${API}/stats/racedays`);
+        const days = await res.json();
 
-        const group = stats.group || { total_stake: 0, total_return: 0, profit: 0 };
-        const players = stats.players || [];
+        if (!days.length) {
+            console.warn("No completed race days found");
+            return;
+        }
 
-        const stake = group.total_stake || 0;
-        const returns = group.total_return || 0;
-        const profit = group.profit || 0;
+        // Latest completed Race Day
+        const today = days[0];
 
         // Update Stats Page summary tiles
-        if (document.getElementById("rsStake")) {
-            document.getElementById("rsStake").textContent = "£" + stake.toFixed(2);
-            document.getElementById("rsReturn").textContent = "£" + returns.toFixed(2);
-            document.getElementById("rsProfit").textContent = "£" + profit.toFixed(2);
-        }
+        document.getElementById("rsStake").textContent =
+            "£" + today.total_stake.toFixed(2);
 
-        // Top player
-        if (document.getElementById("rsTopPlayer")) {
-            let top = "—";
+        document.getElementById("rsReturn").textContent =
+            "£" + today.total_return.toFixed(2);
 
-            if (players.length > 0) {
-                const sorted = [...players].sort((a, b) => b.profit - a.profit);
-                top = sorted[0].player || "—";
-            }
+        document.getElementById("rsProfit").textContent =
+            "£" + today.profit.toFixed(2);
 
-            document.getElementById("rsTopPlayer").textContent = top;
-        }
+        // Top player (if backend provides it)
+        document.getElementById("rsTopPlayer").textContent =
+            today.top_player || "—";
 
     } catch (err) {
         console.error("Failed to load Race Day summary", err);
