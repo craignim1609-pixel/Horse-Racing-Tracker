@@ -1070,7 +1070,7 @@ async function loadRaceDaySummary() {
             "£" + today.total_return.toFixed(2);
 
         document.getElementById("rsProfit").textContent =
-            "£" + today.profit.toFixed(2);
+            "£" + Number(today.profit).toFixed(3);
 
         // -------------------------------
         // Compute Top Player From Bets
@@ -1264,7 +1264,8 @@ function renderRaceDayPlayerTiles(players) {
 
                 <div class="stat-box profit">
                     <span class="stat-label">PROFIT</span>
-                    <span class="stat-value">${p.profit}</span>
+                    <span class="stat-value">${Number(p.profit).toFixed(3)}</span>
+
                 </div>
             </div>
         `;
