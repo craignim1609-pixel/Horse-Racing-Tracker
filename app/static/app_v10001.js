@@ -781,6 +781,14 @@ async function loadCompletedRaceDays() {
     const days = await res.json();
 
     if (!days.length) {
+    console.warn("No completed race days found");
+    return;
+}
+
+const today = days[0]; // latest completed day
+
+
+    if (!days.length) {
         container.innerHTML = "<p>No completed Race Days yet.</p>";
         return;
     }
