@@ -1052,7 +1052,7 @@ async function loadRaceDaySummary() {
         const returns = group.total_return || 0;
         const profit = group.profit || 0;
 
-        // Inject values into the Stats Page summary tiles
+        // Update Stats Page summary tiles
         if (document.getElementById("rsStake")) {
             document.getElementById("rsStake").textContent = "£" + stake.toFixed(2);
             document.getElementById("rsReturn").textContent = "£" + returns.toFixed(2);
@@ -1075,6 +1075,7 @@ async function loadRaceDaySummary() {
         console.error("Failed to load Race Day summary", err);
     }
 }
+
 
 /* ============================================================
    NEW — FULL STATS PAGE LOADER
