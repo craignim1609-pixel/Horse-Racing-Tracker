@@ -1072,9 +1072,30 @@ async function loadRaceDaySummary() {
         document.getElementById("rsProfit").textContent =
             "£" + today.profit.toFixed(2);
 
-        // Top player (if backend provides it)
-        document.getElementById("rsTopPlayer").textContent =
-            today.top_player || "—";
+        // -------------------------------
+        // Compute Top Player From Bets
+        // -------------------------------
+        let playerProfits = {};
+
+        today.bets.forEach(b => {
+            if (!playerProfits[b.player_name]) {
+                playerProfits[b.player_name] = 0;
+            }
+            playerProfits[b.player_name] += b.winnings - b.stake;
+        });
+
+        // Determine top player
+        let topPlayer = "—";
+        let bestProfit = -Infinity;
+
+        for (const player in playerProfits) {
+            if (playerProfits[player] > bestProfit) {
+                bestProfit = playerProfits[player];
+                topPlayer = player;
+            }
+        }
+
+        document.getElementById("rsTopPlayer").textContent = topPlayer;
 
     } catch (err) {
         console.error("Failed to load Race Day summary", err);
