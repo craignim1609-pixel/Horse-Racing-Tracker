@@ -1048,38 +1048,33 @@ async function loadRaceDaySummary() {
         const group = stats.group || { total_stake: 0, total_return: 0, profit: 0 };
         const players = stats.players || [];
 
-        // Basic totals
         const stake = group.total_stake || 0;
         const returns = group.total_return || 0;
         const profit = group.profit || 0;
 
-        // Inject values if tiles exist
-        if (document.getElementById("gsStake")) {
-            document.getElementById("gsStake").textContent = "£" + stake.toFixed(2);
-            document.getElementById("gsReturns").textContent = "£" + returns.toFixed(2);
-            document.getElementById("gsProfit").textContent = "£" + profit.toFixed(2);
+        // Inject values into the Stats Page summary tiles
+        if (document.getElementById("rsStake")) {
+            document.getElementById("rsStake").textContent = "£" + stake.toFixed(2);
+            document.getElementById("rsReturn").textContent = "£" + returns.toFixed(2);
+            document.getElementById("rsProfit").textContent = "£" + profit.toFixed(2);
         }
 
-        // ROI
-        if (document.getElementById("gsROI")) {
-            const roi = stake > 0 ? ((profit / stake) * 100).toFixed(1) : 0;
-            document.getElementById("gsROI").textContent = roi + "%";
-        }
+        // Top player
+        if (document.getElementById("rsTopPlayer")) {
+            let top = "—";
 
-        // Profit box colour
-        const profitBox = document.getElementById("gsProfitBox");
-        if (profitBox) {
-            profitBox.style.borderColor =
-                profit > 0 ? "#00c853" :
-                profit < 0 ? "#ff4a4a" :
-                "rgba(247,198,0,0.25)";
+            if (players.length > 0) {
+                const sorted = [...players].sort((a, b) => b.profit - a.profit);
+                top = sorted[0].player || "—";
+            }
+
+            document.getElementById("rsTopPlayer").textContent = top;
         }
 
     } catch (err) {
         console.error("Failed to load Race Day summary", err);
     }
 }
-
 
 /* ============================================================
    NEW — FULL STATS PAGE LOADER
