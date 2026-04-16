@@ -567,7 +567,8 @@ function renderPlayerTiles(players) {
 
                 <div class="stat-box profit">
                     <span class="stat-label">PROFIT</span>
-                    <span class="stat-value">${p.profit}</span>
+                    <span class="stat-value">${Number(p.profit).toFixed(2)}</span>
+
                 </div>
             </div>
         `;
