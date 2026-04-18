@@ -918,6 +918,65 @@ button:active,
 }
 
 /* ========================================= */
+/* DROP DOWN FOR COMPLETE RACEDAY STATS                  */
+/* ========================================= */
+.completed-bets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.completed-bet-tile {
+    background: #0f1a0f;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    color: #fff;
+}
+
+.bet-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.bet-player {
+    font-weight: bold;
+    color: #f7c600;
+}
+
+.bet-result {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.bet-result.win { color: #00c853; }
+.bet-result.place { color: #2196f3; }
+.bet-result.lose { color: #ff4a4a; }
+.bet-result.nr { color: #aaa; }
+
+.bet-horse {
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+}
+
+.bet-course {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.bet-odds {
+    margin-top: 0.4rem;
+    font-weight: bold;
+}
+
+.bet-money {
+    margin-top: 0.6rem;
+    font-size: 0.9rem;
+}
+
+/* ========================================= */
 /* PERFORMANCE CENTRE                        */
 /* ========================================= */
 
