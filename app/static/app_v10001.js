@@ -782,14 +782,6 @@ async function loadCompletedRaceDays() {
     const days = await res.json();
 
     if (!days.length) {
-    console.warn("No completed race days found");
-    return;
-}
-
-const today = days[0]; // latest completed day
-
-
-    if (!days.length) {
         container.innerHTML = "<p>No completed Race Days yet.</p>";
         return;
     }
@@ -803,23 +795,37 @@ const today = days[0]; // latest completed day
 
             <details>
                 <summary>View Bets</summary>
-                <ul>
+
+                <div class="completed-bets-grid">
                     ${day.bets.map(b => `
-                        <li>
-                            <strong>${b.player_name}</strong> — 
-                            ${b.horse_name} (${b.odds_fraction})  
-                            @ ${b.course} ${b.race_time}  
-                            — Result: ${b.result}  
-                            — Stake: £${b.stake.toFixed(2)}  
-                            — Winnings: £${b.winnings.toFixed(2)}
-                        </li>
+                        <div class="completed-bet-tile ${b.result.toLowerCase()}">
+
+                            <div class="bet-header">
+                                <span class="bet-player">${b.player_name}</span>
+                                <span class="bet-result ${b.result.toLowerCase()}">${b.result}</span>
+                            </div>
+
+                            <div class="bet-horse">
+                                ${b.horse_number ? `(${b.horse_number}) ` : ""}${b.horse_name}
+                            </div>
+
+                            <div class="bet-course">${b.course} — ${b.race_time}</div>
+
+                            <div class="bet-odds">@${b.odds_fraction}</div>
+
+                            <div class="bet-money">
+                                Stake: £${b.stake.toFixed(2)}<br>
+                                Winnings: £${b.winnings.toFixed(2)}
+                            </div>
+
+                        </div>
                     `).join("")}
-                </ul>
+                </div>
+
             </details>
         </div>
     `).join("");
 }
-
 
 /* ============================================================
    PLAYER DETAILS (unchanged)
