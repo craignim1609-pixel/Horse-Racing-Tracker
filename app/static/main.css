@@ -550,16 +550,19 @@ button:active,
 }
 
 .returns-label {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     opacity: 0.7;
-    margin: 0;
 }
 
 .returns-value {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0;
+    font-size: 1.4rem;
+    font-weight: bold;
 }
+
+.returns-value.win { color: #00c853; }
+.returns-value.place { color: #2196f3; }
+.returns-value.lose { color: #ff4a4a; }
+
 /* ========================================= */
 /* ACCA STANDINGS                            */
 /* ========================================= */
@@ -689,28 +692,31 @@ button:active,
 /* ========================================= */
 
 .acca-card {
-    background: var(--bg-panel);
-    border-radius: var(--radius-xl);
+    background: #123026; /* racing green */
+    border: 1px solid rgba(247,198,0,0.25); /* gold accent */
+    border-radius: 10px;
     padding: 1.2rem;
-    border: 1px solid var(--border-soft);
     margin-bottom: 1.5rem;
-    box-shadow: var(--shadow-soft);
+    color: #fff;
 }
 
 .acca-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    margin-bottom: 1rem;
 }
 
 .acca-date {
-    color: var(--gold);
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #f7c600; /* gold */
 }
 
 .acca-sub {
-    color: var(--text-muted);
     font-size: 0.9rem;
+    opacity: 0.85;
+    margin-top: 0.2rem;
 }
 
 .returns-value {
@@ -723,16 +729,18 @@ button:active,
 .returns-value.lose { color: #ff5252; }
 
 .acca-status-badge {
-    padding: 4px 10px;
-    border-radius: var(--radius-sm);
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #000;
+    display: inline-block;
+    margin-top: 0.4rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
-.acca-badge-win { background: #00c853; }
-.acca-badge-place { background: #29b6f6; }
-.acca-badge-lose { background: #ff5252; }
+.acca-badge-win { background: #003d00; color: #00c853; }
+.acca-badge-place { background: #002b4d; color: #2196f3; }
+.acca-badge-lose { background: #4d0000; color: #ff4a4a; }
 
 
 /* ========================================= */
@@ -741,40 +749,38 @@ button:active,
 
 .acca-picks-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 14px;
-    margin-top: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
 }
 
 .pick-tile {
     background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(247,198,0,0.25);
-    border-radius: var(--radius-md);
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 0.8rem;
+    border-radius: 8px;
 }
 
 .pick-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    margin-bottom: 0.4rem;
 }
 
 .pick-player {
-    font-weight: 700;
-    color: var(--gold);
+    font-weight: bold;
+    color: #f7c600;
 }
 
 .pick-badge {
-    padding: 2px 8px;
-    border-radius: var(--radius-md);
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: bold;
     text-transform: uppercase;
 }
 
+.pick-badge.win { color: #00c853; }
+.pick-badge.place { color: #2196f3; }
+.pick-badge.lose { color: #ff4a4a; }
+.pick-badge.nr { color: #aaa; }
 .pick-badge.win {
     background: rgba(0, 200, 83, 0.2);
     border: 1px solid #00c853;
@@ -794,19 +800,20 @@ button:active,
 }
 
 .pick-course {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     opacity: 0.8;
 }
 
 .pick-horse {
-    font-size: 1rem;
-    font-weight: 600;
+    font-weight: bold;
+    margin: 0.3rem 0;
 }
 
 .pick-odds {
-    font-size: 0.9rem;
-    opacity: 0.8;
+    font-weight: bold;
+    margin-top: 0.3rem;
 }
+
 /* ========================================= */
 /* 4. PLAYER TILES (ACCA + RACE DAY)         */
 /* ========================================= */
