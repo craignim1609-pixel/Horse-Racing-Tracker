@@ -786,45 +786,64 @@ async function loadCompletedRaceDays() {
         return;
     }
 
-    container.innerHTML = days.map(day => `
-        <div class="completed-day">
-            <h3>Race Day — ${new Date(day.date).toLocaleDateString()}</h3>
-            <p><strong>Total Stake:</strong> £${day.total_stake.toFixed(2)}</p>
-            <p><strong>Total Return:</strong> £${day.total_return.toFixed(2)}</p>
-            <p><strong>Profit:</strong> £${day.profit.toFixed(2)}</p>
+    container.innerHTML = days.map(day => {
 
-            <details>
-                <summary>View Bets</summary>
+        // Group bets by player
+        const grouped = {};
+        day.bets.forEach(b => {
+            if (!grouped[b.player_name]) grouped[b.player_name] = [];
+            grouped[b.player_name].push(b);
+        });
 
-                <div class="completed-bets-grid">
-                    ${day.bets.map(b => `
-                        <div class="completed-bet-tile ${b.result.toLowerCase()}">
+        return `
+            <div class="completed-day">
+                <h3>Race Day — ${new Date(day.date).toLocaleDateString()}</h3>
+                <p><strong>Total Stake:</strong> £${day.total_stake.toFixed(2)}</p>
+                <p><strong>Total Return:</strong> £${day.total_return.toFixed(2)}</p>
+                <p><strong>Profit:</strong> £${day.profit.toFixed(2)}</p>
 
-                            <div class="bet-header">
-                                <span class="bet-player">${b.player_name}</span>
-                                <span class="bet-result ${b.result.toLowerCase()}">${b.result}</span>
+                <details>
+                    <summary>View Bets</summary>
+
+                    <div class="player-bets-outer">
+                        ${Object.keys(grouped).map(player => `
+                            <div class="player-bet-group">
+
+                                <div class="player-bet-header">${player}</div>
+
+                                <div class="completed-bets-grid">
+                                    ${grouped[player].map(b => `
+                                        <div class="completed-bet-tile ${b.result.toLowerCase()}">
+
+                                            <div class="bet-header">
+                                                <span class="bet-result ${b.result.toLowerCase()}">${b.result}</span>
+                                            </div>
+
+                                            <div class="bet-horse">
+                                                ${b.horse_number ? `(${b.horse_number}) ` : ""}${b.horse_name}
+                                            </div>
+
+                                            <div class="bet-course">${b.course} — ${b.race_time}</div>
+
+                                            <div class="bet-odds">@${b.odds_fraction}</div>
+
+                                            <div class="bet-money">
+                                                Stake: £${b.stake.toFixed(2)}<br>
+                                                Winnings: £${b.winnings.toFixed(2)}
+                                            </div>
+
+                                        </div>
+                                    `).join("")}
+                                </div>
+
                             </div>
+                        `).join("")}
+                    </div>
 
-                            <div class="bet-horse">
-                                ${b.horse_number ? `(${b.horse_number}) ` : ""}${b.horse_name}
-                            </div>
-
-                            <div class="bet-course">${b.course} — ${b.race_time}</div>
-
-                            <div class="bet-odds">@${b.odds_fraction}</div>
-
-                            <div class="bet-money">
-                                Stake: £${b.stake.toFixed(2)}<br>
-                                Winnings: £${b.winnings.toFixed(2)}
-                            </div>
-
-                        </div>
-                    `).join("")}
-                </div>
-
-            </details>
-        </div>
-    `).join("");
+                </details>
+            </div>
+        `;
+    }).join("");
 }
 
 /* ============================================================
