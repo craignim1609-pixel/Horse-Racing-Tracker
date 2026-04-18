@@ -917,18 +917,43 @@ button:active,
     color: var(--text-muted);
 }
 
-/* ========================================= */
-/* DROP DOWN FOR COMPLETE RACEDAY STATS                  */
-/* ========================================= */
-.completed-bets-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
+/* ============================================
+   COMPLETED RACE DAY — PLAYER GROUP TILE
+   ============================================ */
+
+.player-bet-group {
+    background: #123026; /* racing green */
+    border: 1px solid rgba(247,198,0,0.25); /* gold accent */
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
 }
 
+.player-bet-header {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #f7c600; /* gold */
+    margin-bottom: 1rem;
+}
+
+
+/* ============================================
+   INNER BET GRID (TILES INSIDE PLAYER GROUP)
+   ============================================ */
+
+.completed-bets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+
+/* ============================================
+   INDIVIDUAL BET TILE
+   ============================================ */
+
 .completed-bet-tile {
-    background: #0f1a0f;
+    background: rgba(255,255,255,0.05); /* soft translucent */
     border: 1px solid rgba(255,255,255,0.1);
     padding: 1rem;
     border-radius: 8px;
@@ -975,6 +1000,7 @@ button:active,
     margin-top: 0.6rem;
     font-size: 0.9rem;
 }
+
 
 /* ========================================= */
 /* PERFORMANCE CENTRE                        */
