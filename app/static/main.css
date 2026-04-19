@@ -513,57 +513,9 @@ button:active,
     background: #14a35a;
 }
 
-/* ========================================= */
-/* TODAY'S BETS — PREMIUM ACCA STYLE         */
-/* ========================================= */
-
-.race-bet-card {
-    margin-bottom: 22px;
-    border-radius: var(--radius-lg);
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(247,198,0,0.25);
-    padding: 18px 20px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    backdrop-filter: blur(6px);
-}
-
-.acca-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-}
-
-.acca-date {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--gold);
-}
-
-.acca-sub {
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-.acca-returns {
-    text-align: right;
-}
-
-.returns-label {
-    font-size: 0.8rem;
-    opacity: 0.7;
-}
-
-.returns-value {
-    font-size: 1.4rem;
-    font-weight: bold;
-}
-
-.returns-value.win { color: #00c853; }
-.returns-value.place { color: #2196f3; }
-.returns-value.lose { color: #ff4a4a; }
-
-/* === ACCA ALIVE BANNER === */
+/* =========================================
+   ACCA ALIVE BANNER
+========================================= */
 .acca-alive-banner {
     background: #0f6b3b;
     color: white;
@@ -576,7 +528,9 @@ button:active,
 }
 
 
-/* === ACCA HERO TILE === */
+/* =========================================
+   ACCA HERO TILE
+========================================= */
 .acca-hero {
     background: #123026;
     border: 2px solid rgba(247,198,0,0.25);
@@ -627,7 +581,9 @@ button:active,
 }
 
 
-/* === ACCA PAGE LAYOUT === */
+/* =========================================
+   ACCA PAGE LAYOUT (TWO COLUMNS)
+========================================= */
 .acca-layout {
     display: grid;
     grid-template-columns: 1fr 300px;
@@ -644,14 +600,16 @@ button:active,
 .acca-right {
     background: rgba(255,255,255,0.05);
     border: 2px solid rgba(247,198,0,0.25);
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     padding: 16px 20px;
     height: fit-content;
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
 
 
-/* === BUTTONS === */
+/* =========================================
+   BUTTONS
+========================================= */
 .reset-acca-btn,
 .complete-acca-btn {
     width: 100%;
@@ -674,19 +632,22 @@ button:active,
 }
 
 
-/* === PICK TILES === */
-.acca-picks-grid {
-    display: flex;
-    flex-direction: column;
+/* =========================================
+   CURRENT PICKS — GRID + TILE
+========================================= */
+#accaPicks.acca-picks-grid {
+    display: flex !important;
+    flex-direction: column !important;
     gap: 18px;
 }
 
 .acca-pick-tile {
-    background: #123026;
+    width: 100%;
+    background: rgba(255,255,255,0.05);
     border: 2px solid rgba(247,198,0,0.25);
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     padding: 16px 18px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -730,132 +691,9 @@ button:active,
 }
 
 
-/* === STATUS BUTTONS === */
-.pick-status-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.pick-status-btn {
-    flex: 1 1 calc(20% - 6px);
-    min-width: 70px;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid rgba(247,198,0,0.25);
-    background: rgba(255,255,255,0.05);
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-    transition: 0.15s ease;
-}
-
-.pick-status-btn:hover {
-    background: var(--gold);
-    color: black;
-    transform: scale(1.05);
-}
-
-.pick-status-btn.delete {
-    border-color: #ff4a4a;
-    color: #ff4a4a;
-}
-
-.pick-status-btn.delete:hover {
-    background: #ff4a4a;
-    color: black;
-}
-
-
-/* === STANDINGS === */
-.acca-standings-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.acca-standing-item {
-    background: #123026;
-    border: 1px solid rgba(247,198,0,0.25);
-    border-radius: 10px;
-    padding: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #fff;
-}
-
-.acca-standing-player {
-    font-weight: bold;
-    color: var(--gold);
-}
-
-.acca-standing-status {
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    border: 1px solid var(--gold);
-    color: var(--gold);
-}
-
-/* ========================================= */
-/* ACCA PAGE — TWO COLUMN LAYOUT             */
-/* ========================================= */
-
-.acca-layout {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 24px;
-    margin-top: 20px;
-}
-
-.acca-left {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.acca-right {
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(247,198,0,0.25);
-    border-radius: var(--radius-lg);
-    padding: 16px 20px;
-    height: fit-content;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-}
-
-/* ========================================= */
-/* FORCE PICKS TO STACK VERTICALLY           */
-/* ========================================= */
-
-#accaPicks.acca-picks-grid {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 18px;
-}
-
-/* ========================================= */
-/* ACCA PICK TILE — FULL WIDTH LEFT COLUMN   */
-/* ========================================= */
-
-.acca-pick-tile {
-    width: 100%;
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(247,198,0,0.25);
-    border-radius: var(--radius-lg);
-    padding: 16px 18px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-/* ========================================= */
-/* STATUS BUTTONS — RESPONSIVE WRAP          */
-/* ========================================= */
-
+/* =========================================
+   STATUS BUTTONS
+========================================= */
 .pick-status-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -892,13 +730,48 @@ button:active,
     color: black;
 }
 
-/* ========================================= */
-/* 6. COMPLETED ACCAS                        */
-/* ========================================= */
 
+/* =========================================
+   GROUP STANDINGS
+========================================= */
+.acca-standings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.acca-standing-item {
+    background: #123026;
+    border: 1px solid rgba(247,198,0,0.25);
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+}
+
+.acca-standing-player {
+    font-weight: bold;
+    color: var(--gold);
+}
+
+.acca-standing-status {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+}
+
+
+/* =========================================
+   COMPLETED ACCAS (HISTORY PAGE)
+========================================= */
 .acca-card {
-    background: #123026; /* racing green */
-    border: 1px solid rgba(247,198,0,0.25); /* gold accent */
+    background: #123026;
+    border: 1px solid rgba(247,198,0,0.25);
     border-radius: 10px;
     padding: 1.2rem;
     margin-bottom: 1.5rem;
@@ -915,7 +788,7 @@ button:active,
 .acca-date {
     font-size: 1.1rem;
     font-weight: bold;
-    color: #f7c600; /* gold */
+    color: #f7c600;
 }
 
 .acca-sub {
@@ -948,11 +821,10 @@ button:active,
 .acca-badge-lose { background: #4d0000; color: #ff4a4a; }
 
 
-/* ========================================= */
-/* ACCA PICKS GRID (COMPLETED ACCAS)         */
-/* ========================================= */
-
-.acca-picks-grid {
+/* =========================================
+   COMPLETED ACCA — PICK GRID
+========================================= */
+.acca-picks-grid.completed {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
@@ -972,115 +844,24 @@ button:active,
     margin-bottom: 0.4rem;
 }
 
-.pick-player {
-    font-weight: bold;
-    color: #f7c600;
-}
-
-.pick-badge {
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.pick-badge.win { color: #00c853; }
-.pick-badge.place { color: #2196f3; }
-.pick-badge.lose { color: #ff4a4a; }
-.pick-badge.nr { color: #aaa; }
 .pick-badge.win {
-    background: rgba(0, 200, 83, 0.2);
+    background: rgba(0,200,83,0.2);
     border: 1px solid #00c853;
     color: #00e676;
 }
 
 .pick-badge.place {
-    background: rgba(74, 163, 255, 0.2);
+    background: rgba(74,163,255,0.2);
     border: 1px solid #4aa3ff;
     color: #4aa3ff;
 }
 
 .pick-badge.lose {
-    background: rgba(255, 74, 74, 0.2);
+    background: rgba(255,74,74,0.2);
     border: 1px solid #ff4a4a;
     color: #ff4a4a;
 }
 
-.pick-course {
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-.pick-horse {
-    font-weight: bold;
-    margin: 0.3rem 0;
-}
-
-.pick-odds {
-    font-weight: bold;
-    margin-top: 0.3rem;
-}
-
-/* ========================================= */
-/* 4. PLAYER TILES (ACCA + RACE DAY)         */
-/* ========================================= */
-
-.player-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.2rem;
-    margin-bottom: 2rem;
-}
-
-.player-tile {
-    background: var(--bg-panel);
-    padding: 1.2rem;
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--border-soft);
-    box-shadow: var(--shadow-soft);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.player-tile:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.45);
-}
-
-.player-header h3 {
-    margin: 0;
-    font-size: 1.3rem;
-    color: var(--gold);
-}
-
-.player-header .month-wins {
-    margin-top: 4px;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-    gap: 0.6rem;
-    margin-top: 1rem;
-}
-
-.stat-box {
-    background: var(--bg-tile);
-    padding: 0.7rem;
-    border-radius: var(--radius-md);
-    text-align: center;
-    border: 1px solid var(--border-soft);
-}
-
-.stat-label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-}
-
-.stat-value {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--text-light);
-}
 
 /* ========================================= */
 /* 5. COMPLETED RACE DAYS                    */
