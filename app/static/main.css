@@ -613,6 +613,41 @@ button:active,
     border: 1px solid rgba(0,200,83,0.4);
     color: #00c853;
 }
+/* === ACCA ALIVE BANNER === */
+
+.acca-alive-banner {
+    background: #0f6b3b;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-weight: 700;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: none; /* JS toggles this */
+}
+/* === ACCA PAGE LAYOUT === */
+
+.acca-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.acca-left {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.acca-right {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(247,198,0,0.25);
+    border-radius: 10px;
+    padding: 16px 20px;
+    height: fit-content;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
 
 /* ========================================= */
 /* ACCA STANDINGS                            */
