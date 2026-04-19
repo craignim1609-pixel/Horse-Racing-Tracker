@@ -1,46 +1,35 @@
-/* ========================================= */
-/* GLOBAL DARK RACING THEME — MERGED + CLEAN */
-/* ========================================= */
+/* === 1. ROOT VARIABLES (UNCHANGED) === */
 
 :root {
-    /* Backgrounds */
     --bg: #0e2412;
     --bg-dark: #0d1f14;
     --bg-panel: #12281a;
     --bg-tile: #153421;
 
-    /* Borders */
     --card-border: #d4af37;
     --border-soft: #1f3d2a;
 
-    /* Text */
     --text-main: #f5f5f5;
     --text-light: #e8f5e9;
     --text-muted: #9bb8a1;
 
-    /* Gold Accents */
     --gold: #f7c600;
     --gold-soft: rgba(247,198,0,0.25);
 
-    /* Radii */
     --radius-sm: 4px;
     --radius-md: 6px;
     --radius-lg: 10px;
     --radius-xl: 12px;
 
-    /* Fonts */
     --font-body: 'Inter', sans-serif;
     --font-title: 'Playfair Display', serif;
 
-    /* Shadows */
     --shadow-soft: 0 2px 6px rgba(0,0,0,0.35);
     --shadow-gold: 0 0 12px rgba(247,198,0,0.25);
 }
 
 
-/* ========================================= */
-/* 2. GLOBAL RESET + BASE ELEMENTS           */
-/* ========================================= */
+/* === 2. RESET + BASE ELEMENTS === */
 
 * {
     margin: 0;
@@ -68,9 +57,8 @@ a:hover {
     opacity: 0.85;
 }
 
-/* ========================================= */
-/* 3. TYPOGRAPHY                             */
-/* ========================================= */
+
+/* === 3. TYPOGRAPHY === */
 
 h1 {
     font-size: 32px;
@@ -85,7 +73,6 @@ h1 {
 h2 {
     font-size: 22px;
     font-weight: 700;
-    letter-letter-spacing: 0.5px;
     margin-bottom: 14px;
     color: var(--gold);
     text-shadow: 0 0 4px rgba(0,0,0,0.35);
@@ -118,22 +105,30 @@ h2 {
     flex-direction: column;
     gap: 4px;
 }
-/* ========================================= */
-/* 4. LAYOUT HELPERS                         */
-/* ========================================= */
+
+
+/* === 4. LAYOUT HELPERS === */
 
 .race-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 300px;
     gap: 24px;
     margin-top: 20px;
 }
 
 .left-panel {
-    width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .right-panel {
-    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid var(--gold-soft);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    height: fit-content;
+    box-shadow: var(--shadow-soft);
 }
 
 @keyframes fadeIn {
@@ -141,9 +136,8 @@ h2 {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* ========================================= */
-/* CLEAN BOOKMAKER NAV — SMALL + PREMIUM     */
-/* ========================================= */
+
+/* === 5. NAVIGATION === */
 
 .nav-bar {
     display: flex;
@@ -151,13 +145,12 @@ h2 {
     gap: 28px;
     margin: 10px 0 25px 0;
     padding-bottom: 6px;
-    border-bottom: 2px solid rgba(247,198,0,0.25);
+    border-bottom: 2px solid var(--gold-soft);
 }
 
 .nav-bar a {
     color: var(--gold);
     font-weight: 600;
-    text-decoration: none;
     letter-spacing: 0.4px;
     padding: 4px 0;
     transition: 0.2s ease;
@@ -185,9 +178,8 @@ h2 {
     box-shadow: 0 0 10px rgba(247,198,0,0.6);
 }
 
-/* ========================================= */
-/* PAGE HEADER (H1) — MATCH PERFORMANCE BOX  */
-/* ========================================= */
+
+/* === 6. PAGE HEADERS === */
 
 .page-title {
     text-align: center;
@@ -198,18 +190,18 @@ h2 {
     color: var(--gold);
     text-shadow: 0 0 6px rgba(247,198,0,0.25);
 }
-/* ========================================= */
-/* FORM TILE — MATCHES STATS PAGE STYLE      */
-/* ========================================= */
+
+
+/* === 7. FORM ELEMENTS === */
 
 .form-tile {
     max-width: 500px;
     margin: 0 auto;
     background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(247,198,0,0.25);
+    border: 2px solid var(--gold-soft);
     border-radius: var(--radius-lg);
     padding: 25px 30px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    box-shadow: var(--shadow-soft);
     backdrop-filter: blur(6px);
 }
 
@@ -235,35 +227,11 @@ h2 {
     font-size: 1rem;
 }
 
-/* HORSE NUMBER + NAME FIXES */
-.horse-group div {
-    display: flex;
-    flex-direction: column;
-}
-
-.horse-group label {
-    color: var(--gold);
-    font-weight: 600;
-    margin-bottom: 6px;
-}
-
-.horse-group input {
-    width: 100%;
-    padding: 10px;
-    border-radius: var(--radius-md);
-    border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.05);
-    color: #fff;
-    font-size: 1rem;
-}
-
-/* FIX: Dropdown background + text colour */
 select {
     background: rgba(255,255,255,0.05) !important;
     color: #fff !important;
 }
 
-/* FIX: Dropdown option styling */
 select option {
     background: #0b1915;
     color: #fff;
@@ -277,9 +245,7 @@ select option {
 }
 
 
-/* ========================================= */
-/* 6. BUTTONS + INTERACTIONS                 */
-/* ========================================= */
+/* === 8. BUTTONS === */
 
 button,
 .submit-btn {
@@ -303,17 +269,17 @@ button:active,
 .submit-btn:active {
     transform: scale(0.95);
 }
-/* ========================================= */
-/* RACE DAY — BASE TILE STYLES               */
-/* ========================================= */
+
+
+/* === 9. GLOBAL TILE STYLES === */
 
 .race-card,
 .player-bet-block,
 .right-panel {
     background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(247,198,0,0.25);
+    border: 2px solid var(--gold-soft);
     border-radius: var(--radius-lg);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    box-shadow: var(--shadow-soft);
     backdrop-filter: blur(6px);
 }
 
@@ -321,19 +287,11 @@ button:active,
     padding: 18px 22px;
 }
 
-.right-panel {
-    padding: 16px 20px;
-    height: fit-content;
-}
-
 .player-bet-block {
     padding: 20px;
     margin-bottom: 30px;
 }
-
-/* ========================================= */
-/* RACE DAY — HEADERS                        */
-/* ========================================= */
+/* === 10. RACE DAY === */
 
 .race-card h3,
 .player-bet-header {
@@ -353,10 +311,6 @@ button:active,
     margin-bottom: 16px;
 }
 
-/* ========================================= */
-/* RACE DAY — HORSE LIST + ITEMS             */
-/* ========================================= */
-
 .horse-list {
     display: flex;
     flex-direction: column;
@@ -365,7 +319,7 @@ button:active,
 
 .horse-item {
     background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(247,198,0,0.25);
+    border: 1px solid var(--gold-soft);
     border-radius: var(--radius-md);
     padding: 12px 14px;
     display: flex;
@@ -409,13 +363,6 @@ button:active,
     opacity: 0.9;
 }
 
-.horse-group input {
-    background: rgba(255,255,255,0.05);
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-/* Style the E/W checkbox to match input fields */
 #eachWay {
     width: 20px;
     height: 20px;
@@ -434,39 +381,17 @@ button:active,
 
 #eachWay:focus {
     outline: none;
-    box-shadow: 0 0 4px rgba(20, 163, 90, 0.6);
+    box-shadow: 0 0 4px rgba(20,163,90,0.6);
 }
-
-/* ========================================= */
-/* RACE DAY — TWO COLUMN LAYOUT              */
-/* ========================================= */
-
-.race-container {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 24px;
-    margin-top: 20px;
-}
-
-.left-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-/* ========================================= */
-/* PLAYER GROUP TILES                        */
-/* ========================================= */
 
 .player-bet-inner {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 16px;
-
     overflow: hidden;
     max-height: 1000px;
     opacity: 1;
-    transition: max-height 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transition: max-height 0.8s cubic-bezier(0.22,0.61,0.36,1),
                 opacity 0.5s ease;
 }
 
@@ -491,10 +416,6 @@ button:active,
     transform: rotate(-90deg);
 }
 
-/* ========================================= */
-/* COMPLETE DAY BUTTON                       */
-/* ========================================= */
-
 .complete-day-btn {
     background: #0f6b3b;
     color: white;
@@ -513,117 +434,8 @@ button:active,
     background: #14a35a;
 }
 
-/* ========================================= */
-/* TODAY'S BETS — PREMIUM ACCA STYLE         */
-/* ========================================= */
 
-.race-bet-card {
-    margin-bottom: 22px;
-    border-radius: var(--radius-lg);
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(247,198,0,0.25);
-    padding: 18px 20px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    backdrop-filter: blur(6px);
-}
-
-.acca-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-}
-
-.acca-date {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--gold);
-}
-
-.acca-sub {
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-.acca-returns {
-    text-align: right;
-}
-
-.returns-label {
-    font-size: 0.8rem;
-    opacity: 0.7;
-}
-
-.returns-value {
-    font-size: 1.4rem;
-    font-weight: bold;
-}
-
-.returns-value.win { color: #00c853; }
-.returns-value.place { color: #2196f3; }
-.returns-value.lose { color: #ff4a4a; }
-
-/* ========================================= */
-/* ACCA STANDINGS                            */
-/* ========================================= */
-
-.acca-standings-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.acca-standing-item {
-    background-color: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-md);
-    padding: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.acca-standing-player {
-    font-weight: bold;
-}
-
-.acca-standing-status {
-    padding: 4px 10px;
-    border-radius: var(--radius-md);
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    border: 1px solid var(--gold);
-}
-
-/* ========================================= */
-/* ACCA PAGE — TWO COLUMN LAYOUT             */
-/* ========================================= */
-
-.acca-layout {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 24px;
-    margin-top: 20px;
-}
-
-.acca-left {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.acca-right {
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(247,198,0,0.25);
-    border-radius: var(--radius-lg);
-    padding: 16px 20px;
-    height: fit-content;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-}
-
-/* ========================================= */
-/* FORCE PICKS TO STACK VERTICALLY           */
-/* ========================================= */
+/* === 11. TODAY'S ACCA (CLEANED + FIXED) === */
 
 #accaPicks.acca-picks-grid {
     display: flex !important;
@@ -631,25 +443,54 @@ button:active,
     gap: 18px;
 }
 
-/* ========================================= */
-/* ACCA PICK TILE — FULL WIDTH LEFT COLUMN   */
-/* ========================================= */
-
 .acca-pick-tile {
     width: 100%;
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(247,198,0,0.25);
-    border-radius: var(--radius-lg);
+    background: #123026;
+    border: 2px solid var(--gold-soft);
+    border-radius: 10px;
     padding: 16px 18px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    box-shadow: var(--shadow-soft);
     display: flex;
     flex-direction: column;
     gap: 12px;
+    color: #fff;
 }
 
-/* ========================================= */
-/* STATUS BUTTONS — RESPONSIVE WRAP          */
-/* ========================================= */
+.pick-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pick-player {
+    font-weight: bold;
+    color: var(--gold);
+}
+
+.pick-badge {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.pick-badge.win { color: #00c853; }
+.pick-badge.place { color: #2196f3; }
+.pick-badge.lose { color: #ff4a4a; }
+.pick-badge.nr { color: #aaa; }
+
+.pick-course {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.pick-horse {
+    font-weight: bold;
+    margin: 0.3rem 0;
+}
+
+.pick-odds {
+    font-weight: bold;
+    margin-top: 0.3rem;
+}
 
 .pick-status-buttons {
     display: flex;
@@ -662,7 +503,7 @@ button:active,
     min-width: 70px;
     padding: 8px;
     border-radius: var(--radius-md);
-    border: 1px solid rgba(247,198,0,0.25);
+    border: 1px solid var(--gold-soft);
     background: rgba(255,255,255,0.05);
     color: #fff;
     font-weight: 600;
@@ -687,136 +528,64 @@ button:active,
     color: black;
 }
 
-/* ========================================= */
-/* 6. COMPLETED ACCAS                        */
-/* ========================================= */
+.acca-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    margin-top: 20px;
+}
 
-.acca-card {
-    background: #123026; /* racing green */
-    border: 1px solid rgba(247,198,0,0.25); /* gold accent */
+.acca-left {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.acca-right {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid var(--gold-soft);
     border-radius: 10px;
-    padding: 1.2rem;
-    margin-bottom: 1.5rem;
+    padding: 16px 20px;
+    height: fit-content;
+    box-shadow: var(--shadow-soft);
+}
+
+
+/* === 12. ACCA STANDINGS (CLEANED) === */
+
+.acca-standings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.acca-standing-item {
+    background: #123026;
+    border: 1px solid var(--gold-soft);
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     color: #fff;
 }
 
-.acca-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-}
-
-.acca-date {
-    font-size: 1.1rem;
+.acca-standing-player {
     font-weight: bold;
-    color: #f7c600; /* gold */
+    color: var(--gold);
 }
 
-.acca-sub {
-    font-size: 0.9rem;
-    opacity: 0.85;
-    margin-top: 0.2rem;
-}
-
-.returns-value {
-    font-size: 1.4rem;
-    font-weight: 700;
-}
-
-.returns-value.win { color: #00c853; }
-.returns-value.place { color: #29b6f6; }
-.returns-value.lose { color: #ff5252; }
-
-.acca-status-badge {
-    display: inline-block;
-    margin-top: 0.4rem;
-    padding: 0.25rem 0.6rem;
+.acca-standing-status {
+    padding: 4px 10px;
     border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: bold;
+    font-size: 0.8rem;
     text-transform: uppercase;
+    border: 1px solid var(--gold);
+    color: var(--gold);
 }
 
-.acca-badge-win { background: #003d00; color: #00c853; }
-.acca-badge-place { background: #002b4d; color: #2196f3; }
-.acca-badge-lose { background: #4d0000; color: #ff4a4a; }
 
-
-/* ========================================= */
-/* ACCA PICKS GRID (COMPLETED ACCAS)         */
-/* ========================================= */
-
-.acca-picks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.pick-tile {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 0.8rem;
-    border-radius: 8px;
-}
-
-.pick-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.4rem;
-}
-
-.pick-player {
-    font-weight: bold;
-    color: #f7c600;
-}
-
-.pick-badge {
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.pick-badge.win { color: #00c853; }
-.pick-badge.place { color: #2196f3; }
-.pick-badge.lose { color: #ff4a4a; }
-.pick-badge.nr { color: #aaa; }
-.pick-badge.win {
-    background: rgba(0, 200, 83, 0.2);
-    border: 1px solid #00c853;
-    color: #00e676;
-}
-
-.pick-badge.place {
-    background: rgba(74, 163, 255, 0.2);
-    border: 1px solid #4aa3ff;
-    color: #4aa3ff;
-}
-
-.pick-badge.lose {
-    background: rgba(255, 74, 74, 0.2);
-    border: 1px solid #ff4a4a;
-    color: #ff4a4a;
-}
-
-.pick-course {
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-.pick-horse {
-    font-weight: bold;
-    margin: 0.3rem 0;
-}
-
-.pick-odds {
-    font-weight: bold;
-    margin-top: 0.3rem;
-}
-
-/* ========================================= */
-/* 4. PLAYER TILES (ACCA + RACE DAY)         */
-/* ========================================= */
+/* === 13. STATS PAGE === */
 
 .player-stats-grid {
     display: grid;
@@ -876,10 +645,7 @@ button:active,
     font-weight: 700;
     color: var(--text-light);
 }
-
-/* ========================================= */
-/* 5. COMPLETED RACE DAYS                    */
-/* ========================================= */
+/* === 14. COMPLETED RACE DAYS === */
 
 .completed-day {
     background: var(--bg-panel);
@@ -924,13 +690,10 @@ button:active,
     color: var(--text-muted);
 }
 
-/* ============================================
-   COMPLETED RACE DAY — PLAYER GROUP TILE
-   ============================================ */
-
+/* Player group tile */
 .player-bet-group {
-    background: #123026; /* racing green */
-    border: 1px solid rgba(247,198,0,0.25); /* gold accent */
+    background: #123026;
+    border: 1px solid var(--gold-soft);
     padding: 1rem;
     border-radius: 10px;
     margin-bottom: 1.5rem;
@@ -939,28 +702,20 @@ button:active,
 .player-bet-header {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #f7c600; /* gold */
+    color: var(--gold);
     margin-bottom: 1rem;
 }
 
-
-/* ============================================
-   INNER BET GRID (TILES INSIDE PLAYER GROUP)
-   ============================================ */
-
+/* Inner bet grid */
 .completed-bets-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
 }
 
-
-/* ============================================
-   INDIVIDUAL BET TILE
-   ============================================ */
-
+/* Individual bet tile */
 .completed-bet-tile {
-    background: rgba(255,255,255,0.05); /* soft translucent */
+    background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.1);
     padding: 1rem;
     border-radius: 8px;
@@ -975,7 +730,7 @@ button:active,
 
 .bet-player {
     font-weight: bold;
-    color: #f7c600;
+    color: var(--gold);
 }
 
 .bet-result {
@@ -1009,17 +764,15 @@ button:active,
 }
 
 
-/* ========================================= */
-/* PERFORMANCE CENTRE                        */
-/* ========================================= */
+/* === 15. PERFORMANCE CENTRE === */
 
 .performance-center-box {
     background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(247,198,0,0.25);
+    border: 2px solid var(--gold-soft);
     border-radius: var(--radius-lg);
     padding: 20px 24px;
     margin-bottom: 30px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    box-shadow: var(--shadow-soft);
 }
 
 .performance-center-box .page-title {
@@ -1037,12 +790,11 @@ button:active,
     flex-wrap: wrap;
 }
 
-/* Monthly overview grid */
 .monthly-overview-box {
     margin-top: 20px;
     padding: 16px;
     background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(247,198,0,0.25);
+    border: 1px solid var(--gold-soft);
     border-radius: var(--radius-md);
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -1062,147 +814,8 @@ button:active,
     margin-top: 4px;
 }
 
-/* ========================================= */
-/* 3. RACE DAY SUMMARY — PREMIUM BOX         */
-/* ========================================= */
 
-.race-summary-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 1rem;
-    background: var(--bg-panel);
-    padding: 1.5rem;
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--border-soft);
-    box-shadow: var(--shadow-soft);
-}
-
-.summary-tile {
-    background: var(--bg-tile);
-    padding: 1rem;
-    border-radius: var(--radius-lg);
-    text-align: center;
-    border: 1px solid var(--border-soft);
-}
-
-.summary-tile .label {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-}
-
-.summary-tile .value {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--text-light);
-}
-
-/* ========================================= */
-/* 12. ACTIVITY CARDS                        */
-/* ========================================= */
-
-.activity-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-md);
-    padding: 14px;
-    margin-bottom: 14px;
-    box-shadow: var(--shadow-soft);
-}
-
-.activity-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.activity-title {
-    font-weight: bold;
-    color: var(--gold);
-}
-
-.activity-meta {
-    opacity: 0.7;
-    font-size: 0.85rem;
-}
-
-.activity-body {
-    margin-top: 10px;
-    line-height: 1.4rem;
-}
-
-/* ========================================= */
-/* 13. MODALS                                */
-/* ========================================= */
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.65);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-.modal {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-lg);
-    padding: 25px;
-    width: 90%;
-    max-width: 550px;
-    box-shadow: var(--shadow-gold);
-    animation: fadeIn 0.35s ease forwards;
-    position: relative;
-}
-
-.modal h2 {
-    color: var(--gold);
-    margin-bottom: 15px;
-    font-family: var(--font-title);
-}
-
-.modal-close {
-    background: none;
-    border: none;
-    color: var(--gold);
-    font-size: 1.4rem;
-    cursor: pointer;
-    position: absolute;
-    top: 18px;
-    right: 22px;
-    opacity: 0.7;
-}
-
-.modal-close:hover {
-    opacity: 1;
-}
-
-.modal-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 12px;
-    margin-top: 15px;
-}
-
-.modal-stat-box {
-    background: rgba(255,255,255,0.05);
-    padding: 12px;
-    border-radius: var(--radius-md);
-    text-align: center;
-}
-
-.modal-stat-box h4 {
-    color: var(--gold);
-    margin-bottom: 6px;
-}
-
-/* ========================================= */
-/* 14. COURSE TABLE + HEATMAP                */
-/* ========================================= */
+/* === 16. TABLES + HEATMAPS === */
 
 .course-table {
     width: 100%;
@@ -1239,12 +852,11 @@ button:active,
 .heatmap-high { background: #3f8f3f; }
 .heatmap-max  { background: #4fbf4f; }
 
-/* ========================================= */
-/* 15. CHARTS (BAR, LINE)                    */
-/* ========================================= */
+
+/* === 17. CHARTS === */
 
 .chart-container {
-    background: var(--card-bg);
+    background: var(--bg-panel);
     border: 1px solid var(--card-border);
     border-radius: var(--radius-md);
     padding: 20px;
@@ -1281,9 +893,8 @@ button:active,
     background: var(--gold);
 }
 
-/* ========================================= */
-/* 16. COMPARISON MODE                       */
-/* ========================================= */
+
+/* === 18. COMPARISON MODE === */
 
 .comparison-container {
     display: grid;
@@ -1293,7 +904,7 @@ button:active,
 }
 
 .comparison-card {
-    background: var(--card-bg);
+    background: var(--bg-panel);
     border: 1px solid var(--card-border);
     border-radius: var(--radius-lg);
     padding: 18px;
@@ -1316,9 +927,9 @@ button:active,
 .comparison-stat:last-child {
     border-bottom: none;
 }
-/* ========================================= */
-/* 18. RESPONSIVE RULES                      */
-/* ========================================= */
+
+
+/* === 19. RESPONSIVE RULES === */
 
 @media (max-width: 900px) {
     .race-container {
@@ -1356,9 +967,8 @@ button:active,
     }
 }
 
-/* ========================================= */
-/* 19. FINAL CLEANUP                         */
-/* ========================================= */
+
+/* === 20. UTILITIES === */
 
 .hidden {
     display: none !important;
