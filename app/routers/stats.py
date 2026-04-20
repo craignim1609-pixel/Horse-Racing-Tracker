@@ -540,7 +540,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
 
     def new_page(title):
         nonlocal page
-        if c.getPageNumber() > 1:
+        if page > 1:
             page_number(page)
             c.showPage()
             page += 1
