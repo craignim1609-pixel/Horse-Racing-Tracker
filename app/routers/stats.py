@@ -12,6 +12,9 @@ router = APIRouter(prefix="/stats", tags=["Stats"])
 templates = Jinja2Templates(directory="app/templates")
 
 
+# ------------------------------------------------------------
+# STATS PAGE (HTML)
+# ------------------------------------------------------------
 @router.get("")
 def stats_home(request: Request):
     return templates.TemplateResponse("stats.html", {
@@ -20,6 +23,9 @@ def stats_home(request: Request):
     })
 
 
+# ------------------------------------------------------------
+# MONTHLY STATS
+# ------------------------------------------------------------
 @router.get("/month/{month}")
 def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
     players = db.query(models.Player).all()
@@ -46,6 +52,9 @@ def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
     return results
 
 
+# ------------------------------------------------------------
+# PLAYER DETAILS
+# ------------------------------------------------------------
 @router.get("/player/{name}")
 def player_details(name: str, db: Session = Depends(get_db)):
     player = db.query(models.Player).filter_by(name=name).first()
@@ -96,6 +105,9 @@ def player_details(name: str, db: Session = Depends(get_db)):
     }
 
 
+# ------------------------------------------------------------
+# ACCA PERFORMANCE CENTER
+# ------------------------------------------------------------
 @router.get("/acca")
 def acca_stats(db: Session = Depends(get_db)):
     q = db.query(models.AccaHistory)
@@ -141,6 +153,9 @@ def acca_stats(db: Session = Depends(get_db)):
     }
 
 
+# ------------------------------------------------------------
+# DASHBOARD (used by stats.html)
+# ------------------------------------------------------------
 @router.get("/dashboard")
 def stats_dashboard(db: Session = Depends(get_db)):
 
@@ -206,6 +221,9 @@ def stats_dashboard(db: Session = Depends(get_db)):
     }
 
 
+# ------------------------------------------------------------
+# COMPLETED RACE DAYS
+# ------------------------------------------------------------
 @router.get("/racedays")
 def get_completed_racedays(db: Session = Depends(get_db)):
     racedays = (
@@ -244,6 +262,9 @@ def get_completed_racedays(db: Session = Depends(get_db)):
     return result
 
 
+# ------------------------------------------------------------
+# RACE DAY PLAYER PERFORMANCE
+# ------------------------------------------------------------
 @router.get("/raceday/players")
 def raceday_player_stats(db: Session = Depends(get_db)):
     players = db.query(models.Player).all()
@@ -288,33 +309,32 @@ def export_excel(db: Session = Depends(get_db)):
     from openpyxl.chart import BarChart, Reference
 
     wb = Workbook()
+    ws = wb.active
+    ws.title = "Player Performance"
 
-    # Sheet 1: Player Performance
-    ws_players = wb.active
-    ws_players.title = "Player Performance"
-    ws_players.append(["Player", "Wins", "Places", "Loses", "NR", "Profit"])
+    ws.append(["Player", "Wins", "Places", "Loses", "NR", "Profit"])
 
     players = db.query(models.Player).all()
+
     for p in players:
         picks = db.query(models.Pick).filter(models.Pick.player_id == p.id).all()
+
         wins = sum(1 for x in picks if x.status == "Win")
         places = sum(1 for x in picks if x.status == "Place")
         loses = sum(1 for x in picks if x.status == "Lose")
         nr = sum(1 for x in picks if x.status == "NR")
         profit = sum((x.winnings - x.stake) for x in picks if hasattr(x, "winnings"))
-        ws_players.append([p.name, wins, places, loses, nr, float(profit or 0)])
 
-    # Simple bar chart for wins
-    if ws_players.max_row > 1:
+        ws.append([p.name, wins, places, loses, nr, float(profit or 0)])
+
+    if ws.max_row > 1:
         chart = BarChart()
-        data = Reference(ws_players, min_col=2, max_col=2, min_row=1, max_row=ws_players.max_row)
-        cats = Reference(ws_players, min_col=1, min_row=2, max_row=ws_players.max_row)
+        data = Reference(ws, min_col=2, max_col=2, min_row=1, max_row=ws.max_row)
+        cats = Reference(ws, min_col=1, min_row=2, max_row=ws.max_row)
         chart.add_data(data, titles_from_data=True)
         chart.set_categories(cats)
         chart.title = "Wins by Player"
-        ws_players.add_chart(chart, "H2")
-
-    # You can add more sheets here (Race Day, Accas, etc.)
+        ws.add_chart(chart, "H2")
 
     stream = BytesIO()
     wb.save(stream)
@@ -356,6 +376,7 @@ def export_pdf(db: Session = Depends(get_db)):
             c.setFont("Helvetica", 10)
 
         picks = db.query(models.Pick).filter(models.Pick.player_id == p.id).all()
+
         wins = sum(1 for x in picks if x.status == "Win")
         places = sum(1 for x in picks if x.status == "Place")
         loses = sum(1 for x in picks if x.status == "Lose")
