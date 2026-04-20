@@ -8,10 +8,9 @@
 <div class="performance-center-box">
     <h1 class="page-title">Performance Center</h1>
 
-    <!-- EXPORT BUTTONS -->
+    <!-- EXPORT REPORTS BUTTON -->
     <div class="stats-actions">
-        <button id="exportExcelBtn" class="export-btn">Export Excel</button>
-        <button id="exportPdfBtn" class="export-btn secondary">Export PDF</button>
+        <button id="openExportModal" class="export-btn">Export Reports</button>
     </div>
 
     <div class="stats-filter-bar">
@@ -114,6 +113,36 @@
 
 
 <!-- ========================= -->
+<!-- EXPORT MODAL (Option C)   -->
+<!-- ========================= -->
+<div id="exportModal" class="export-modal hidden">
+    <div class="export-modal-content">
+        <h2>Export Reports</h2>
+
+        <div class="export-section">
+            <h3>Race Day Reports</h3>
+            <button class="export-option" data-type="raceday-excel">Excel</button>
+            <button class="export-option" data-type="raceday-pdf">PDF</button>
+        </div>
+
+        <div class="export-section">
+            <h3>Acca Reports</h3>
+            <button class="export-option" data-type="acca-excel">Excel</button>
+            <button class="export-option" data-type="acca-pdf">PDF</button>
+        </div>
+
+        <div class="export-section">
+            <h3>Overall Summary</h3>
+            <button class="export-option" data-type="summary-excel">Excel</button>
+            <button class="export-option" data-type="summary-pdf">PDF</button>
+        </div>
+
+        <button id="closeExportModal" class="close-modal">Close</button>
+    </div>
+</div>
+
+
+<!-- ========================= -->
 <!-- JS LOADER                 -->
 <!-- ========================= -->
 <script src="/static/app_v10001.js"></script>
@@ -138,34 +167,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadFullStatsPage();
 
-    // ============================
-    // EXPORT EXCEL
-    // ============================
-    document.getElementById("exportExcelBtn").addEventListener("click", async () => {
-        const response = await fetch("/stats/export/excel");
-        const blob = await response.blob();
 
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "performance_report.xlsx";
-        a.click();
-        window.URL.revokeObjectURL(url);
+    // ============================
+    // EXPORT MODAL LOGIC
+    // ============================
+    const modal = document.getElementById("exportModal");
+    const openBtn = document.getElementById("openExportModal");
+    const closeBtn = document.getElementById("closeExportModal");
+
+    openBtn.addEventListener("click", () => {
+        modal.classList.remove("hidden");
     });
 
-    // ============================
-    // EXPORT PDF
-    // ============================
-    document.getElementById("exportPdfBtn").addEventListener("click", async () => {
-        const response = await fetch("/stats/export/pdf");
-        const blob = await response.blob();
+    closeBtn.addEventListener("click", () => {
+        modal.classList.add("hidden");
+    });
 
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "performance_report.pdf";
-        a.click();
-        window.URL.revokeObjectURL(url);
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            modal.classList.add("hidden");
+        }
+    });
+
+
+    // ============================
+    // EXPORT HANDLERS
+    // ============================
+    document.querySelectorAll(".export-option").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const type = btn.dataset.type;
+
+            const endpoints = {
+                "raceday-excel": "/stats/export/raceday/excel",
+                "raceday-pdf": "/stats/export/raceday/pdf",
+                "acca-excel": "/stats/export/acca/excel",
+                "acca-pdf": "/stats/export/acca/pdf",
+                "summary-excel": "/stats/export/summary/excel",
+                "summary-pdf": "/stats/export/summary/pdf",
+            };
+
+            const url = endpoints[type];
+            const response = await fetch(url);
+            const blob = await response.blob();
+
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = downloadUrl;
+
+            // Name the file based on type
+            const filename = type.replace("-", "_") + (type.includes("pdf") ? ".pdf" : ".xlsx");
+            a.download = filename;
+
+            a.click();
+            window.URL.revokeObjectURL(downloadUrl);
+        });
     });
 
 });
