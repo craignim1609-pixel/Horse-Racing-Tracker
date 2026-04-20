@@ -779,11 +779,10 @@ def export_acca_pdf(db: Session = Depends(get_db)):
     places = sum(1 for a in accas if a.status == "place")
     loses = sum(1 for a in accas if a.status == "lose")
 
-    total_stake = sum(a.stake for a in accas)
-    total_return = sum(a.total_return for a in accas)
+    total_stake = sum((a.stake or 0) for a in accas)
+    total_return = sum((a.total_return or 0) for a in accas)
     total_profit = total_return - total_stake
-
-    biggest_return = max((a.total_return for a in accas), default=0)
+    biggest_return = max(((a.total_return or 0) for a in accas), default=0)
 
     # PDF setup
     stream = BytesIO()
@@ -832,6 +831,7 @@ def export_acca_pdf(db: Session = Depends(get_db)):
         return height - 60
 
     y = new_page("ACCA Report")
+
     # Generated date
     c.setFont("Helvetica", 10)
     c.setFillColor(colors.black)
@@ -869,6 +869,7 @@ def export_acca_pdf(db: Session = Depends(get_db)):
         return y - 20
 
     y = section("Accumulator Breakdown", y)
+
     for acca in accas:
 
         # Page break before parent tile
@@ -876,8 +877,8 @@ def export_acca_pdf(db: Session = Depends(get_db)):
             y = new_page("ACCA Report")
             y = section("Accumulator Breakdown (cont.)", y)
 
-        # Parent tile height (auto grows with picks)
-        parent_h = 120 + (len(acca.picks_json) * 90)
+        picks = acca.picks_json or []
+        parent_h = 120 + (len(picks) * 90)
         parent_y = y - parent_h
 
         # Parent tile background
@@ -891,7 +892,8 @@ def export_acca_pdf(db: Session = Depends(get_db)):
 
         c.setFillColor(gold)
         c.setFont("Helvetica-Bold", 12)
-        header_text = f"ACCA #{acca.id} — {acca.created_at.strftime('%Y-%m-%d')} — {acca.status.upper()}"
+        created = acca.created_at.strftime("%Y-%m-%d") if acca.created_at else "-"
+        header_text = f"ACCA #{acca.id} — {created} — {acca.status.upper()}"
         c.drawString(parent_x + 12, parent_y + parent_h - 20, header_text)
 
         # Parent tile content
@@ -900,16 +902,23 @@ def export_acca_pdf(db: Session = Depends(get_db)):
         c.setFont("Helvetica", 10)
         c.drawString(parent_x + 12, ty, f"Combined Odds: {acca.combined_decimal_odds:g}")
         ty -= 16
-        c.drawString(parent_x + 12, ty, f"Stake: £{acca.stake:g}")
+        c.drawString(parent_x + 12, ty, f"Stake: £{(acca.stake or 0):g}")
         ty -= 16
-        c.drawString(parent_x + 12, ty, f"Return: £{acca.total_return:g}")
+        c.drawString(parent_x + 12, ty, f"Return: £{(acca.total_return or 0):g}")
         ty -= 30
 
         # Mini-tiles for each pick
-        for pick in acca.picks_json:
+        for pick in picks:
+            # Safe field access
+            player = pick.get("player", "Unknown")
+            course = pick.get("course", "Unknown")
+            race_time = pick.get("race_time", "-")
+            hn = pick.get("horse_name", "Unknown")
+            num = pick.get("horse_number", "-")
+            odds = pick.get("odds_fraction", "-")
+            result = pick.get("result", "Pending")
 
             # Colour coding
-            result = pick.get("result", "Pending")
             if result == "Win":
                 bg = pale_green
                 rc = colors.green
@@ -939,16 +948,14 @@ def export_acca_pdf(db: Session = Depends(get_db)):
 
             c.setFont("Helvetica-Bold", 10)
             c.setFillColor(colors.black)
-            c.drawString(ix, my, f"{pick['player']} — {pick['course']} — {pick['race_time']}")
+            c.drawString(ix, my, f"{player} — {course} — {race_time}")
             my -= 16
 
             c.setFont("Helvetica", 10)
-            hn = pick.get("horse_name", "Unknown")
-            num = pick.get("horse_number", "-")
             c.drawString(ix, my, f"Horse: {hn} (#{num})")
             my -= 14
 
-            c.drawString(ix, my, f"Odds: {pick.get('odds_fraction', '-')}")
+            c.drawString(ix, my, f"Odds: {odds}")
             my -= 14
 
             c.setFillColor(rc)
