@@ -300,41 +300,141 @@ def raceday_player_stats(db: Session = Depends(get_db)):
     ]
 
 
-# ------------------------------------------------------------
-# EXPORT: EXCEL (.xlsx)
-# ------------------------------------------------------------
-@router.get("/export/excel")
-def export_excel(db: Session = Depends(get_db)):
-    from openpyxl import Workbook
-    from openpyxl.chart import BarChart, Reference
-
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "Player Performance"
-
-    ws.append(["Player", "Wins", "Places", "Loses", "NR", "Profit"])
+# ============================================================
+# EXPORT HELPERS
+# ============================================================
+def get_raceday_data(db: Session):
+    racedays = (
+        db.query(models.CompletedRaceDay)
+        .options(joinedload(models.CompletedRaceDay.bets))
+        .order_by(models.CompletedRaceDay.date.desc())
+        .all()
+    )
 
     players = db.query(models.Player).all()
 
-    for p in players:
-        picks = db.query(models.Pick).filter(models.Pick.player_id == p.id).all()
+    player_stats = {
+        p.name: {"wins": 0, "places": 0, "loses": 0, "nr": 0, "profit": 0}
+        for p in players
+    }
 
-        wins = sum(1 for x in picks if x.status == "Win")
-        places = sum(1 for x in picks if x.status == "Place")
-        loses = sum(1 for x in picks if x.status == "Lose")
-        nr = sum(1 for x in picks if x.status == "NR")
-        profit = sum((x.winnings - x.stake) for x in picks if hasattr(x, "winnings"))
+    for rd in racedays:
+        for b in rd.bets:
+            name = b.player_name
+            if name not in player_stats:
+                continue
 
-        ws.append([p.name, wins, places, loses, nr, float(profit or 0)])
+            if b.result == "Win":
+                player_stats[name]["wins"] += 1
+            elif b.result == "Place":
+                player_stats[name]["places"] += 1
+            elif b.result == "Lose":
+                player_stats[name]["loses"] += 1
+            elif b.result == "NR":
+                player_stats[name]["nr"] += 1
 
-    if ws.max_row > 1:
-        chart = BarChart()
-        data = Reference(ws, min_col=2, max_col=2, min_row=1, max_row=ws.max_row)
-        cats = Reference(ws, min_col=1, min_row=2, max_row=ws.max_row)
-        chart.add_data(data, titles_from_data=True)
-        chart.set_categories(cats)
-        chart.title = "Wins by Player"
-        ws.add_chart(chart, "H2")
+            player_stats[name]["profit"] += (b.winnings - b.stake)
+
+    return racedays, player_stats
+
+
+def get_acca_data(db: Session):
+    accas = (
+        db.query(models.AccaHistory)
+        .order_by(models.AccaHistory.created_at.desc())
+        .all()
+    )
+
+    players = db.query(models.Player).all()
+
+    player_stats = {
+        p.name: {"wins": 0, "places": 0, "loses": 0, "nr": 0}
+        for p in players
+    }
+
+    for a in accas:
+        for pick in a.picks_json:
+            name = pick.get("player")
+            result = pick.get("result")
+
+            if name not in player_stats:
+                continue
+
+            if result == "Win":
+                player_stats[name]["wins"] += 1
+            elif result == "Place":
+                player_stats[name]["places"] += 1
+            elif result == "Lose":
+                player_stats[name]["loses"] += 1
+            elif result == "NR":
+                player_stats[name]["nr"] += 1
+
+    return accas, player_stats
+
+
+def get_summary_data(db: Session):
+    players = db.query(models.Player).all()
+    picks = db.query(models.Pick).all()
+
+    player_stats = {
+        p.name: {"wins": 0, "places": 0, "loses": 0, "nr": 0}
+        for p in players
+    }
+
+    for p in picks:
+        player = db.query(models.Player).filter(models.Player.id == p.player_id).first()
+        if not player:
+            continue
+
+        name = player.name
+
+        if p.status == "Win":
+            player_stats[name]["wins"] += 1
+        elif p.status == "Place":
+            player_stats[name]["places"] += 1
+        elif p.status == "Lose":
+            player_stats[name]["loses"] += 1
+        elif p.status == "NR":
+            player_stats[name]["nr"] += 1
+
+    return player_stats
+
+
+# ============================================================
+# RACE DAY EXPORT — EXCEL
+# ============================================================
+@router.get("/export/raceday/excel")
+def export_raceday_excel(db: Session = Depends(get_db)):
+    from openpyxl import Workbook
+
+    racedays, player_stats = get_raceday_data(db)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Race Day Summary"
+
+    ws.append(["Date", "Stake", "Return", "Profit"])
+
+    for rd in racedays:
+        ws.append([
+            rd.date.strftime("%Y-%m-%d"),
+            float(rd.total_stake),
+            float(rd.total_return),
+            float(rd.profit)
+        ])
+
+    ws2 = wb.create_sheet("Player Performance")
+    ws2.append(["Player", "Wins", "Places", "Loses", "NR", "Profit"])
+
+    for name, stats in player_stats.items():
+        ws2.append([
+            name,
+            stats["wins"],
+            stats["places"],
+            stats["loses"],
+            stats["nr"],
+            float(stats["profit"])
+        ])
 
     stream = BytesIO()
     wb.save(stream)
@@ -343,47 +443,61 @@ def export_excel(db: Session = Depends(get_db)):
     return Response(
         content=stream.read(),
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": "attachment; filename=performance_report.xlsx"}
+        headers={"Content-Disposition": "attachment; filename=performance_raceday.xlsx"}
     )
 
 
-# ------------------------------------------------------------
-# EXPORT: PDF
-# ------------------------------------------------------------
-@router.get("/export/pdf")
-def export_pdf(db: Session = Depends(get_db)):
+# ============================================================
+# RACE DAY EXPORT — PDF
+# ============================================================
+@router.get("/export/raceday/pdf")
+def export_raceday_pdf(db: Session = Depends(get_db)):
     from reportlab.lib.pagesizes import A4
     from reportlab.pdfgen import canvas
+
+    racedays, player_stats = get_raceday_data(db)
 
     stream = BytesIO()
     c = canvas.Canvas(stream, pagesize=A4)
     width, height = A4
 
-    c.setFont("Helvetica-Bold", 16)
-    c.drawString(40, height - 40, "Performance Report")
+    c.setFont("Helvetica-Bold", 18)
+    c.drawString(40, height - 40, "Race Day Report")
 
     y = height - 80
-    c.setFont("Helvetica", 10)
+    c.setFont("Helvetica", 11)
 
-    players = db.query(models.Player).all()
-    c.drawString(40, y, "Player Performance:")
+    c.drawString(40, y, "Completed Race Days:")
     y -= 20
 
-    for p in players:
+    for rd in racedays:
         if y < 60:
             c.showPage()
             y = height - 60
-            c.setFont("Helvetica", 10)
 
-        picks = db.query(models.Pick).filter(models.Pick.player_id == p.id).all()
+        line = (
+            f"{rd.date}: Stake £{rd.total_stake:.2f} | "
+            f"Return £{rd.total_return:.2f} | Profit £{rd.profit:.2f}"
+        )
+        c.drawString(50, y, line)
+        y -= 16
 
-        wins = sum(1 for x in picks if x.status == "Win")
-        places = sum(1 for x in picks if x.status == "Place")
-        loses = sum(1 for x in picks if x.status == "Lose")
-        nr = sum(1 for x in picks if x.status == "NR")
-        profit = sum((x.winnings - x.stake) for x in picks if hasattr(x, "winnings"))
+    c.showPage()
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(40, height - 40, "Race Day Player Performance")
 
-        line = f"{p.name}: W {wins} / P {places} / L {loses} / NR {nr} / Profit £{float(profit or 0):.2f}"
+    y = height - 80
+    c.setFont("Helvetica", 11)
+
+    for name, stats in player_stats.items():
+        if y < 60:
+            c.showPage()
+            y = height - 60
+
+        line = (
+            f"{name}: W {stats['wins']} | P {stats['places']} | "
+            f"L {stats['loses']} | NR {stats['nr']} | Profit £{stats['profit']:.2f}"
+        )
         c.drawString(50, y, line)
         y -= 16
 
@@ -394,5 +508,86 @@ def export_pdf(db: Session = Depends(get_db)):
     return Response(
         content=stream.read(),
         media_type="application/pdf",
-        headers={"Content-Disposition": "attachment; filename=performance_report.pdf"}
+        headers={"Content-Disposition": "attachment; filename=performance_raceday.pdf"}
     )
+
+
+# ============================================================
+# ACCA EXPORT — EXCEL
+# ============================================================
+@router.get("/export/acca/excel")
+def export_acca_excel(db: Session = Depends(get_db)):
+    from openpyxl import Workbook
+
+    accas, player_stats = get_acca_data(db)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Acca Summary"
+
+    ws.append(["Date", "Status", "Combined Odds", "Return"])
+
+    for a in accas:
+        ws.append([
+            a.created_at.strftime("%Y-%m-%d") if a.created_at else "",
+            a.status,
+            float(a.combined_decimal_odds or 0),
+            float(a.total_return or 0)
+        ])
+
+    ws2 = wb.create_sheet("Player Performance")
+    ws2.append(["Player", "Wins", "Places", "Loses", "NR"])
+
+    for name, stats in player_stats.items():
+        ws2.append([
+            name,
+            stats["wins"],
+            stats["places"],
+            stats["loses"],
+            stats["nr"]
+        ])
+
+    stream = BytesIO()
+    wb.save(stream)
+    stream.seek(0)
+
+    return Response(
+        content=stream.read(),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=performance_acca.xlsx"}
+    )
+
+
+# ============================================================
+# ACCA EXPORT — PDF
+# ============================================================
+@router.get("/export/acca/pdf")
+def export_acca_pdf(db: Session = Depends(get_db)):
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
+
+    accas, player_stats = get_acca_data(db)
+
+    stream = BytesIO()
+    c = canvas.Canvas(stream, pagesize=A4)
+    width, height = A4
+
+    c.setFont("Helvetica-Bold", 18)
+    c.drawString(40, height - 40, "Acca Report")
+
+    y = height - 80
+    c.setFont("Helvetica", 11)
+
+    c.drawString(40, y, "Completed Accas:")
+    y -= 20
+
+    for a in accas:
+        if y < 60:
+            c.showPage()
+            y = height - 60
+
+        line = (
+            f"{a.created_at}: Status {a.status} | Odds {a.combined_decimal_odds} | "
+            f"Return £{a.total_return:.2f}"
+        )
+        c.drawString(50, y, line)
