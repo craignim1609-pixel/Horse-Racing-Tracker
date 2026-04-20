@@ -581,30 +581,38 @@ button:active,
 }
 
 
-/* =========================================
-   ACCA PAGE LAYOUT (TWO COLUMNS)
-========================================= */
+/* === NEW TWO-COLUMN LAYOUT === */
 .acca-layout {
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 1fr 350px;
     gap: 24px;
     margin-top: 20px;
 }
 
-.acca-left {
+/* LEFT TILE */
+.acca-left-tile {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(247,198,0,0.25);
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     display: flex;
     flex-direction: column;
     gap: 18px;
 }
 
-.acca-right {
+/* RIGHT TILE */
+.acca-right-tile {
     background: rgba(255,255,255,0.05);
     border: 2px solid rgba(247,198,0,0.25);
-    border-radius: var(--radius-lg);
-    padding: 16px 20px;
-    height: fit-content;
+    border-radius: 12px;
+    padding: 20px 24px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
+
 
 
 /* =========================================
