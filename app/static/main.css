@@ -1197,6 +1197,87 @@ button:active,
 }
 
 /* ========================================= */
+/* Monthly Overview Tiles        */
+/* ========================================= */
+.monthly-overview-box {
+    background: #123026;
+    border: 2px solid rgba(247,198,0,0.25);
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    color: #fff;
+}
+
+.monthly-overview-box .stat-label {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.monthly-overview-box .stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--gold);
+}
+
+/* ========================================= */
+/* Race Day Summary Tiles        */
+/* ========================================= */
+.race-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.summary-tile {
+    background: #123026;
+    border: 2px solid rgba(247,198,0,0.25);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    color: #fff;
+}
+
+.summary-tile .label {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.summary-tile .value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--gold);
+}
+
+/* ========================================= */
+/* Race Day Summary Tiles        */
+/* ========================================= */
+.completed-day {
+    background: #123026;
+    border: 2px solid rgba(247,198,0,0.25);
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+.completed-day h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--gold);
+}
+
+.completed-day details {
+    margin-top: 0.8rem;
+    background: rgba(255,255,255,0.05);
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(247,198,0,0.25);
+}
+
+/* ========================================= */
 /* 3. RACE DAY SUMMARY — PREMIUM BOX         */
 /* ========================================= */
 
