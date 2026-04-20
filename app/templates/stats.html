@@ -8,6 +8,9 @@
 <div class="performance-center-box">
     <h1 class="page-title">Performance Center</h1>
 
+    <!-- EXPORT BUTTON -->
+    <button id="exportStatsBtn" class="export-btn">Export Stats</button>
+
     <div class="stats-filter-bar">
         <div class="filter-group">
             <label for="statsMonth">Month</label>
@@ -116,13 +119,13 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     async function loadFullStatsPage() {
-        await loadMonthlyOverview();        // Monthly overview
-        await loadPlayerStats();            // Acca player stats
-        await loadStatsPageHistory();       // Completed accas
+        await loadMonthlyOverview();
+        await loadPlayerStats();
+        await loadStatsPageHistory();
 
-        await loadRaceDaySummary();         // Today's Race Day summary
-        await loadRaceDayPlayerStats();     // NEW — Race Day player tiles
-        await loadCompletedRaceDays();      // Completed Race Days
+        await loadRaceDaySummary();
+        await loadRaceDayPlayerStats();
+        await loadCompletedRaceDays();
     }
 
     const monthSelect = document.getElementById("statsMonth");
@@ -132,6 +135,22 @@ document.addEventListener("DOMContentLoaded", () => {
     yearSelect.addEventListener("change", loadFullStatsPage);
 
     loadFullStatsPage();
+
+    // ============================
+    // EXPORT BUTTON HANDLER
+    // ============================
+    document.getElementById("exportStatsBtn").addEventListener("click", async () => {
+        const response = await fetch("/stats/export");
+        const blob = await response.blob();
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "stats_export.csv";
+        a.click();
+        window.URL.revokeObjectURL(url);
+    });
+
 });
 </script>
 
