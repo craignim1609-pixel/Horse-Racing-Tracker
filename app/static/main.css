@@ -1091,6 +1091,70 @@ button:active,
 }
 
 /* ========================================= */
+/* Player Performance Tiles (ACCA)                        */
+/* ========================================= */
+
+.player-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.player-tile {
+    background: #123026;
+    border: 2px solid rgba(247,198,0,0.25);
+    border-radius: 12px;
+    padding: 1.2rem;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.player-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+}
+
+.player-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: var(--gold);
+}
+
+.player-header .month-wins {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 0.6rem;
+    margin-top: 1rem;
+}
+
+.stat-box {
+    background: rgba(255,255,255,0.05);
+    padding: 0.7rem;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid rgba(247,198,0,0.25);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gold);
+}
+
+/* ========================================= */
 /* 3. RACE DAY SUMMARY — PREMIUM BOX         */
 /* ========================================= */
 
