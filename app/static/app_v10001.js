@@ -769,6 +769,56 @@ async function loadMonthlyOverview() {
         </div>
     `;
 }
+// ============================
+// EXPORT MODAL LOGIC
+// ============================
+const modal = document.getElementById("exportModal");
+const openBtn = document.getElementById("openExportModal");
+const closeBtn = document.getElementById("closeExportModal");
+
+openBtn.addEventListener("click", () => {
+    modal.classList.remove("hidden");
+});
+
+closeBtn.addEventListener("click", () => {
+    modal.classList.add("hidden");
+});
+
+// Close modal when clicking outside content
+modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+        modal.classList.add("hidden");
+    }
+});
+
+// ============================
+// EXPORT HANDLERS
+// ============================
+document.querySelectorAll(".export-option").forEach(btn => {
+    btn.addEventListener("click", async () => {
+        const type = btn.dataset.type;
+
+        const endpoints = {
+            "raceday-excel": "/stats/export/raceday/excel",
+            "raceday-pdf": "/stats/export/raceday/pdf",
+            "acca-excel": "/stats/export/acca/excel",
+            "acca-pdf": "/stats/export/acca/pdf",
+            "summary-excel": "/stats/export/summary/excel",
+            "summary-pdf": "/stats/export/summary/pdf",
+        };
+
+        const url = endpoints[type];
+        const response = await fetch(url);
+        const blob = await response.blob();
+
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = url.split("/").pop() + (type.includes("pdf") ? ".pdf" : ".xlsx");
+        a.click();
+        window.URL.revokeObjectURL(downloadUrl);
+    });
+});
 
 
 /* ============================================================
