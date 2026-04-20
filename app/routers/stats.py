@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from datetime import datetime
 from io import BytesIO
-from app.models import CompletedRaceDay, CompletedRaceDayBet
 
+from app.models import CompletedRaceDay, CompletedRaceDayBet
 from app.database import get_db
 from app import models
 
@@ -399,8 +399,6 @@ def get_summary_data(db: Session):
             player_stats[name]["nr"] += 1
 
     return player_stats
-
-
 # ============================================================
 # RACE DAY EXPORT — EXCEL
 # ============================================================
@@ -449,7 +447,7 @@ def export_raceday_excel(db: Session = Depends(get_db)):
 
 
 # ============================================================
-# RACE DAY EXPORT — PDF
+# RACE DAY EXPORT — PDF (FIXED LAYOUT)
 # ============================================================
 @router.get("/export/raceday/pdf")
 def export_raceday_pdf(db: Session = Depends(get_db)):
@@ -540,10 +538,11 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
 
     def new_page(title):
         nonlocal page
+        # FIX: use our own page counter, not c.getPageNumber()
         if page > 1:
             page_number(page)
             c.showPage()
-            page += 1
+        page += 1
         header(title)
         return height - 60
 
@@ -654,11 +653,11 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
 
     for rd in racedays:
 
-        # Race day card
         if y < 160:
             y = new_page("Race Day Report")
             y = section("Full Bet Breakdown (cont.)", y)
 
+        # Race day card
         c.setFont("Helvetica-Bold", 12)
         c.setStrokeColor(gold)
         c.roundRect(40, y - 24, width - 80, 24, 6, stroke=1, fill=0)
@@ -695,7 +694,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
                 bg = colors.white
                 rc = colors.black
 
-            # FIXED TILE HEIGHT (no overlap)
+            # Tile height tuned for medium padding
             tile_h = 140
             tile_y = y - tile_h
 
@@ -742,7 +741,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
             ty -= 16
             c.drawString(ix, ty, f"Winnings: £{(bet.winnings or 0):g}")
 
-            # FIXED SPACING BELOW TILE
+            # Spacing below tile
             y = tile_y - 35
 
     page_number(page)
@@ -754,10 +753,6 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         media_type="application/pdf",
         headers={"Content-Disposition": "attachment; filename=raceday_report.pdf"}
     )
-
-
-
-
 # ============================================================
 # SUMMARY EXPORT — EXCEL
 # ============================================================
