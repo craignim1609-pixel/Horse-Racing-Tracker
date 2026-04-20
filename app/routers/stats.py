@@ -832,6 +832,142 @@ def export_acca_pdf(db: Session = Depends(get_db)):
         return height - 60
 
     y = new_page("ACCA Report")
+    # Generated date
+    c.setFont("Helvetica", 10)
+    c.setFillColor(colors.black)
+    c.drawString(40, y, f"Generated: {datetime.utcnow().strftime('%Y-%m-%d')}")
+    y -= 25
+
+    # Summary box
+    box_h = 80
+    c.setFillColor(pale_grey)
+    c.setStrokeColor(gold)
+    c.roundRect(40, y - box_h, width - 80, box_h, 8, stroke=1, fill=1)
+
+    c.setFillColor(colors.black)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(50, y - 18, "Summary")
+    c.setFont("Helvetica", 10)
+
+    c.drawString(50, y - 35, f"Total Accas: {total_accas}")
+    c.drawString(220, y - 35, f"Wins: {wins} | Places: {places} | Loses: {loses}")
+    c.drawString(50, y - 50, f"Total Stake: £{total_stake:g}")
+    c.drawString(220, y - 50, f"Total Return: £{total_return:g}")
+    c.drawString(390, y - 50, f"Profit: £{total_profit:g}")
+    c.drawString(50, y - 65, f"Biggest Return: £{biggest_return:g}")
+
+    y -= (box_h + 30)
+
+    # Section helper
+    def section(title, y):
+        c.setFont("Helvetica-Bold", 14)
+        c.setFillColor(colors.black)
+        c.drawString(40, y, title)
+        y -= 8
+        c.setStrokeColor(gold)
+        c.line(40, y, width - 40, y)
+        return y - 20
+
+    y = section("Accumulator Breakdown", y)
+    for acca in accas:
+
+        # Page break before parent tile
+        if y < 200:
+            y = new_page("ACCA Report")
+            y = section("Accumulator Breakdown (cont.)", y)
+
+        # Parent tile height (auto grows with picks)
+        parent_h = 120 + (len(acca.picks_json) * 90)
+        parent_y = y - parent_h
+
+        # Parent tile background
+        c.setFillColor(pale_grey)
+        c.setStrokeColor(gold)
+        c.roundRect(parent_x, parent_y, parent_width, parent_h, 10, stroke=1, fill=1)
+
+        # Header bar inside parent tile
+        c.setFillColor(racing_green)
+        c.roundRect(parent_x, parent_y + parent_h - 30, parent_width, 30, 10, stroke=0, fill=1)
+
+        c.setFillColor(gold)
+        c.setFont("Helvetica-Bold", 12)
+        header_text = f"ACCA #{acca.id} — {acca.created_at.strftime('%Y-%m-%d')} — {acca.status.upper()}"
+        c.drawString(parent_x + 12, parent_y + parent_h - 20, header_text)
+
+        # Parent tile content
+        ty = parent_y + parent_h - 50
+        c.setFillColor(colors.black)
+        c.setFont("Helvetica", 10)
+        c.drawString(parent_x + 12, ty, f"Combined Odds: {acca.combined_decimal_odds:g}")
+        ty -= 16
+        c.drawString(parent_x + 12, ty, f"Stake: £{acca.stake:g}")
+        ty -= 16
+        c.drawString(parent_x + 12, ty, f"Return: £{acca.total_return:g}")
+        ty -= 30
+
+        # Mini-tiles for each pick
+        for pick in acca.picks_json:
+
+            # Colour coding
+            result = pick.get("result", "Pending")
+            if result == "Win":
+                bg = pale_green
+                rc = colors.green
+            elif result == "Lose":
+                bg = pale_red
+                rc = colors.HexColor("#B00020")
+            elif result == "Place":
+                bg = pale_blue
+                rc = colors.HexColor("#0047AB")
+            elif result == "NR":
+                bg = pale_grey
+                rc = colors.grey
+            else:
+                bg = colors.white
+                rc = colors.black
+
+            mini_h = 80
+            mini_y = ty - mini_h
+
+            # Mini tile
+            c.setFillColor(bg)
+            c.setStrokeColor(gold)
+            c.roundRect(mini_x, mini_y, mini_width, mini_h, 8, stroke=1, fill=1)
+
+            ix = mini_x + 12
+            my = mini_y + mini_h - 18
+
+            c.setFont("Helvetica-Bold", 10)
+            c.setFillColor(colors.black)
+            c.drawString(ix, my, f"{pick['player']} — {pick['course']} — {pick['race_time']}")
+            my -= 16
+
+            c.setFont("Helvetica", 10)
+            hn = pick.get("horse_name", "Unknown")
+            num = pick.get("horse_number", "-")
+            c.drawString(ix, my, f"Horse: {hn} (#{num})")
+            my -= 14
+
+            c.drawString(ix, my, f"Odds: {pick.get('odds_fraction', '-')}")
+            my -= 14
+
+            c.setFillColor(rc)
+            c.drawString(ix, my, f"Result: {result}")
+            my -= 14
+
+            ty = mini_y - 20
+
+        y = parent_y - 40
+
+    page_number(page)
+    c.save()
+    stream.seek(0)
+
+    return Response(
+        content=stream.read(),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=acca_report.pdf"}
+    )
 
 # ============================================================
 # SUMMARY EXPORT — EXCEL
