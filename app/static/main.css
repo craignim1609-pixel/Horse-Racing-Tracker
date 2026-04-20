@@ -527,6 +527,40 @@ button:active,
     display: none;
 }
 
+/* =========================================
+   ACCA SUCCESS BANNER
+========================================= */
+.success-banner {
+    background: #0f6b3b;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-weight: 700;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(-6px);
+    animation: successPop 3s ease forwards;
+}
+
+@keyframes successPop {
+    0% {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    80% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+}
 
 /* =========================================
    ACCA HERO TILE
