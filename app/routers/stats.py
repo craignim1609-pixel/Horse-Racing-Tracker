@@ -476,6 +476,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
     total_return = sum((b.winnings or 0) for b in all_bets)
     total_profit = total_return - total_stake
 
+    # Player stats
     player_stats = {}
     for bet in all_bets:
         name = bet.player_name or "Unknown"
@@ -494,11 +495,13 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
             player_stats[name]["return"] - player_stats[name]["stake"]
         )
 
+    # Course summary
     course_counts = {}
     for bet in all_bets:
         course = bet.course or "Unknown"
         course_counts[course] = course_counts.get(course, 0) + 1
 
+    # Horse summary
     horse_counts = {}
     for bet in all_bets:
         hn = bet.horse_name or "Unknown"
@@ -506,6 +509,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         key = f"{hn} (#{num})"
         horse_counts[key] = horse_counts.get(key, 0) + 1
 
+    # PDF setup
     stream = BytesIO()
     c = canvas.Canvas(stream, pagesize=A4)
     width, height = A4
@@ -545,11 +549,13 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
 
     y = new_page("Race Day Report")
 
+    # Generated date
     c.setFont("Helvetica", 10)
     c.setFillColor(colors.black)
     c.drawString(40, y, f"Generated: {datetime.utcnow().strftime('%Y-%m-%d')}")
     y -= 25
 
+    # Summary box
     box_h = 70
     c.setFillColor(pale_grey)
     c.setStrokeColor(gold)
@@ -568,6 +574,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
 
     y -= (box_h + 30)
 
+    # Section helper
     def section(title, y):
         c.setFont("Helvetica-Bold", 14)
         c.setFillColor(colors.black)
@@ -577,9 +584,10 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         c.line(40, y, width - 40, y)
         return y - 20
 
+    # Race Day Summary
     y = section("Race Day Summary", y)
-
     c.setFont("Helvetica", 11)
+
     for rd in racedays:
         if y < 80:
             y = new_page("Race Day Report")
@@ -593,6 +601,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         c.drawString(50, y, f"{date_str} — Stake £{stake:g} | Return £{ret:g} | Profit £{profit:g}")
         y -= 16
 
+    # Player Performance
     page_number(page)
     y = new_page("Race Day Report")
     y = section("Player Performance", y)
@@ -610,6 +619,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         )
         y -= 16
 
+    # Course Summary
     page_number(page)
     y = new_page("Race Day Report")
     y = section("Course Summary", y)
@@ -623,6 +633,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         c.drawString(50, y, f"{course} — {count} bets")
         y -= 16
 
+    # Horse Summary
     page_number(page)
     y = new_page("Race Day Report")
     y = section("Horse Summary", y)
@@ -636,12 +647,15 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         c.drawString(50, y, f"{horse} — {count} picks")
         y -= 16
 
+    # Full Bet Breakdown
     page_number(page)
     y = new_page("Race Day Report")
     y = section("Full Bet Breakdown", y)
 
     for rd in racedays:
-        if y < 140:
+
+        # Race day card
+        if y < 160:
             y = new_page("Race Day Report")
             y = section("Full Bet Breakdown (cont.)", y)
 
@@ -651,8 +665,10 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         c.drawCentredString(width / 2, y - 17, f"RACE DAY — {rd.date.strftime('%Y-%m-%d')}")
         y -= 50
 
+        # Bets
         for bet in rd.bets:
-            if y < 140:
+
+            if y < 180:
                 y = new_page("Race Day Report")
                 y = section("Full Bet Breakdown (cont.)", y)
                 c.setFont("Helvetica-Bold", 12)
@@ -661,6 +677,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
                 c.drawCentredString(width / 2, y - 17, f"RACE DAY — {rd.date.strftime('%Y-%m-%d')}")
                 y -= 50
 
+            # Determine tile colours
             result = bet.result or "Pending"
             if result == "Win":
                 bg = pale_green
@@ -678,30 +695,37 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
                 bg = colors.white
                 rc = colors.black
 
-            tile_h = 100
+            # FIXED TILE HEIGHT (no overlap)
+            tile_h = 140
             tile_y = y - tile_h
 
+            # Draw tile
             c.setFillColor(bg)
             c.setStrokeColor(gold)
             c.roundRect(tile_x, tile_y, tile_width, tile_h, 8, stroke=1, fill=1)
 
-            ix = tile_x + 12
-            ty = tile_y + tile_h - 18
+            # Internal padding
+            ix = tile_x + 14
+            ty = tile_y + tile_h - 22
 
+            # Header
             c.setFont("Helvetica-Bold", 11)
             c.setFillColor(colors.black)
             c.drawString(ix, ty, f"{bet.player_name} — {bet.course} — {bet.race_time}")
-            ty -= 18
+            ty -= 20
 
+            # Horse
             c.setFont("Helvetica", 10)
             hn = bet.horse_name or "Unknown"
             num = bet.horse_number if bet.horse_number is not None else "-"
             c.drawString(ix, ty, f"Horse: {hn} (#{num})")
-            ty -= 14
+            ty -= 16
 
+            # Odds
             c.drawString(ix, ty, f"Odds: {bet.odds_fraction or '-'}")
-            ty -= 14
+            ty -= 16
 
+            # Result
             c.setFillColor(rc)
             if result == "Win":
                 c.setFont("Helvetica-Bold", 10)
@@ -709,15 +733,17 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
             else:
                 c.setFont("Helvetica", 10)
                 c.drawString(ix, ty, f"Result: {result}")
-            ty -= 14
+            ty -= 16
 
+            # Money
             c.setFillColor(colors.black)
             c.setFont("Helvetica", 10)
             c.drawString(ix, ty, f"Stake: £{(bet.stake or 0):g}")
-            ty -= 14
+            ty -= 16
             c.drawString(ix, ty, f"Winnings: £{(bet.winnings or 0):g}")
 
-            y = tile_y - 25
+            # FIXED SPACING BELOW TILE
+            y = tile_y - 35
 
     page_number(page)
     c.save()
