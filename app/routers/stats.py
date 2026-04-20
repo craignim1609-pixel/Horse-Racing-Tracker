@@ -480,7 +480,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
             f"Return £{rd.total_return:.2f} | Profit £{rd.profit:.2f}"
         )
         c.drawString(50, y, line)
-               y -= 16
+        y -= 16
 
     c.showPage()
     c.save()
