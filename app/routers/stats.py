@@ -3,6 +3,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from datetime import datetime
+from io import BytesIO
 
 from app.database import get_db
 from app import models
@@ -11,9 +12,6 @@ router = APIRouter(prefix="/stats", tags=["Stats"])
 templates = Jinja2Templates(directory="app/templates")
 
 
-# ------------------------------------------------------------
-# STATS PAGE (HTML)
-# ------------------------------------------------------------
 @router.get("")
 def stats_home(request: Request):
     return templates.TemplateResponse("stats.html", {
@@ -22,9 +20,6 @@ def stats_home(request: Request):
     })
 
 
-# ------------------------------------------------------------
-# MONTHLY STATS (still lifetime — Pick has no date field)
-# ------------------------------------------------------------
 @router.get("/month/{month}")
 def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
     players = db.query(models.Player).all()
@@ -51,9 +46,6 @@ def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
     return results
 
 
-# ------------------------------------------------------------
-# PLAYER DETAILS
-# ------------------------------------------------------------
 @router.get("/player/{name}")
 def player_details(name: str, db: Session = Depends(get_db)):
     player = db.query(models.Player).filter_by(name=name).first()
@@ -70,7 +62,6 @@ def player_details(name: str, db: Session = Depends(get_db)):
     total = wins + places + loses
     win_rate = wins / total if total > 0 else 0
 
-    # biggest winner
     biggest = None
     for p in picks:
         if p.status == "Win":
@@ -105,9 +96,6 @@ def player_details(name: str, db: Session = Depends(get_db)):
     }
 
 
-# ------------------------------------------------------------
-# ACCA PERFORMANCE CENTER
-# ------------------------------------------------------------
 @router.get("/acca")
 def acca_stats(db: Session = Depends(get_db)):
     q = db.query(models.AccaHistory)
@@ -153,15 +141,9 @@ def acca_stats(db: Session = Depends(get_db)):
     }
 
 
-# ------------------------------------------------------------
-# DASHBOARD (used by stats.html)
-# ------------------------------------------------------------
 @router.get("/dashboard")
 def stats_dashboard(db: Session = Depends(get_db)):
 
-    # ========================================================
-    # PLAYER PERFORMANCE (from AccaHistory)
-    # ========================================================
     players = db.query(models.Player).all()
 
     player_stats = {
@@ -193,9 +175,6 @@ def stats_dashboard(db: Session = Depends(get_db)):
         for name, stats in player_stats.items()
     ]
 
-    # ========================================================
-    # ACCA HISTORY (grouped by date)
-    # ========================================================
     history_rows = (
         db.query(models.AccaHistory)
         .order_by(models.AccaHistory.created_at.desc())
@@ -227,9 +206,6 @@ def stats_dashboard(db: Session = Depends(get_db)):
     }
 
 
-# ------------------------------------------------------------
-# COMPLETED RACE DAY HISTORY (NEW)
-# ------------------------------------------------------------
 @router.get("/racedays")
 def get_completed_racedays(db: Session = Depends(get_db)):
     racedays = (
@@ -268,9 +244,6 @@ def get_completed_racedays(db: Session = Depends(get_db)):
     return result
 
 
-# ------------------------------------------------------------
-# RACE DAY PLAYER PERFORMANCE (NEW)
-# ------------------------------------------------------------
 @router.get("/raceday/players")
 def raceday_player_stats(db: Session = Depends(get_db)):
     players = db.query(models.Player).all()
@@ -307,27 +280,98 @@ def raceday_player_stats(db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------------------
-# EXPORT STATS (CSV DOWNLOAD)
+# EXPORT: EXCEL (.xlsx)
 # ------------------------------------------------------------
-@router.get("/export")
-def export_stats(db: Session = Depends(get_db)):
+@router.get("/export/excel")
+def export_excel(db: Session = Depends(get_db)):
+    from openpyxl import Workbook
+    from openpyxl.chart import BarChart, Reference
+
+    wb = Workbook()
+
+    # Sheet 1: Player Performance
+    ws_players = wb.active
+    ws_players.title = "Player Performance"
+    ws_players.append(["Player", "Wins", "Places", "Loses", "NR", "Profit"])
+
     players = db.query(models.Player).all()
-
-    output = "Player,Wins,Places,Loses,NR,Profit\n"
-
     for p in players:
         picks = db.query(models.Pick).filter(models.Pick.player_id == p.id).all()
+        wins = sum(1 for x in picks if x.status == "Win")
+        places = sum(1 for x in picks if x.status == "Place")
+        loses = sum(1 for x in picks if x.status == "Lose")
+        nr = sum(1 for x in picks if x.status == "NR")
+        profit = sum((x.winnings - x.stake) for x in picks if hasattr(x, "winnings"))
+        ws_players.append([p.name, wins, places, loses, nr, float(profit or 0)])
 
+    # Simple bar chart for wins
+    if ws_players.max_row > 1:
+        chart = BarChart()
+        data = Reference(ws_players, min_col=2, max_col=2, min_row=1, max_row=ws_players.max_row)
+        cats = Reference(ws_players, min_col=1, min_row=2, max_row=ws_players.max_row)
+        chart.add_data(data, titles_from_data=True)
+        chart.set_categories(cats)
+        chart.title = "Wins by Player"
+        ws_players.add_chart(chart, "H2")
+
+    # You can add more sheets here (Race Day, Accas, etc.)
+
+    stream = BytesIO()
+    wb.save(stream)
+    stream.seek(0)
+
+    return Response(
+        content=stream.read(),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=performance_report.xlsx"}
+    )
+
+
+# ------------------------------------------------------------
+# EXPORT: PDF
+# ------------------------------------------------------------
+@router.get("/export/pdf")
+def export_pdf(db: Session = Depends(get_db)):
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
+
+    stream = BytesIO()
+    c = canvas.Canvas(stream, pagesize=A4)
+    width, height = A4
+
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(40, height - 40, "Performance Report")
+
+    y = height - 80
+    c.setFont("Helvetica", 10)
+
+    players = db.query(models.Player).all()
+    c.drawString(40, y, "Player Performance:")
+    y -= 20
+
+    for p in players:
+        if y < 60:
+            c.showPage()
+            y = height - 60
+            c.setFont("Helvetica", 10)
+
+        picks = db.query(models.Pick).filter(models.Pick.player_id == p.id).all()
         wins = sum(1 for x in picks if x.status == "Win")
         places = sum(1 for x in picks if x.status == "Place")
         loses = sum(1 for x in picks if x.status == "Lose")
         nr = sum(1 for x in picks if x.status == "NR")
         profit = sum((x.winnings - x.stake) for x in picks if hasattr(x, "winnings"))
 
-        output += f"{p.name},{wins},{places},{loses},{nr},{profit}\n"
+        line = f"{p.name}: W {wins} / P {places} / L {loses} / NR {nr} / Profit £{float(profit or 0):.2f}"
+        c.drawString(50, y, line)
+        y -= 16
+
+    c.showPage()
+    c.save()
+    stream.seek(0)
 
     return Response(
-        content=output,
-        media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=stats_export.csv"}
+        content=stream.read(),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=performance_report.pdf"}
     )
