@@ -480,26 +480,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
             f"Return £{rd.total_return:.2f} | Profit £{rd.profit:.2f}"
         )
         c.drawString(50, y, line)
-        y -= 16
-
-    c.showPage()
-    c.setFont("Helvetica-Bold", 14)
-    c.drawString(40, height - 40, "Race Day Player Performance")
-
-    y = height - 80
-    c.setFont("Helvetica", 11)
-
-    for name, stats in player_stats.items():
-        if y < 60:
-            c.showPage()
-            y = height - 60
-
-        line = (
-            f"{name}: W {stats['wins']} | P {stats['places']} | "
-            f"L {stats['loses']} | NR {stats['nr']} | Profit £{stats['profit']:.2f}"
-        )
-        c.drawString(50, y, line)
-        y -= 16
+               y -= 16
 
     c.showPage()
     c.save()
@@ -508,38 +489,27 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
     return Response(
         content=stream.read(),
         media_type="application/pdf",
-        headers={"Content-Disposition": "attachment; filename=performance_raceday.pdf"}
+        headers={"Content-Disposition": "attachment; filename=performance_acca.pdf"}
     )
 
 
 # ============================================================
-# ACCA EXPORT — EXCEL
+# SUMMARY EXPORT — EXCEL
 # ============================================================
-@router.get("/export/acca/excel")
-def export_acca_excel(db: Session = Depends(get_db)):
+@router.get("/export/summary/excel")
+def export_summary_excel(db: Session = Depends(get_db)):
     from openpyxl import Workbook
 
-    accas, player_stats = get_acca_data(db)
+    player_stats = get_summary_data(db)
 
     wb = Workbook()
     ws = wb.active
-    ws.title = "Acca Summary"
+    ws.title = "Overall Summary"
 
-    ws.append(["Date", "Status", "Combined Odds", "Return"])
-
-    for a in accas:
-        ws.append([
-            a.created_at.strftime("%Y-%m-%d") if a.created_at else "",
-            a.status,
-            float(a.combined_decimal_odds or 0),
-            float(a.total_return or 0)
-        ])
-
-    ws2 = wb.create_sheet("Player Performance")
-    ws2.append(["Player", "Wins", "Places", "Loses", "NR"])
+    ws.append(["Player", "Wins", "Places", "Loses", "NR"])
 
     for name, stats in player_stats.items():
-        ws2.append([
+        ws.append([
             name,
             stats["wins"],
             stats["places"],
@@ -554,40 +524,48 @@ def export_acca_excel(db: Session = Depends(get_db)):
     return Response(
         content=stream.read(),
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": "attachment; filename=performance_acca.xlsx"}
+        headers={"Content-Disposition": "attachment; filename=performance_summary.xlsx"}
     )
 
 
 # ============================================================
-# ACCA EXPORT — PDF
+# SUMMARY EXPORT — PDF
 # ============================================================
-@router.get("/export/acca/pdf")
-def export_acca_pdf(db: Session = Depends(get_db)):
+@router.get("/export/summary/pdf")
+def export_summary_pdf(db: Session = Depends(get_db)):
     from reportlab.lib.pagesizes import A4
     from reportlab.pdfgen import canvas
 
-    accas, player_stats = get_acca_data(db)
+    player_stats = get_summary_data(db)
 
     stream = BytesIO()
     c = canvas.Canvas(stream, pagesize=A4)
     width, height = A4
 
     c.setFont("Helvetica-Bold", 18)
-    c.drawString(40, height - 40, "Acca Report")
+    c.drawString(40, height - 40, "Overall Summary Report")
 
     y = height - 80
     c.setFont("Helvetica", 11)
 
-    c.drawString(40, y, "Completed Accas:")
-    y -= 20
-
-    for a in accas:
+    for name, stats in player_stats.items():
         if y < 60:
             c.showPage()
             y = height - 60
 
         line = (
-            f"{a.created_at}: Status {a.status} | Odds {a.combined_decimal_odds} | "
-            f"Return £{a.total_return:.2f}"
+            f"{name}: W {stats['wins']} | P {stats['places']} | "
+            f"L {stats['loses']} | NR {stats['nr']}"
         )
         c.drawString(50, y, line)
+        y -= 16
+
+    c.showPage()
+    c.save()
+    stream.seek(0)
+
+    return Response(
+        content=stream.read(),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=performance_summary.pdf"}
+    )
