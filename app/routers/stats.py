@@ -475,9 +475,14 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
             c.showPage()
             y = height - 60
 
+        date_str = rd.date.strftime("%Y-%m-%d") if rd.date else "Unknown"
+        stake = float(rd.total_stake or 0)
+        ret = float(rd.total_return or 0)
+        profit = float(rd.profit or 0)
+
         line = (
-            f"{rd.date}: Stake £{rd.total_stake:.2f} | "
-            f"Return £{rd.total_return:.2f} | Profit £{rd.profit:.2f}"
+            f"{date_str}: Stake £{stake:.2f} | "
+            f"Return £{ret:.2f} | Profit £{profit:.2f}"
         )
         c.drawString(50, y, line)
         y -= 16
