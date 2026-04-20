@@ -753,6 +753,86 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         media_type="application/pdf",
         headers={"Content-Disposition": "attachment; filename=raceday_report.pdf"}
     )
+    
+# ============================================================
+# ACCA EXPORT — PDF (FULL-WIDTH PARENT TILE + MINI-TILES)
+# ============================================================
+@router.get("/export/acca/pdf")
+def export_acca_pdf(db: Session = Depends(get_db)):
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
+    from reportlab.lib import colors
+    from datetime import datetime
+    from io import BytesIO
+    from fastapi import Response
+
+    # Load all accas
+    accas = (
+        db.query(models.AccaHistory)
+        .order_by(models.AccaHistory.created_at.desc())
+        .all()
+    )
+
+    # Summary stats
+    total_accas = len(accas)
+    wins = sum(1 for a in accas if a.status == "win")
+    places = sum(1 for a in accas if a.status == "place")
+    loses = sum(1 for a in accas if a.status == "lose")
+
+    total_stake = sum(a.stake for a in accas)
+    total_return = sum(a.total_return for a in accas)
+    total_profit = total_return - total_stake
+
+    biggest_return = max((a.total_return for a in accas), default=0)
+
+    # PDF setup
+    stream = BytesIO()
+    c = canvas.Canvas(stream, pagesize=A4)
+    width, height = A4
+
+    # Colours
+    racing_green = colors.HexColor("#004225")
+    gold = colors.HexColor("#D4AF37")
+    pale_green = colors.HexColor("#E6F4EA")
+    pale_red = colors.HexColor("#FDE7E9")
+    pale_blue = colors.HexColor("#E5F0FF")
+    pale_grey = colors.HexColor("#F2F2F2")
+
+    # Tile widths
+    parent_width = width * 0.8
+    parent_x = (width - parent_width) / 2
+
+    mini_width = width * 0.6
+    mini_x = (width - mini_width) / 2
+
+    # Header bar
+    def header(title):
+        c.setFillColor(racing_green)
+        c.rect(0, height - 40, width, 40, stroke=0, fill=1)
+        c.setFillColor(gold)
+        c.setFont("Helvetica-Bold", 16)
+        c.drawString(40, height - 27, title)
+
+    # Page number
+    def page_number(n):
+        c.setFont("Helvetica", 9)
+        c.setFillColor(colors.grey)
+        c.drawRightString(width - 40, 25, f"Page {n}")
+
+    # Page engine
+    page = 1
+
+    def new_page(title):
+        nonlocal page
+        if page > 1:
+            page_number(page)
+            c.showPage()
+        page += 1
+        header(title)
+        return height - 60
+
+    y = new_page("ACCA Report")
+
 # ============================================================
 # SUMMARY EXPORT — EXCEL
 # ============================================================
