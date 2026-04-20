@@ -454,48 +454,240 @@ def export_raceday_excel(db: Session = Depends(get_db)):
 def export_raceday_pdf(db: Session = Depends(get_db)):
     from reportlab.lib.pagesizes import A4
     from reportlab.pdfgen import canvas
+    from reportlab.lib import colors
+    from datetime import datetime
 
-    racedays, player_stats = get_raceday_data(db)
+    racedays = (
+        db.query(CompletedRaceDay)
+        .order_by(CompletedRaceDay.date.desc())
+        .all()
+    )
 
+    # Flatten all bets for summaries
+    all_bets = []
+    for rd in racedays:
+        all_bets.extend(rd.bets)
+
+    # -----------------------------
+    # BUILD SUMMARIES
+    # -----------------------------
+
+    # Player performance summary
+    player_stats = {}
+    for bet in all_bets:
+        name = bet.player_name
+        if name not in player_stats:
+            player_stats[name] = {
+                "W": 0, "P": 0, "L": 0, "NR": 0,
+                "stake": 0.0, "return": 0.0, "profit": 0.0
+            }
+
+        # Count result
+        if bet.result in ["Win", "Place", "Lose", "NR"]:
+            player_stats[name][bet.result[0]] += 1
+
+        # Money
+        player_stats[name]["stake"] += bet.stake or 0
+        player_stats[name]["return"] += bet.winnings or 0
+        player_stats[name]["profit"] = (
+            player_stats[name]["return"] - player_stats[name]["stake"]
+        )
+
+    # Course summary
+    course_counts = {}
+    for bet in all_bets:
+        course_counts[bet.course] = course_counts.get(bet.course, 0) + 1
+
+    # Horse summary
+    horse_counts = {}
+    for bet in all_bets:
+        key = f"{bet.horse_name} (#{bet.horse_number})"
+        horse_counts[key] = horse_counts.get(key, 0) + 1
+
+    # -----------------------------
+    # PDF SETUP
+    # -----------------------------
     stream = BytesIO()
     c = canvas.Canvas(stream, pagesize=A4)
     width, height = A4
 
-    c.setFont("Helvetica-Bold", 18)
-    c.drawString(40, height - 40, "Race Day Report")
+    y = height - 40
 
-    y = height - 80
+    # -----------------------------
+    # TITLE
+    # -----------------------------
+    c.setFont("Helvetica-Bold", 20)
+    c.drawString(40, y, "Race Day Report")
+    y -= 30
+
     c.setFont("Helvetica", 11)
+    c.drawString(40, y, f"Generated: {datetime.utcnow().strftime('%Y-%m-%d')}")
+    y -= 40
 
-    c.drawString(40, y, "Completed Race Days:")
-    y -= 20
+    # -----------------------------
+    # SECTION 1 — RACE DAY SUMMARY
+    # -----------------------------
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(40, y, "Race Day Summary")
+    y -= 25
+
+    c.setFont("Helvetica", 11)
 
     for rd in racedays:
         if y < 60:
             c.showPage()
             y = height - 60
 
-        date_str = rd.date.strftime("%Y-%m-%d") if rd.date else "Unknown"
+        date_str = rd.date.strftime("%Y-%m-%d")
         stake = float(rd.total_stake or 0)
         ret = float(rd.total_return or 0)
         profit = float(rd.profit or 0)
 
         line = (
-            f"{date_str}: Stake £{stake:.2f} | "
-            f"Return £{ret:.2f} | Profit £{profit:.2f}"
+            f"{date_str} — Stake £{stake:g} | "
+            f"Return £{ret:g} | Profit £{profit:g}"
         )
         c.drawString(50, y, line)
         y -= 16
 
+    # PAGE BREAK
     c.showPage()
+    y = height - 40
+
+    # -----------------------------
+    # SECTION 2 — PLAYER PERFORMANCE
+    # -----------------------------
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(40, y, "Player Performance")
+    y -= 25
+
+    c.setFont("Helvetica", 11)
+
+    for player, stats in player_stats.items():
+        if y < 60:
+            c.showPage()
+            y = height - 60
+
+        line = (
+            f"{player} — "
+            f"W {stats['W']} | P {stats['P']} | L {stats['L']} | NR {stats['NR']} | "
+            f"Stake £{stats['stake']:g} | Return £{stats['return']:g} | Profit £{stats['profit']:g}"
+        )
+        c.drawString(50, y, line)
+        y -= 16
+
+    # PAGE BREAK
+    c.showPage()
+    y = height - 40
+
+    # -----------------------------
+    # SECTION 3 — COURSE SUMMARY
+    # -----------------------------
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(40, y, "Course Summary")
+    y -= 25
+
+    c.setFont("Helvetica", 11)
+
+    for course, count in sorted(course_counts.items(), key=lambda x: -x[1]):
+        if y < 60:
+            c.showPage()
+            y = height - 60
+
+        c.drawString(50, y, f"{course} — {count} bets")
+        y -= 16
+
+    # PAGE BREAK
+    c.showPage()
+    y = height - 40
+
+    # -----------------------------
+    # SECTION 4 — HORSE SUMMARY
+    # -----------------------------
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(40, y, "Horse Summary")
+    y -= 25
+
+    c.setFont("Helvetica", 11)
+
+    for horse, count in sorted(horse_counts.items(), key=lambda x: -x[1]):
+        if y < 60:
+            c.showPage()
+            y = height - 60
+
+        c.drawString(50, y, f"{horse} — {count} picks")
+        y -= 16
+
+    # PAGE BREAK
+    c.showPage()
+    y = height - 40
+
+    # -----------------------------
+    # SECTION 5 — FULL BET BREAKDOWN
+    # -----------------------------
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(40, y, "Full Bet Breakdown")
+    y -= 30
+
+    for rd in racedays:
+        if y < 120:
+            c.showPage()
+            y = height - 60
+
+        # Race Day Header
+        c.setFont("Helvetica-Bold", 13)
+        c.drawString(40, y, rd.date.strftime("%Y-%m-%d"))
+        y -= 10
+
+        c.setLineWidth(0.5)
+        c.line(40, y, width - 40, y)
+        y -= 20
+
+        # Bets
+        for bet in rd.bets:
+            if y < 100:
+                c.showPage()
+                y = height - 60
+
+            c.setFont("Helvetica-Bold", 11)
+            c.drawString(50, y, f"{bet.player_name} — {bet.course} — {bet.race_time}")
+            y -= 14
+
+            c.setFont("Helvetica", 11)
+            c.drawString(60, y, f"Horse: {bet.horse_name} (#{bet.horse_number})")
+            y -= 14
+
+            c.drawString(60, y, f"Odds: {bet.odds_fraction}")
+            y -= 14
+
+            # Highlight WIN only
+            if bet.result == "Win":
+                c.setFont("Helvetica-Bold", 11)
+                c.drawString(60, y, "Result: WIN")
+            else:
+                c.setFont("Helvetica", 11)
+                c.drawString(60, y, f"Result: {bet.result}")
+            y -= 14
+
+            c.setFont("Helvetica", 11)
+            c.drawString(60, y, f"Stake: £{bet.stake:g}")
+            y -= 14
+
+            c.drawString(60, y, f"Winnings: £{bet.winnings:g}")
+            y -= 18  # compact spacing
+
+        y -= 10  # small gap between race days
+
+    # FINALISE PDF
     c.save()
     stream.seek(0)
 
     return Response(
         content=stream.read(),
         media_type="application/pdf",
-        headers={"Content-Disposition": "attachment; filename=performance_raceday.pdf"}
+        headers={"Content-Disposition": "attachment; filename=raceday_report.pdf"}
     )
+
 
 
 
