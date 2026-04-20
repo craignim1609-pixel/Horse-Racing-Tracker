@@ -8,8 +8,11 @@
 <div class="performance-center-box">
     <h1 class="page-title">Performance Center</h1>
 
-    <!-- EXPORT BUTTON -->
-    <button id="exportStatsBtn" class="export-btn">Export Stats</button>
+    <!-- EXPORT BUTTONS -->
+    <div class="stats-actions">
+        <button id="exportExcelBtn" class="export-btn">Export Excel</button>
+        <button id="exportPdfBtn" class="export-btn secondary">Export PDF</button>
+    </div>
 
     <div class="stats-filter-bar">
         <div class="filter-group">
@@ -122,7 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
         await loadMonthlyOverview();
         await loadPlayerStats();
         await loadStatsPageHistory();
-
         await loadRaceDaySummary();
         await loadRaceDayPlayerStats();
         await loadCompletedRaceDays();
@@ -137,16 +139,31 @@ document.addEventListener("DOMContentLoaded", () => {
     loadFullStatsPage();
 
     // ============================
-    // EXPORT BUTTON HANDLER
+    // EXPORT EXCEL
     // ============================
-    document.getElementById("exportStatsBtn").addEventListener("click", async () => {
-        const response = await fetch("/stats/export");
+    document.getElementById("exportExcelBtn").addEventListener("click", async () => {
+        const response = await fetch("/stats/export/excel");
         const blob = await response.blob();
 
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "stats_export.csv";
+        a.download = "performance_report.xlsx";
+        a.click();
+        window.URL.revokeObjectURL(url);
+    });
+
+    // ============================
+    // EXPORT PDF
+    // ============================
+    document.getElementById("exportPdfBtn").addEventListener("click", async () => {
+        const response = await fetch("/stats/export/pdf");
+        const blob = await response.blob();
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "performance_report.pdf";
         a.click();
         window.URL.revokeObjectURL(url);
     });
