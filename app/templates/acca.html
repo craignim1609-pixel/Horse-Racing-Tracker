@@ -70,4 +70,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const banner = document.querySelector(".success-banner");
+    if (banner) {
+        setTimeout(() => {
+            banner.remove();
+        }, 3000);
+    }
+});
+</script>
+
+
 {% endblock %}
