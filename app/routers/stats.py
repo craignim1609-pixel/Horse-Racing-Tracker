@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
@@ -278,20 +278,17 @@ def raceday_player_stats(db: Session = Depends(get_db)):
         joinedload(models.CompletedRaceDay.bets)
     ).all()
 
-    # Initialise stats for each player
     stats = {
         p.name: {"wins": 0, "places": 0, "loses": 0, "nr": 0, "profit": 0}
         for p in players
     }
 
-    # Loop through completed race days and their bets
     for rd in racedays:
         for b in rd.bets:
             name = b.player_name
             if name not in stats:
                 continue
 
-            # Count results
             if b.result == "Win":
                 stats[name]["wins"] += 1
             elif b.result == "Place":
@@ -301,11 +298,36 @@ def raceday_player_stats(db: Session = Depends(get_db)):
             elif b.result == "NR":
                 stats[name]["nr"] += 1
 
-            # Profit = winnings - stake
             stats[name]["profit"] += (b.winnings - b.stake)
 
-    # Convert to list for frontend
     return [
         {"player": name, **values}
         for name, values in stats.items()
     ]
+
+
+# ------------------------------------------------------------
+# EXPORT STATS (CSV DOWNLOAD)
+# ------------------------------------------------------------
+@router.get("/export")
+def export_stats(db: Session = Depends(get_db)):
+    players = db.query(models.Player).all()
+
+    output = "Player,Wins,Places,Loses,NR,Profit\n"
+
+    for p in players:
+        picks = db.query(models.Pick).filter(models.Pick.player_id == p.id).all()
+
+        wins = sum(1 for x in picks if x.status == "Win")
+        places = sum(1 for x in picks if x.status == "Place")
+        loses = sum(1 for x in picks if x.status == "Lose")
+        nr = sum(1 for x in picks if x.status == "NR")
+        profit = sum((x.winnings - x.stake) for x in picks if hasattr(x, "winnings"))
+
+        output += f"{p.name},{wins},{places},{loses},{nr},{profit}\n"
+
+    return Response(
+        content=output,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=stats_export.csv"}
+    )
