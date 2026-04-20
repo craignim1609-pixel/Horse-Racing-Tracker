@@ -489,7 +489,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
     return Response(
         content=stream.read(),
         media_type="application/pdf",
-        headers={"Content-Disposition": "attachment; filename=performance_acca.pdf"}
+        headers={"Content-Disposition": "attachment; filename=performance_raceday.pdf"}
     )
 
 
