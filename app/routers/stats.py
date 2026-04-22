@@ -582,7 +582,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
     y = last_y_tile - SECTION_GAP
 
     # ============================================================
-    # PLAYER TILES (2‑column grid, safe vertical flow)
+    # PLAYER TILES (2‑column grid, robust vertical flow)
     # ============================================================
     tile_w_p = (width - 40*mm) / 2
     tile_h_p = 26 * mm
@@ -599,20 +599,25 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         for name, stats in player_stats.items()
     ]
 
+    # Start the player grid just below the summary section
+    current_y = y
+
     for i, p in enumerate(players_list):
         col = i % 2
-        row = i // 2
+
+        # Move to next row when starting a new left‑hand tile (col == 0),
+        # except for the very first tile.
+        if col == 0 and i != 0:
+            current_y -= (tile_h_p + ROW_GAP)
+
+            # Page break check for the new row
+            if current_y < PAGE_MARGIN_BOTTOM:
+                c.showPage()
+                header("Race Day Report")
+                current_y = height - PAGE_MARGIN_TOP
 
         x = x_start + col * (tile_w_p + ROW_GAP)
-        y_tile = y - row * (tile_h_p + ROW_GAP)
-
-        # Page break
-        if y_tile < PAGE_MARGIN_BOTTOM:
-            c.showPage()
-            header("Race Day Report")
-            y = height - PAGE_MARGIN_TOP
-            row = 0
-            y_tile = y
+        y_tile = current_y
 
         draw_tile(x, y_tile, tile_w_p, tile_h_p, p["name"])
 
@@ -632,6 +637,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
             body_y - 12,
             f"Profit £{p['profit']:.2f}"
         )
+
 
     # Finalise
     c.showPage()
