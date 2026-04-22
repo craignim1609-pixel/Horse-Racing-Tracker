@@ -8,3 +8,4 @@ openpyxl
 python-multipart
 jinja2
 reportlab
+xlsxwriter
