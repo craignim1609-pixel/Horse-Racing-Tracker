@@ -769,27 +769,31 @@ async function loadMonthlyOverview() {
         </div>
     `;
 }
+
 // ============================
-// EXPORT MODAL LOGIC
+// EXPORT MODAL LOGIC (SAFE)
 // ============================
 const modal = document.getElementById("exportModal");
 const openBtn = document.getElementById("openExportModal");
 const closeBtn = document.getElementById("closeExportModal");
 
-openBtn.addEventListener("click", () => {
-    modal.classList.remove("hidden");
-});
+if (modal && openBtn && closeBtn) {
 
-closeBtn.addEventListener("click", () => {
-    modal.classList.add("hidden");
-});
+    openBtn.addEventListener("click", () => {
+        modal.classList.remove("hidden");
+    });
 
-// Close modal when clicking outside content
-modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
+    closeBtn.addEventListener("click", () => {
         modal.classList.add("hidden");
-    }
-});
+    });
+
+    // Close modal when clicking outside content
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            modal.classList.add("hidden");
+        }
+    });
+}
 
 // ============================
 // EXPORT HANDLERS
