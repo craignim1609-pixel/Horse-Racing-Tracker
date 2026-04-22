@@ -234,7 +234,7 @@ def stats_dashboard(db: Session = Depends(get_db)):
 def get_completed_racedays(db: Session = Depends(get_db)):
     racedays = (
         db.query(models.CompletedRaceDay)
-        .options(joinedload(models.Completed.CompletedRaceDay.bets))
+        .options(joinedload(models.CompletedRaceDay.bets))
         .order_by(models.CompletedRaceDay.date.desc())
         .all()
     )
