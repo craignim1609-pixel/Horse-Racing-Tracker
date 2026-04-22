@@ -338,6 +338,107 @@ def get_raceday_data(db: Session):
 
     return racedays, player_stats
 
+# ============================================================
+# RACE DAY EXPORT — EXCEL (PREMIUM BOOKMAKER STYLE)
+# ============================================================
+@router.get("/export/raceday/excel")
+def export_raceday_excel(db: Session = Depends(get_db)):
+    from fastapi import Response
+    import xlsxwriter
+    from io import BytesIO
+
+    racedays, player_stats = get_raceday_data(db)
+
+    # Colours
+    RACING_GREEN = "#004225"
+    GOLD = "#D4AF37"
+    CREAM = "#FAF7F0"
+
+    # Create workbook
+    output = BytesIO()
+    workbook = xlsxwriter.Workbook(output, {"in_memory": True})
+
+    # ============================================================
+    # SHEET 1 — RACE DAY SUMMARY
+    # ============================================================
+    ws = workbook.add_worksheet("Race Day Summary")
+
+    headers = ["Date", "Stake", "Return", "Profit"]
+
+    # Header style
+    header_fmt = workbook.add_format({
+        "bold": True,
+        "font_color": GOLD,
+        "bg_color": RACING_GREEN,
+        "border": 1,
+        "border_color": GOLD,
+        "align": "center",
+        "valign": "vcenter"
+    })
+
+    # Body style
+    body_fmt = workbook.add_format({
+        "border": 1,
+        "border_color": "#CCCCCC",
+        "bg_color": CREAM
+    })
+
+    # Write headers
+    for col, h in enumerate(headers):
+        ws.write(0, col, h, header_fmt)
+
+    # Write rows
+    for r, rd in enumerate(racedays, start=1):
+        ws.write(r, 0, rd.date.strftime("%Y-%m-%d"), body_fmt)
+        ws.write(r, 1, float(rd.total_stake), body_fmt)
+        ws.write(r, 2, float(rd.total_return), body_fmt)
+        ws.write(r, 3, float(rd.profit), body_fmt)
+
+    # Auto-fit columns
+    for col in range(len(headers)):
+        ws.set_column(col, col, max(12, len(headers[col]) + 2))
+
+    # Auto-filter
+    ws.autofilter(0, 0, len(racedays), len(headers) - 1)
+
+    # ============================================================
+    # SHEET 2 — PLAYER PERFORMANCE
+    # ============================================================
+    ws2 = workbook.add_worksheet("Player Performance")
+
+    headers2 = ["Player", "Wins", "Places", "Loses", "NR", "Profit"]
+
+    # Write headers
+    for col, h in enumerate(headers2):
+        ws2.write(0, col, h, header_fmt)
+
+    # Write rows
+    for r, (name, stats) in enumerate(player_stats.items(), start=1):
+        ws2.write(r, 0, name, body_fmt)
+        ws2.write(r, 1, stats["wins"], body_fmt)
+        ws2.write(r, 2, stats["places"], body_fmt)
+        ws2.write(r, 3, stats["loses"], body_fmt)
+        ws2.write(r, 4, stats["nr"], body_fmt)
+        ws2.write(r, 5, float(stats["profit"]), body_fmt)
+
+    # Auto-fit columns
+    for col in range(len(headers2)):
+        ws2.set_column(col, col, max(12, len(headers2[col]) + 2))
+
+    # Auto-filter
+    ws2.autofilter(0, 0, len(player_stats), len(headers2) - 1)
+
+    # ============================================================
+    # FINALISE
+    # ============================================================
+    workbook.close()
+    output.seek(0)
+
+    return Response(
+        content=output.read(),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=raceday_summary.xlsx"}
+    )
 
 
 # ============================================================
