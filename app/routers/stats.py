@@ -619,7 +619,7 @@ def generate_raceday_pdf(buffer, summary, players, courses, bets, horses):
 
     
 # ============================================================
-# ACCA EXPORT — PDF (FULL-WIDTH PARENT TILE + MINI-TILES)
+# ACCA EXPORT — PREMIUM BOOKMAKER LAYOUT (PARENT TILE + 2-COL MINI-TILES)
 # ============================================================
 @router.get("/export/acca/pdf")
 def export_acca_pdf(db: Session = Depends(get_db)):
@@ -654,25 +654,27 @@ def export_acca_pdf(db: Session = Depends(get_db)):
     width, height = A4
 
     # Colours
-    racing_green = colors.HexColor("#004225")
-    gold = colors.HexColor("#D4AF37")
-    pale_green = colors.HexColor("#E6F4EA")
-    pale_red = colors.HexColor("#FDE7E9")
-    pale_blue = colors.HexColor("#E5F0FF")
-    pale_grey = colors.HexColor("#F2F2F2")
+    RACING_GREEN = colors.HexColor("#004225")
+    GOLD = colors.HexColor("#D4AF37")
+    CREAM = colors.HexColor("#FAF7F0")
+    PALE_GREEN = colors.HexColor("#E6F4EA")
+    PALE_RED = colors.HexColor("#FDE7E9")
+    PALE_BLUE = colors.HexColor("#E5F0FF")
+    PALE_GREY = colors.HexColor("#F2F2F2")
 
     # Tile widths
-    parent_width = width * 0.8
-    parent_x = (width - parent_width) / 2
+    PARENT_W = width * 0.80
+    PARENT_X = (width - PARENT_W) / 2
 
-    mini_width = width * 0.6
-    mini_x = (width - mini_width) / 2
+    MINI_W = (PARENT_W - 30) / 2   # 2 tiles per row inside parent
+    MINI_H = 80
+    MINI_RADIUS = 6
 
     # Header bar
     def header(title):
-        c.setFillColor(racing_green)
+        c.setFillColor(RACING_GREEN)
         c.rect(0, height - 40, width, 40, stroke=0, fill=1)
-        c.setFillColor(gold)
+        c.setFillColor(GOLD)
         c.setFont("Helvetica-Bold", 16)
         c.drawString(40, height - 27, title)
 
@@ -702,78 +704,121 @@ def export_acca_pdf(db: Session = Depends(get_db)):
     c.drawString(40, y, f"Generated: {datetime.utcnow().strftime('%Y-%m-%d')}")
     y -= 25
 
-    # Summary box
-    box_h = 80
-    c.setFillColor(pale_grey)
-    c.setStrokeColor(gold)
-    c.roundRect(40, y - box_h, width - 80, box_h, 8, stroke=1, fill=1)
+    # -----------------------------
+    # SUMMARY TILES (3 across)
+    # -----------------------------
+    TILE_W = (width - 60) / 3
+    TILE_H = 30
+    TILE_RADIUS = 6
 
-    c.setFillColor(colors.black)
-    c.setFont("Helvetica-Bold", 12)
-    c.drawString(50, y - 18, "Summary")
-    c.setFont("Helvetica", 10)
+    summary_items = [
+        ("Total Accas", total_accas),
+        ("Wins", wins),
+        ("Places", places),
+        ("Loses", loses),
+        ("Total Stake", f"£{total_stake:g}"),
+        ("Total Return", f"£{total_return:g}"),
+        ("Profit", f"£{total_profit:g}"),
+        ("Biggest Return", f"£{biggest_return:g}"),
+    ]
 
-    c.drawString(50, y - 35, f"Total Accas: {total_accas}")
-    c.drawString(220, y - 35, f"Wins: {wins} | Places: {places} | Loses: {loses}")
-    c.drawString(50, y - 50, f"Total Stake: £{total_stake:g}")
-    c.drawString(220, y - 50, f"Total Return: £{total_return:g}")
-    c.drawString(390, y - 50, f"Profit: £{total_profit:g}")
-    c.drawString(50, y - 65, f"Biggest Return: £{biggest_return:g}")
+    x_start = 40
+    for i, (label, value) in enumerate(summary_items):
+        col = i % 3
+        row = i // 3
 
-    y -= (box_h + 30)
+        x = x_start + col * (TILE_W + 10)
+        y_tile = y - row * (TILE_H + 15)
 
-    # Section helper
-    def section(title, y):
-        c.setFont("Helvetica-Bold", 14)
+        # Tile background
+        c.setFillColor(CREAM)
+        c.setStrokeColor(GOLD)
+        c.roundRect(x, y_tile, TILE_W, TILE_H, TILE_RADIUS, stroke=1, fill=1)
+
+        # Header bar
+        c.setFillColor(RACING_GREEN)
+        c.roundRect(x, y_tile + TILE_H - 12, TILE_W, 12, TILE_RADIUS, stroke=0, fill=1)
+
+        c.setFillColor(GOLD)
+        c.setFont("Helvetica-Bold", 9)
+        c.drawString(x + 4, y_tile + TILE_H - 9, label)
+
+        # Value
         c.setFillColor(colors.black)
-        c.drawString(40, y, title)
-        y -= 8
-        c.setStrokeColor(gold)
-        c.line(40, y, width - 40, y)
-        return y - 20
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(x + 4, y_tile + 8, str(value))
 
-    y = section("Accumulator Breakdown", y)
+    y -= 3 * (TILE_H + 20)
 
+    # -----------------------------
+    # SECTION TITLE
+    # -----------------------------
+    c.setFont("Helvetica-Bold", 14)
+    c.setFillColor(colors.black)
+    c.drawString(40, y, "Accumulator Breakdown")
+    y -= 8
+    c.setStrokeColor(GOLD)
+    c.line(40, y, width - 40, y)
+    y -= 25
+
+    # -----------------------------
+    # ACCA LOOP
+    # -----------------------------
     for acca in accas:
 
-        # Page break before parent tile
-        if y < 200:
-            y = new_page("ACCA Report")
-            y = section("Accumulator Breakdown (cont.)", y)
-
         picks = acca.picks_json or []
-        parent_h = 120 + (len(picks) * 90)
+        rows = (len(picks) + 1) // 2
+        parent_h = 120 + rows * (MINI_H + 10)
+
+        # Page break
+        if y - parent_h < 80:
+            y = new_page("ACCA Report")
+            c.setFont("Helvetica-Bold", 14)
+            c.drawString(40, y, "Accumulator Breakdown (cont.)")
+            y -= 8
+            c.setStrokeColor(GOLD)
+            c.line(40, y, width - 40, y)
+            y -= 25
+
         parent_y = y - parent_h
 
-        # Parent tile background
-        c.setFillColor(pale_grey)
-        c.setStrokeColor(gold)
-        c.roundRect(parent_x, parent_y, parent_width, parent_h, 10, stroke=1, fill=1)
+        # Parent tile
+        c.setFillColor(CREAM)
+        c.setStrokeColor(GOLD)
+        c.roundRect(PARENT_X, parent_y, PARENT_W, parent_h, 10, stroke=1, fill=1)
 
-        # Header bar inside parent tile
-        c.setFillColor(racing_green)
-        c.roundRect(parent_x, parent_y + parent_h - 30, parent_width, 30, 10, stroke=0, fill=1)
+        # Header bar
+        c.setFillColor(RACING_GREEN)
+        c.roundRect(PARENT_X, parent_y + parent_h - 30, PARENT_W, 30, 10, stroke=0, fill=1)
 
-        c.setFillColor(gold)
+        c.setFillColor(GOLD)
         c.setFont("Helvetica-Bold", 12)
         created = acca.created_at.strftime("%Y-%m-%d") if acca.created_at else "-"
         header_text = f"ACCA #{acca.id} — {created} — {acca.status.upper()}"
-        c.drawString(parent_x + 12, parent_y + parent_h - 20, header_text)
+        c.drawString(PARENT_X + 12, parent_y + parent_h - 20, header_text)
 
-        # Parent tile content
+        # Parent body
         ty = parent_y + parent_h - 50
         c.setFillColor(colors.black)
         c.setFont("Helvetica", 10)
-        c.drawString(parent_x + 12, ty, f"Combined Odds: {acca.combined_decimal_odds:g}")
+        c.drawString(PARENT_X + 12, ty, f"Combined Odds: {acca.combined_decimal_odds:g}")
         ty -= 16
-        c.drawString(parent_x + 12, ty, f"Stake: £{(acca.stake or 0):g}")
+        c.drawString(PARENT_X + 12, ty, f"Stake: £{(acca.stake or 0):g}")
         ty -= 16
-        c.drawString(parent_x + 12, ty, f"Return: £{(acca.total_return or 0):g}")
-        ty -= 30
+        c.drawString(PARENT_X + 12, ty, f"Return: £{(acca.total_return or 0):g}")
+        ty -= 25
 
-        # Mini-tiles for each pick
-        for pick in picks:
-            # Safe field access
+        # -----------------------------
+        # MINI-TILES (2 per row)
+        # -----------------------------
+        for i, pick in enumerate(picks):
+            col = i % 2
+            row = i // 2
+
+            mx = PARENT_X + 12 + col * (MINI_W + 12)
+            my = ty - row * (MINI_H + 10)
+
+            # Safe fields
             player = pick.get("player", "Unknown")
             course = pick.get("course", "Unknown")
             race_time = pick.get("race_time", "-")
@@ -784,49 +829,37 @@ def export_acca_pdf(db: Session = Depends(get_db)):
 
             # Colour coding
             if result == "Win":
-                bg = pale_green
+                bg = PALE_GREEN
                 rc = colors.green
             elif result == "Lose":
-                bg = pale_red
+                bg = PALE_RED
                 rc = colors.HexColor("#B00020")
             elif result == "Place":
-                bg = pale_blue
+                bg = PALE_BLUE
                 rc = colors.HexColor("#0047AB")
             elif result == "NR":
-                bg = pale_grey
+                bg = PALE_GREY
                 rc = colors.grey
             else:
                 bg = colors.white
                 rc = colors.black
 
-            mini_h = 80
-            mini_y = ty - mini_h
-
             # Mini tile
             c.setFillColor(bg)
-            c.setStrokeColor(gold)
-            c.roundRect(mini_x, mini_y, mini_width, mini_h, 8, stroke=1, fill=1)
+            c.setStrokeColor(GOLD)
+            c.roundRect(mx, my, MINI_W, MINI_H, MINI_RADIUS, stroke=1, fill=1)
 
-            ix = mini_x + 12
-            my = mini_y + mini_h - 18
-
+            # Text
             c.setFont("Helvetica-Bold", 10)
             c.setFillColor(colors.black)
-            c.drawString(ix, my, f"{player} — {course} — {race_time}")
-            my -= 16
+            c.drawString(mx + 6, my + MINI_H - 16, f"{player} — {course} — {race_time}")
 
             c.setFont("Helvetica", 10)
-            c.drawString(ix, my, f"Horse: {hn} (#{num})")
-            my -= 14
-
-            c.drawString(ix, my, f"Odds: {odds}")
-            my -= 14
+            c.drawString(mx + 6, my + MINI_H - 32, f"Horse: {hn} (#{num})")
+            c.drawString(mx + 6, my + MINI_H - 46, f"Odds: {odds}")
 
             c.setFillColor(rc)
-            c.drawString(ix, my, f"Result: {result}")
-            my -= 14
-
-            ty = mini_y - 20
+            c.drawString(mx + 6, my + MINI_H - 60, f"Result: {result}")
 
         y = parent_y - 40
 
