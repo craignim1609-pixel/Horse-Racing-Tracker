@@ -216,14 +216,16 @@ def complete_acca(db: Session = Depends(get_db)):
     picks_payload = []
     for p in picks:
         picks_payload.append(
-            {
-                "player": p.player.name if p.player else "Unknown",
-                "course": p.course,
-                "horse": p.horse_name,
-                "odds": p.odds_fraction,
-                "result": p.status,
-            }
-        )
+    {
+        "player": p.player.name if p.player else "Unknown",
+        "course": p.course,
+        "race_time": p.race_time,
+        "horse_name": p.horse_name,
+        "horse_number": p.horse_number,
+        "odds_fraction": p.odds_fraction,
+        "result": p.status,
+    }
+)
 
     history_row = models.AccaHistory(
         created_at=datetime.utcnow(),
