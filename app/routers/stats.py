@@ -598,89 +598,203 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
     )
 
 # ============================================================
-# ACCA EXPORT — EXCEL (PREMIUM BOOKMAKER STYLE)
+# ACCA EXPORT — PDF (PREMIUM BOOKMAKER STYLE)
 # ============================================================
-@router.get("/export/acca/excel")
-def export_acca_excel(db: Session = Depends(get_db)):
-    import xlsxwriter
+@router.get("/export/acca/pdf")
+def export_acca_pdf(db: Session = Depends(get_db)):
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
+    from reportlab.lib import colors
+    from reportlab.lib.units import mm
+    from datetime import datetime
 
     accas, player_stats = get_acca_data(db)
 
-    RACING_GREEN = "#004225"
-    GOLD = "#D4AF37"
-    CREAM = "#FAF7F0"
+    stream = BytesIO()
+    c = canvas.Canvas(stream, pagesize=A4)
+    width, height = A4
 
-    output = BytesIO()
-    workbook = xlsxwriter.Workbook(output, {"in_memory": True})
+    # Colours
+    RACING_GREEN = colors.HexColor("#004225")
+    GOLD = colors.HexColor("#D4AF37")
+    CREAM = colors.HexColor("#FAF7F0")
+    PALE_GREEN = colors.HexColor("#E6F4EA")
+    PALE_RED = colors.HexColor("#FDE7E9")
+    PALE_BLUE = colors.HexColor("#E5F0FF")
+    PALE_GREY = colors.HexColor("#F2F2F2")
 
-    # Sheet 1 — Acca Summary
-    ws = workbook.add_worksheet("Acca Summary")
-    headers = [
-        "ID", "Created At", "Status",
-        "Stake", "Return", "Profit", "Combined Decimal Odds"
+    # Header
+    def header(title):
+        c.setFillColor(RACING_GREEN)
+        c.rect(0, height - 20*mm, width, 20*mm, fill=1, stroke=0)
+        c.setFillColor(GOLD)
+        c.setFont("Helvetica-Bold", 16)
+        c.drawCentredString(width / 2, height - 8*mm, title)
+
+    # Parent tile
+    def parent_tile(x, y, w, h, title):
+        radius = 8
+        c.setFillColor(CREAM)
+        c.setStrokeColor(GOLD)
+        c.roundRect(x, y, w, h, radius, stroke=1, fill=1)
+
+        c.setFillColor(RACING_GREEN)
+        c.roundRect(x, y + h - 14*mm, w, 14*mm, radius, stroke=0, fill=1)
+
+        c.setFillColor(GOLD)
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(x + 4*mm, y + h - 9*mm, title)
+
+    # Mini tile
+    def mini_tile(x, y, w, h, pick):
+        result = pick.get("result", "Pending")
+
+        if result == "Win":
+            bg = PALE_GREEN
+            rc = colors.green
+        elif result == "Lose":
+            bg = PALE_RED
+            rc = colors.HexColor("#B00020")
+        elif result == "Place":
+            bg = PALE_BLUE
+            rc = colors.HexColor("#0047AB")
+        elif result == "NR":
+            bg = PALE_GREY
+            rc = colors.grey
+        else:
+            bg = colors.white
+            rc = colors.black
+
+        radius = 6
+        c.setFillColor(bg)
+        c.setStrokeColor(GOLD)
+        c.roundRect(x, y, w, h, radius, stroke=1, fill=1)
+
+        c.setFillColor(colors.black)
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(x + 6, y + h - 16,
+                     f"{pick.get('player')} — {pick.get('course')} — {pick.get('race_time')}")
+
+        c.setFont("Helvetica", 10)
+        c.drawString(x + 6, y + h - 32,
+                     f"Horse: {pick.get('horse_name')} (#{pick.get('horse_number')})")
+        c.drawString(x + 6, y + h - 46,
+                     f"Odds: {pick.get('odds_fraction')}")
+
+        c.setFillColor(rc)
+        c.drawString(x + 6, y + h - 60, f"Result: {result}")
+
+    # Start page
+    header("ACCA Report")
+    y = height - 35*mm
+
+    # Summary tiles
+    TILE_W = (width - 60) / 3
+    TILE_H = 30
+    TILE_RADIUS = 6
+
+    total_accas = len(accas)
+    wins = sum(1 for a in accas if a.status == "win")
+    places = sum(1 for a in accas if a.status == "place")
+    loses = sum(1 for a in accas if a.status == "lose")
+    total_stake = sum((a.stake or 0) for a in accas)
+    total_return = sum((a.total_return or 0) for a in accas)
+    total_profit = total_return - total_stake
+    biggest_return = max(((a.total_return or 0) for a in accas), default=0)
+
+    summary_items = [
+        ("Total Accas", total_accas),
+        ("Wins", wins),
+        ("Places", places),
+        ("Loses", loses),
+        ("Total Stake", f"£{total_stake:g}"),
+        ("Total Return", f"£{total_return:g}"),
+        ("Profit", f"£{total_profit:g}"),
+        ("Biggest Return", f"£{biggest_return:g}"),
     ]
 
-    header_fmt = workbook.add_format({
-        "bold": True,
-        "font_color": GOLD,
-        "bg_color": RACING_GREEN,
-        "border": 1,
-        "border_color": GOLD,
-        "align": "center",
-        "valign": "vcenter"
-    })
+    x_start = 40
+    for i, (label, value) in enumerate(summary_items):
+        col = i % 3
+        row = i // 3
 
-    body_fmt = workbook.add_format({
-        "border": 1,
-        "border_color": "#CCCCCC",
-        "bg_color": CREAM
-    })
+        x = x_start + col * (TILE_W + 10)
+        y_tile = y - row * (TILE_H + 15)
 
-    for col, h in enumerate(headers):
-        ws.write(0, col, h, header_fmt)
+        c.setFillColor(CREAM)
+        c.setStrokeColor(GOLD)
+        c.roundRect(x, y_tile, TILE_W, TILE_H, TILE_RADIUS, stroke=1, fill=1)
 
-    for r, a in enumerate(accas, start=1):
-        profit = (a.total_return or 0) - (a.stake or 0)
-        ws.write(r, 0, a.id, body_fmt)
-        ws.write(r, 1, a.created_at.strftime("%Y-%m-%d") if a.created_at else "", body_fmt)
-        ws.write(r, 2, a.status, body_fmt)
-        ws.write(r, 3, float(a.stake or 0), body_fmt)
-        ws.write(r, 4, float(a.total_return or 0), body_fmt)
-        ws.write(r, 5, float(profit), body_fmt)
-        ws.write(r, 6, float(a.combined_decimal_odds or 0), body_fmt)
+        c.setFillColor(RACING_GREEN)
+        c.roundRect(x, y_tile + TILE_H - 12, TILE_W, 12, TILE_RADIUS, stroke=0, fill=1)
 
-    for col in range(len(headers)):
-        ws.set_column(col, col, max(14, len(headers[col]) + 2))
+        c.setFillColor(GOLD)
+        c.setFont("Helvetica-Bold", 9)
+        c.drawString(x + 4, y_tile + TILE_H - 9, label)
 
-    ws.autofilter(0, 0, len(accas), len(headers) - 1)
+        c.setFillColor(colors.black)
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(x + 4, y_tile + 8, str(value))
 
-    # Sheet 2 — Player Performance
-    ws2 = workbook.add_worksheet("Player Performance")
-    headers2 = ["Player", "Wins", "Places", "Loses", "NR"]
+    y -= 3 * (TILE_H + 20)
 
-    for col, h in enumerate(headers2):
-        ws2.write(0, col, h, header_fmt)
+    # ACCA breakdown
+    PARENT_W = width * 0.80
+    PARENT_X = (width - PARENT_W) / 2
+    MINI_W = (PARENT_W - 30) / 2
+    MINI_H = 80
 
-    for r, (name, stats) in enumerate(player_stats.items(), start=1):
-        ws2.write(r, 0, name, body_fmt)
-        ws2.write(r, 1, stats["wins"], body_fmt)
-        ws2.write(r, 2, stats["places"], body_fmt)
-        ws2.write(r, 3, stats["loses"], body_fmt)
-        ws2.write(r, 4, stats["nr"], body_fmt)
+    for acca in accas:
+        picks = acca.picks_json or []
+        rows = (len(picks) + 1) // 2
+        parent_h = 120 + rows * (MINI_H + 10)
 
-    for col in range(len(headers2)):
-        ws2.set_column(col, col, max(12, len(headers2[col]) + 2))
+        if y - parent_h < 80:
+            c.showPage()
+            header("ACCA Report")
+            y = height - 35*mm
 
-    ws2.autofilter(0, 0, len(player_stats), len(headers2) - 1)
+        parent_y = y - parent_h
 
-    workbook.close()
-    output.seek(0)
+        parent_tile(
+            PARENT_X,
+            parent_y,
+            PARENT_W,
+            parent_h,
+            f"ACCA #{acca.id} — {acca.created_at.strftime('%Y-%m-%d') if acca.created_at else '-'} — {acca.status.upper()}"
+        )
+
+        ty = parent_y + parent_h - 50
+        c.setFillColor(colors.black)
+        c.setFont("Helvetica", 10)
+        c.drawString(PARENT_X + 12, ty, f"Combined Odds: {acca.combined_decimal_odds:g}")
+        ty -= 16
+        c.drawString(PARENT_X + 12, ty, f"Stake: £{(acca.stake or 0):g}")
+        ty -= 16
+        c.drawString(PARENT_X + 12, ty, f"Return: £{(acca.total_return or 0):g}")
+        ty -= 25
+
+        for i, pick in enumerate(picks):
+            col = i % 2
+            row = i // 2
+
+            mx = PARENT_X + 12 + col * (MINI_W + 12)
+            my = ty - row * (MINI_H + 10)
+
+            mini_tile(mx, my, MINI_W, MINI_H, pick)
+
+        y = parent_y - 40
+
+    c.showPage()
+    c.save()
+    stream.seek(0)
 
     return Response(
-        content=output.read(),
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": "attachment; filename=acca_summary.xlsx"}
+        content=stream.read(),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=acca_report.pdf"}
     )
+
 
 # ============================================================
 # SUMMARY EXPORT — EXCEL (PREMIUM BOOKMAKER STYLE)
