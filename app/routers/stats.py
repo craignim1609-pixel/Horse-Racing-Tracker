@@ -452,307 +452,171 @@ def export_raceday_excel(db: Session = Depends(get_db)):
 @router.get("/export/raceday/pdf")
 def export_raceday_pdf(db: Session = Depends(get_db)):
     from reportlab.lib.pagesizes import A4
-    from reportlab.pdfgen import canvas
-    from reportlab.lib import colors
-    from datetime import datetime
-    from io import BytesIO
-    from fastapi import Response
+from reportlab.lib import colors
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import mm
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import Paragraph
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
 
-    racedays = (
-        db.query(CompletedRaceDay)
-        .order_by(CompletedRaceDay.date.desc())
-        .all()
-    )
+RACING_GREEN = colors.HexColor("#0B3D2E")
+GOLD = colors.HexColor("#D4AF37")
+CREAM = colors.HexColor("#FAF7F0")
 
-    all_bets = []
-    for rd in racedays:
-        all_bets.extend(rd.bets)
+FONT = "Helvetica"
+FONT_BOLD = "Helvetica-Bold"
 
-    total_racedays = len(racedays)
-    total_bets = len(all_bets)
-    total_stake = sum((b.stake or 0) for b in all_bets)
-    total_return = sum((b.winnings or 0) for b in all_bets)
-    total_profit = total_return - total_stake
+# -----------------------------
+# Rounded Tile Helper
+# -----------------------------
+def draw_tile(c, x, y, w, h, header_text=None):
+    radius = 6
 
-    # Player stats
-    player_stats = {}
-    for bet in all_bets:
-        name = bet.player_name or "Unknown"
-        if name not in player_stats:
-            player_stats[name] = {
-                "W": 0, "P": 0, "L": 0, "NR": 0,
-                "stake": 0.0, "return": 0.0, "profit": 0.0
-            }
+    # Background
+    c.setFillColor(CREAM)
+    c.roundRect(x, y, w, h, radius, stroke=1, fill=1)
 
-        if bet.result in ["Win", "Place", "Lose", "NR"]:
-            player_stats[name][bet.result[0]] += 1
+    # Border
+    c.setStrokeColor(GOLD)
+    c.roundRect(x, y, w, h, radius, stroke=1, fill=0)
 
-        player_stats[name]["stake"] += bet.stake or 0
-        player_stats[name]["return"] += bet.winnings or 0
-        player_stats[name]["profit"] = (
-            player_stats[name]["return"] - player_stats[name]["stake"]
-        )
+    # Header bar
+    if header_text:
+        c.setFillColor(RACING_GREEN)
+        c.roundRect(x, y + h - 14*mm, w, 14*mm, radius, stroke=0, fill=1)
 
-    # Course summary
-    course_counts = {}
-    for bet in all_bets:
-        course = bet.course or "Unknown"
-        course_counts[course] = course_counts.get(course, 0) + 1
+        c.setFillColor(GOLD)
+        c.setFont(FONT_BOLD, 12)
+        c.drawString(x + 4*mm, y + h - 9*mm, header_text)
 
-    # Horse summary
-    horse_counts = {}
-    for bet in all_bets:
-        hn = bet.horse_name or "Unknown"
-        num = bet.horse_number if bet.horse_number is not None else "-"
-        key = f"{hn} (#{num})"
-        horse_counts[key] = horse_counts.get(key, 0) + 1
+        # Divider
+        c.setStrokeColor(GOLD)
+        c.setLineWidth(1)
+        c.line(x, y + h - 14*mm, x + w, y + h - 14*mm)
 
-    # PDF setup
-    stream = BytesIO()
-    c = canvas.Canvas(stream, pagesize=A4)
+# -----------------------------
+# Text Helper
+# -----------------------------
+def draw_text(c, x, y, text, size=10, bold=False):
+    c.setFont(FONT_BOLD if bold else FONT, size)
+    c.setFillColor(colors.black)
+    c.drawString(x, y, text)
+
+# -----------------------------
+# MAIN PDF FUNCTION
+# -----------------------------
+def generate_raceday_pdf(buffer, summary, players, courses, bets, horses):
+    c = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
 
-    racing_green = colors.HexColor("#004225")
-    gold = colors.HexColor("#D4AF37")
-    pale_green = colors.HexColor("#E6F4EA")
-    pale_red = colors.HexColor("#FDE7E9")
-    pale_blue = colors.HexColor("#E5F0FF")
-    pale_grey = colors.HexColor("#F2F2F2")
+    # -----------------------------------
+    # PAGE 1 — DASHBOARD
+    # -----------------------------------
 
-    tile_width = width * 0.6
-    tile_x = (width - tile_width) / 2
+    # Header bar
+    c.setFillColor(RACING_GREEN)
+    c.rect(0, height - 20*mm, width, 20*mm, fill=1, stroke=0)
 
-    def header(title):
-        c.setFillColor(racing_green)
-        c.rect(0, height - 40, width, 40, stroke=0, fill=1)
-        c.setFillColor(gold)
-        c.setFont("Helvetica-Bold", 16)
-        c.drawString(40, height - 27, title)
+    c.setFillColor(GOLD)
+    c.setFont(FONT_BOLD, 18)
+    c.drawCentredString(width/2, height - 8*mm, f"RACE DAY REPORT — {summary['date']}")
 
-    def page_number(n):
-        c.setFont("Helvetica", 9)
-        c.setFillColor(colors.grey)
-        c.drawRightString(width - 40, 25, f"Page {n}")
+    y = height - 35*mm
 
-    page = 1
+    # -----------------------------
+    # SUMMARY TILES (3 across)
+    # -----------------------------
+    tile_w = (width - 40*mm) / 3
+    tile_h = 25*mm
+    x_start = 15*mm
 
-    def new_page(title):
-        nonlocal page
-        # FIX: use our own page counter, not c.getPageNumber()
-        if page > 1:
-            page_number(page)
-            c.showPage()
-        page += 1
-        header(title)
-        return height - 60
+    summary_items = [
+        ("Total Bets", summary["total_bets"]),
+        ("Total Stake", f"£{summary['total_stake']}"),
+        ("Total Return", f"£{summary['total_return']}"),
+        ("Total Profit", f"£{summary['total_profit']}"),
+    ]
 
-    y = new_page("Race Day Report")
+    for i, (label, value) in enumerate(summary_items):
+        col = i % 3
+        row = i // 3
 
-    # Generated date
-    c.setFont("Helvetica", 10)
-    c.setFillColor(colors.black)
-    c.drawString(40, y, f"Generated: {datetime.utcnow().strftime('%Y-%m-%d')}")
-    y -= 25
+        x = x_start + col * (tile_w + 5*mm)
+        y_tile = y - row * (tile_h + 5*mm)
 
-    # Summary box
-    box_h = 70
-    c.setFillColor(pale_grey)
-    c.setStrokeColor(gold)
-    c.roundRect(40, y - box_h, width - 80, box_h, 8, stroke=1, fill=1)
+        draw_tile(c, x, y_tile, tile_w, tile_h, header_text=label)
+        draw_text(c, x + 4*mm, y_tile + 8*mm, str(value), size=12, bold=True)
 
-    c.setFillColor(colors.black)
-    c.setFont("Helvetica-Bold", 12)
-    c.drawString(50, y - 18, "Summary")
-    c.setFont("Helvetica", 10)
+    y -= 2 * (tile_h + 10*mm)
 
-    c.drawString(50, y - 35, f"Total Race Days: {total_racedays}")
-    c.drawString(220, y - 35, f"Total Bets: {total_bets}")
-    c.drawString(50, y - 50, f"Total Stake: £{total_stake:g}")
-    c.drawString(220, y - 50, f"Total Return: £{total_return:g}")
-    c.drawString(390, y - 50, f"Total Profit: £{total_profit:g}")
+    # -----------------------------
+    # PLAYER PERFORMANCE (2 columns)
+    # -----------------------------
+    tile_w = (width - 40*mm) / 2
+    tile_h = 30*mm
 
-    y -= (box_h + 30)
+    for i, p in enumerate(players):
+        col = i % 2
+        row = i // 2
 
-    # Section helper
-    def section(title, y):
-        c.setFont("Helvetica-Bold", 14)
-        c.setFillColor(colors.black)
-        c.drawString(40, y, title)
-        y -= 8
-        c.setStrokeColor(gold)
-        c.line(40, y, width - 40, y)
-        return y - 20
+        x = x_start + col * (tile_w + 10*mm)
+        y_tile = y - row * (tile_h + 8*mm)
 
-    # Race Day Summary
-    y = section("Race Day Summary", y)
-    c.setFont("Helvetica", 11)
+        draw_tile(c, x, y_tile, tile_w, tile_h, header_text=p["name"])
 
-    for rd in racedays:
-        if y < 80:
-            y = new_page("Race Day Report")
-            y = section("Race Day Summary (cont.)", y)
+        body_y = y_tile + tile_h - 20*mm
+        draw_text(c, x + 4*mm, body_y, f"W{p['W']} | P{p['P']} | L{p['L']} | NR{p['NR']}")
+        draw_text(c, x + 4*mm, body_y - 6*mm,
+                  f"Stake £{p['stake']} | Return £{p['return']} | Profit £{p['profit']}")
 
-        date_str = rd.date.strftime("%Y-%m-%d")
-        stake = float(rd.total_stake or 0)
-        ret = float(rd.total_return or 0)
-        profit = float(rd.profit or 0)
+    # -----------------------------
+    # COURSE SUMMARY TILE
+    # -----------------------------
+    y_course = y - ((len(players)+1)//2) * (tile_h + 10*mm) - 10*mm
+    tile_h_course = 25*mm
 
-        c.drawString(50, y, f"{date_str} — Stake £{stake:g} | Return £{ret:g} | Profit £{profit:g}")
-        y -= 16
+    draw_tile(c, x_start, y_course, tile_w, tile_h_course, header_text="Course Summary")
 
-    # Player Performance
-    page_number(page)
-    y = new_page("Race Day Report")
-    y = section("Player Performance", y)
+    cy = y_course + tile_h_course - 20*mm
+    for course, count in courses.items():
+        draw_text(c, x_start + 4*mm, cy, f"{course} — {count} bets")
+        cy -= 6*mm
 
-    c.setFont("Helvetica", 11)
-    for player, stats in player_stats.items():
-        if y < 80:
-            y = new_page("Race Day Report")
-            y = section("Player Performance (cont.)", y)
+    c.showPage()
 
-        c.drawString(
-            50, y,
-            f"{player} — W {stats['W']} | P {stats['P']} | L {stats['L']} | NR {stats['NR']} | "
-            f"Stake £{stats['stake']:g} | Return £{stats['return']:g} | Profit £{stats['profit']:g}"
-        )
-        y -= 16
+    # -----------------------------------
+    # PAGE 2 — FULL BET BREAKDOWN
+    # -----------------------------------
 
-    # Course Summary
-    page_number(page)
-    y = new_page("Race Day Report")
-    y = section("Course Summary", y)
+    c.setFillColor(RACING_GREEN)
+    c.rect(0, height - 20*mm, width, 20*mm, fill=1, stroke=0)
+    c.setFillColor(GOLD)
+    c.setFont(FONT_BOLD, 18)
+    c.drawCentredString(width/2, height - 8*mm, "FULL BET BREAKDOWN")
 
-    c.setFont("Helvetica", 11)
-    for course, count in sorted(course_counts.items(), key=lambda x: -x[1]):
-        if y < 80:
-            y = new_page("Race Day Report")
-            y = section("Course Summary (cont.)", y)
+    y = height - 35*mm
+    tile_w = (width - 40*mm) / 2
+    tile_h = 28*mm
 
-        c.drawString(50, y, f"{course} — {count} bets")
-        y -= 16
+    for i, b in enumerate(bets):
+        col = i % 2
+        row = i // 2
 
-    # Horse Summary
-    page_number(page)
-    y = new_page("Race Day Report")
-    y = section("Horse Summary", y)
+        x = x_start + col * (tile_w + 10*mm)
+        y_tile = y - row * (tile_h + 8*mm)
 
-    c.setFont("Helvetica", 11)
-    for horse, count in sorted(horse_counts.items(), key=lambda x: -x[1]):
-        if y < 80:
-            y = new_page("Race Day Report")
-            y = section("Horse Summary (cont.)", y)
+        header = f"{b['player']} — {b['course']} — {b['time']}"
+        draw_tile(c, x, y_tile, tile_w, tile_h, header_text=header)
 
-        c.drawString(50, y, f"{horse} — {count} picks")
-        y -= 16
+        body_y = y_tile + tile_h - 20*mm
+        draw_text(c, x + 4*mm, body_y,
+                  f"{b['horse']} — {b['odds']} — {b['result']}")
+        draw_text(c, x + 4*mm, body_y - 6*mm,
+                  f"Stake £{b['stake']} → £{b['return']}")
 
-    # Full Bet Breakdown
-    page_number(page)
-    y = new_page("Race Day Report")
-    y = section("Full Bet Breakdown", y)
-
-    for rd in racedays:
-
-        if y < 160:
-            y = new_page("Race Day Report")
-            y = section("Full Bet Breakdown (cont.)", y)
-
-        # Race day card
-        c.setFont("Helvetica-Bold", 12)
-        c.setStrokeColor(gold)
-        c.roundRect(40, y - 24, width - 80, 24, 6, stroke=1, fill=0)
-        c.drawCentredString(width / 2, y - 17, f"RACE DAY — {rd.date.strftime('%Y-%m-%d')}")
-        y -= 50
-
-        # Bets
-        for bet in rd.bets:
-
-            if y < 180:
-                y = new_page("Race Day Report")
-                y = section("Full Bet Breakdown (cont.)", y)
-                c.setFont("Helvetica-Bold", 12)
-                c.setStrokeColor(gold)
-                c.roundRect(40, y - 24, width - 80, 24, 6, stroke=1, fill=0)
-                c.drawCentredString(width / 2, y - 17, f"RACE DAY — {rd.date.strftime('%Y-%m-%d')}")
-                y -= 50
-
-            # Determine tile colours
-            result = bet.result or "Pending"
-            if result == "Win":
-                bg = pale_green
-                rc = colors.green
-            elif result == "Lose":
-                bg = pale_red
-                rc = colors.HexColor("#B00020")
-            elif result == "Place":
-                bg = pale_blue
-                rc = colors.HexColor("#0047AB")
-            elif result == "NR":
-                bg = pale_grey
-                rc = colors.grey
-            else:
-                bg = colors.white
-                rc = colors.black
-
-            # Tile height tuned for medium padding
-            tile_h = 140
-            tile_y = y - tile_h
-
-            # Draw tile
-            c.setFillColor(bg)
-            c.setStrokeColor(gold)
-            c.roundRect(tile_x, tile_y, tile_width, tile_h, 8, stroke=1, fill=1)
-
-            # Internal padding
-            ix = tile_x + 14
-            ty = tile_y + tile_h - 22
-
-            # Header
-            c.setFont("Helvetica-Bold", 11)
-            c.setFillColor(colors.black)
-            c.drawString(ix, ty, f"{bet.player_name} — {bet.course} — {bet.race_time}")
-            ty -= 20
-
-            # Horse
-            c.setFont("Helvetica", 10)
-            hn = bet.horse_name or "Unknown"
-            num = bet.horse_number if bet.horse_number is not None else "-"
-            c.drawString(ix, ty, f"Horse: {hn} (#{num})")
-            ty -= 16
-
-            # Odds
-            c.drawString(ix, ty, f"Odds: {bet.odds_fraction or '-'}")
-            ty -= 16
-
-            # Result
-            c.setFillColor(rc)
-            if result == "Win":
-                c.setFont("Helvetica-Bold", 10)
-                c.drawString(ix, ty, "Result: WIN")
-            else:
-                c.setFont("Helvetica", 10)
-                c.drawString(ix, ty, f"Result: {result}")
-            ty -= 16
-
-            # Money
-            c.setFillColor(colors.black)
-            c.setFont("Helvetica", 10)
-            c.drawString(ix, ty, f"Stake: £{(bet.stake or 0):g}")
-            ty -= 16
-            c.drawString(ix, ty, f"Winnings: £{(bet.winnings or 0):g}")
-
-            # Spacing below tile
-            y = tile_y - 35
-
-    page_number(page)
+    c.showPage()
     c.save()
-    stream.seek(0)
 
-    return Response(
-        content=stream.read(),
-        media_type="application/pdf",
-        headers={"Content-Disposition": "attachment; filename=raceday_report.pdf"}
-    )
     
 # ============================================================
 # ACCA EXPORT — PDF (FULL-WIDTH PARENT TILE + MINI-TILES)
