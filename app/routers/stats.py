@@ -529,7 +529,8 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
 
         if title_text:
             c.setFillColor(RACING_GREEN)
-            c.roundRect(x, y + h - TITLE_BAR_HEIGHT, w, TITLE_BAR_HEIGHT, radius, stroke=0, fill=1)
+            c.roundRect(x, y + h - TITLE_BAR_HEIGHT, w, TITLE_BAR_HEIGHT,
+                        radius, stroke=0, fill=1)
             c.setFillColor(GOLD)
             c.setFont("Helvetica-Bold", 11)
             c.drawString(
@@ -542,7 +543,9 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
     header("Race Day Report")
     y = height - PAGE_MARGIN_TOP - 20*mm
 
-    # Summary tiles
+    # ============================================================
+    # SUMMARY TILES (3‑column grid, safe vertical flow)
+    # ============================================================
     tile_w = (width - 40*mm) / 3
     tile_h = 22 * mm
     x_start = 15 * mm
@@ -559,12 +562,15 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         ("Total Profit", f"£{total_profit:.2f}"),
     ]
 
+    last_y_tile = None
+
     for i, (label, value) in enumerate(summary_items):
         col = i % 3
         row = i // 3
 
         x = x_start + col * (tile_w + ROW_GAP)
         y_tile = y - row * (tile_h + ROW_GAP)
+        last_y_tile = y_tile
 
         draw_tile(x, y_tile, tile_w, tile_h, label)
 
@@ -572,9 +578,12 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         c.setFont("Helvetica-Bold", 12)
         c.drawString(x + INNER_PADDING, y_tile + INNER_PADDING, str(value))
 
-    y = y_tile - SECTION_GAP
+    # Move below summary section
+    y = last_y_tile - SECTION_GAP
 
-    # Player tiles
+    # ============================================================
+    # PLAYER TILES (2‑column grid, safe vertical flow)
+    # ============================================================
     tile_w_p = (width - 40*mm) / 2
     tile_h_p = 26 * mm
 
@@ -597,6 +606,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         x = x_start + col * (tile_w_p + ROW_GAP)
         y_tile = y - row * (tile_h_p + ROW_GAP)
 
+        # Page break
         if y_tile < PAGE_MARGIN_BOTTOM:
             c.showPage()
             header("Race Day Report")
@@ -623,9 +633,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
             f"Profit £{p['profit']:.2f}"
         )
 
-        if col == 1:
-            y = y_tile - ROW_GAP
-
+    # Finalise
     c.showPage()
     c.save()
     stream.seek(0)
@@ -635,6 +643,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         media_type="application/pdf",
         headers={"Content-Disposition": "attachment; filename=raceday_report.pdf"}
     )
+
 # ============================================================
 # ACCA EXPORT — PDF (PREMIUM BOOKMAKER STYLE, T2 SPACING)
 # ============================================================
