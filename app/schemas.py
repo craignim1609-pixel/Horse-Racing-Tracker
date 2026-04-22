@@ -171,8 +171,10 @@ class PlayerProfileOut(BaseModel):
 class AccaHistoryPick(BaseModel):
     player: str
     course: str
-    horse: str
-    odds: str
+    race_time: str
+    horse_name: str
+    horse_number: int | None
+    odds_fraction: str
     result: str
 
 
