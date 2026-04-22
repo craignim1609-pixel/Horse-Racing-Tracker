@@ -1,3 +1,6 @@
+# ============================================================
+# IMPORTS
+# ============================================================
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session, joinedload
@@ -5,17 +8,20 @@ from sqlalchemy import func
 from datetime import datetime
 from io import BytesIO
 
-from app.models import CompletedRaceDay, CompletedRaceDayBet
 from app.database import get_db
 from app import models
 
+
+# ============================================================
+# ROUTER SETUP
+# ============================================================
 router = APIRouter(prefix="/stats", tags=["Stats"])
 templates = Jinja2Templates(directory="app/templates")
 
 
-# ------------------------------------------------------------
+# ============================================================
 # STATS PAGE (HTML)
-# ------------------------------------------------------------
+# ============================================================
 @router.get("")
 def stats_home(request: Request):
     return templates.TemplateResponse("stats.html", {
@@ -24,9 +30,9 @@ def stats_home(request: Request):
     })
 
 
-# ------------------------------------------------------------
+# ============================================================
 # MONTHLY STATS
-# ------------------------------------------------------------
+# ============================================================
 @router.get("/month/{month}")
 def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
     players = db.query(models.Player).all()
@@ -53,9 +59,9 @@ def monthly_stats(month: int, year: int, db: Session = Depends(get_db)):
     return results
 
 
-# ------------------------------------------------------------
+# ============================================================
 # PLAYER DETAILS
-# ------------------------------------------------------------
+# ============================================================
 @router.get("/player/{name}")
 def player_details(name: str, db: Session = Depends(get_db)):
     player = db.query(models.Player).filter_by(name=name).first()
@@ -106,9 +112,9 @@ def player_details(name: str, db: Session = Depends(get_db)):
     }
 
 
-# ------------------------------------------------------------
+# ============================================================
 # ACCA PERFORMANCE CENTER
-# ------------------------------------------------------------
+# ============================================================
 @router.get("/acca")
 def acca_stats(db: Session = Depends(get_db)):
     q = db.query(models.AccaHistory)
@@ -154,12 +160,11 @@ def acca_stats(db: Session = Depends(get_db)):
     }
 
 
-# ------------------------------------------------------------
+# ============================================================
 # DASHBOARD (used by stats.html)
-# ------------------------------------------------------------
+# ============================================================
 @router.get("/dashboard")
 def stats_dashboard(db: Session = Depends(get_db)):
-
     players = db.query(models.Player).all()
 
     player_stats = {
@@ -222,14 +227,14 @@ def stats_dashboard(db: Session = Depends(get_db)):
     }
 
 
-# ------------------------------------------------------------
+# ============================================================
 # COMPLETED RACE DAYS
-# ------------------------------------------------------------
+# ============================================================
 @router.get("/racedays")
 def get_completed_racedays(db: Session = Depends(get_db)):
     racedays = (
         db.query(models.CompletedRaceDay)
-        .options(joinedload(models.CompletedRaceDay.bets))
+        .options(joinedload(models.Completed.CompletedRaceDay.bets))
         .order_by(models.CompletedRaceDay.date.desc())
         .all()
     )
@@ -263,9 +268,9 @@ def get_completed_racedays(db: Session = Depends(get_db)):
     return result
 
 
-# ------------------------------------------------------------
+# ============================================================
 # RACE DAY PLAYER PERFORMANCE
-# ------------------------------------------------------------
+# ============================================================
 @router.get("/raceday/players")
 def raceday_player_stats(db: Session = Depends(get_db)):
     players = db.query(models.Player).all()
@@ -299,7 +304,6 @@ def raceday_player_stats(db: Session = Depends(get_db)):
         {"player": name, **values}
         for name, values in stats.items()
     ]
-
 # ============================================================
 # EXPORT HELPERS
 # ============================================================
@@ -399,6 +403,7 @@ def get_summary_data(db: Session):
 
     return player_stats
 
+
 # ============================================================
 # RACE DAY EXPORT — EXCEL (PREMIUM BOOKMAKER STYLE)
 # ============================================================
@@ -480,7 +485,7 @@ def export_raceday_excel(db: Session = Depends(get_db)):
 
 
 # ============================================================
-# RACE DAY EXPORT — PDF (PREMIUM BOOKMAKER STYLE)
+# RACE DAY EXPORT — PDF (PREMIUM BOOKMAKER STYLE, T2 SPACING)
 # ============================================================
 @router.get("/export/raceday/pdf")
 def export_raceday_pdf(db: Session = Depends(get_db)):
@@ -489,21 +494,21 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
     from reportlab.lib import colors
     from reportlab.lib.units import mm
 
-    # GLOBAL SPACING CONSTANTS (T2 — Tight Premium)
-ROW_GAP = 6 * mm              # space between tiles in a row
-SECTION_GAP = 10 * mm         # space between major sections
-PAGE_MARGIN_TOP = 20 * mm
-PAGE_MARGIN_BOTTOM = 20 * mm
-
-# TILE INTERNAL PADDING (Option B — Medium)
-INNER_PADDING = 4 * mm
-TITLE_BAR_HEIGHT = 12 * mm
-
     racedays, player_stats = get_raceday_data(db)
 
     stream = BytesIO()
     c = canvas.Canvas(stream, pagesize=A4)
     width, height = A4
+
+    # GLOBAL SPACING CONSTANTS (T2 — Tight Premium)
+    ROW_GAP = 6 * mm
+    SECTION_GAP = 10 * mm
+    PAGE_MARGIN_TOP = 20 * mm
+    PAGE_MARGIN_BOTTOM = 20 * mm
+
+    # TILE INTERNAL PADDING (Option B — Medium)
+    INNER_PADDING = 4 * mm
+    TITLE_BAR_HEIGHT = 12 * mm
 
     RACING_GREEN = colors.HexColor("#004225")
     GOLD = colors.HexColor("#D4AF37")
@@ -517,26 +522,30 @@ TITLE_BAR_HEIGHT = 12 * mm
         c.drawCentredString(width / 2, height - 8*mm, title)
 
     def draw_tile(x, y, w, h, title_text=None):
-    radius = 6
-    c.setFillColor(CREAM)
-    c.setStrokeColor(GOLD)
-    c.roundRect(x, y, w, h, radius, stroke=1, fill=1)
+        radius = 6
+        c.setFillColor(CREAM)
+        c.setStrokeColor(GOLD)
+        c.roundRect(x, y, w, h, radius, stroke=1, fill=1)
 
-    if title_text:
-        c.setFillColor(RACING_GREEN)
-        c.roundRect(x, y + h - TITLE_BAR_HEIGHT, w, TITLE_BAR_HEIGHT, radius, stroke=0, fill=1)
-        c.setFillColor(GOLD)
-        c.setFont("Helvetica-Bold", 11)
-        c.drawString(x + INNER_PADDING, y + h - TITLE_BAR_HEIGHT + (TITLE_BAR_HEIGHT / 3), title_text)
+        if title_text:
+            c.setFillColor(RACING_GREEN)
+            c.roundRect(x, y + h - TITLE_BAR_HEIGHT, w, TITLE_BAR_HEIGHT, radius, stroke=0, fill=1)
+            c.setFillColor(GOLD)
+            c.setFont("Helvetica-Bold", 11)
+            c.drawString(
+                x + INNER_PADDING,
+                y + h - TITLE_BAR_HEIGHT + (TITLE_BAR_HEIGHT / 3),
+                title_text
+            )
 
-
+    # Start page
     header("Race Day Report")
+    y = height - PAGE_MARGIN_TOP - 20*mm
 
-    # Summary tiles (top)
-    y = height - 40*mm
+    # Summary tiles
     tile_w = (width - 40*mm) / 3
-    tile_h = 22*mm
-    x_start = 15*mm
+    tile_h = 22 * mm
+    x_start = 15 * mm
 
     total_stake = sum(float(rd.total_stake) for rd in racedays)
     total_return = sum(float(rd.total_return) for rd in racedays)
@@ -553,17 +562,21 @@ TITLE_BAR_HEIGHT = 12 * mm
     for i, (label, value) in enumerate(summary_items):
         col = i % 3
         row = i // 3
-        x = x_start + col * (tile_w + 5*mm)
-        y_tile = y - row * (tile_h + 5*mm)
+
+        x = x_start + col * (tile_w + ROW_GAP)
+        y_tile = y - row * (tile_h + ROW_GAP)
+
         draw_tile(x, y_tile, tile_w, tile_h, label)
+
         c.setFillColor(colors.black)
         c.setFont("Helvetica-Bold", 12)
-        c.drawString(x + 4*mm, y_tile + 8*mm, str(value))
+        c.drawString(x + INNER_PADDING, y_tile + INNER_PADDING, str(value))
+
+    y = y_tile - SECTION_GAP
 
     # Player tiles
-    y_players = y - 2 * (tile_h + 8*mm)
     tile_w_p = (width - 40*mm) / 2
-    tile_h_p = 26*mm
+    tile_h_p = 26 * mm
 
     players_list = [
         {
@@ -580,23 +593,38 @@ TITLE_BAR_HEIGHT = 12 * mm
     for i, p in enumerate(players_list):
         col = i % 2
         row = i // 2
-        x = x_start + col * (tile_w_p + 10*mm)
-        y_tile = y_players - row * (tile_h_p + 8*mm)
+
+        x = x_start + col * (tile_w_p + ROW_GAP)
+        y_tile = y - row * (tile_h_p + ROW_GAP)
+
+        if y_tile < PAGE_MARGIN_BOTTOM:
+            c.showPage()
+            header("Race Day Report")
+            y = height - PAGE_MARGIN_TOP
+            row = 0
+            y_tile = y
+
         draw_tile(x, y_tile, tile_w_p, tile_h_p, p["name"])
 
         c.setFillColor(colors.black)
         c.setFont("Helvetica", 10)
-        body_y = y_tile + tile_h_p - 18*mm
+
+        body_y = y_tile + tile_h_p - TITLE_BAR_HEIGHT - INNER_PADDING - 2
+
         c.drawString(
-            x + 4*mm,
+            x + INNER_PADDING,
             body_y,
-            f"W {p['wins']} | P {p['places']} | L {p['loses']} | NR {p['nr']}",
+            f"W {p['wins']} | P {p['places']} | L {p['loses']} | NR {p['nr']}"
         )
+
         c.drawString(
-            x + 4*mm,
-            body_y - 6*mm,
-            f"Profit £{p['profit']:.2f}",
+            x + INNER_PADDING,
+            body_y - 12,
+            f"Profit £{p['profit']:.2f}"
         )
+
+        if col == 1:
+            y = y_tile - ROW_GAP
 
     c.showPage()
     c.save()
@@ -607,7 +635,6 @@ TITLE_BAR_HEIGHT = 12 * mm
         media_type="application/pdf",
         headers={"Content-Disposition": "attachment; filename=raceday_report.pdf"}
     )
-
 # ============================================================
 # ACCA EXPORT — PDF (PREMIUM BOOKMAKER STYLE, T2 SPACING)
 # ============================================================
@@ -617,7 +644,6 @@ def export_acca_pdf(db: Session = Depends(get_db)):
     from reportlab.pdfgen import canvas
     from reportlab.lib import colors
     from reportlab.lib.units import mm
-    from datetime import datetime
 
     accas, player_stats = get_acca_data(db)
 
@@ -625,9 +651,7 @@ def export_acca_pdf(db: Session = Depends(get_db)):
     c = canvas.Canvas(stream, pagesize=A4)
     width, height = A4
 
-    # ------------------------------------------------------------
     # GLOBAL SPACING CONSTANTS (T2 — Tight Premium)
-    # ------------------------------------------------------------
     ROW_GAP = 6 * mm
     SECTION_GAP = 10 * mm
     PAGE_MARGIN_TOP = 20 * mm
@@ -637,9 +661,7 @@ def export_acca_pdf(db: Session = Depends(get_db)):
     INNER_PADDING = 4 * mm
     TITLE_BAR_HEIGHT = 12 * mm
 
-    # ------------------------------------------------------------
     # COLOURS
-    # ------------------------------------------------------------
     RACING_GREEN = colors.HexColor("#004225")
     GOLD = colors.HexColor("#D4AF37")
     CREAM = colors.HexColor("#FAF7F0")
@@ -648,9 +670,7 @@ def export_acca_pdf(db: Session = Depends(get_db)):
     PALE_BLUE = colors.HexColor("#E5F0FF")
     PALE_GREY = colors.HexColor("#F2F2F2")
 
-    # ------------------------------------------------------------
     # HEADER BAR
-    # ------------------------------------------------------------
     def header(title):
         c.setFillColor(RACING_GREEN)
         c.rect(0, height - 20*mm, width, 20*mm, fill=1, stroke=0)
@@ -658,30 +678,21 @@ def export_acca_pdf(db: Session = Depends(get_db)):
         c.setFont("Helvetica-Bold", 16)
         c.drawCentredString(width / 2, height - 8*mm, title)
 
-    # ------------------------------------------------------------
-    # PARENT TILE (ACCA CONTAINER)
-    # ------------------------------------------------------------
+    # PARENT TILE
     def parent_tile(x, y, w, h, title):
         radius = 8
         c.setFillColor(CREAM)
         c.setStrokeColor(GOLD)
         c.roundRect(x, y, w, h, radius, stroke=1, fill=1)
 
-        # Title bar
         c.setFillColor(RACING_GREEN)
         c.roundRect(x, y + h - TITLE_BAR_HEIGHT, w, TITLE_BAR_HEIGHT, radius, stroke=0, fill=1)
 
         c.setFillColor(GOLD)
         c.setFont("Helvetica-Bold", 12)
-        c.drawString(
-            x + INNER_PADDING,
-            y + h - TITLE_BAR_HEIGHT + (TITLE_BAR_HEIGHT / 3),
-            title
-        )
+        c.drawString(x + INNER_PADDING, y + h - TITLE_BAR_HEIGHT + (TITLE_BAR_HEIGHT / 3), title)
 
-    # ------------------------------------------------------------
-    # MINI TILE (PICK TILE)
-    # ------------------------------------------------------------
+    # MINI TILE
     def mini_tile(x, y, w, h, pick):
         result = pick.get("result", "Pending")
 
@@ -710,44 +721,27 @@ def export_acca_pdf(db: Session = Depends(get_db)):
 
         c.setFillColor(colors.black)
         c.setFont("Helvetica-Bold", 10)
-        c.drawString(
-            x + INNER_PADDING,
-            text_y,
-            f"{pick.get('player')} — {pick.get('course')} — {pick.get('race_time')}"
-        )
+        c.drawString(x + INNER_PADDING, text_y,
+                     f"{pick.get('player')} — {pick.get('course')} — {pick.get('race_time')}")
 
         text_y -= 14
         c.setFont("Helvetica", 10)
-        c.drawString(
-            x + INNER_PADDING,
-            text_y,
-            f"Horse: {pick.get('horse_name')} (#{pick.get('horse_number')})"
-        )
+        c.drawString(x + INNER_PADDING, text_y,
+                     f"Horse: {pick.get('horse_name')} (#{pick.get('horse_number')})")
 
         text_y -= 14
-        c.drawString(
-            x + INNER_PADDING,
-            text_y,
-            f"Odds: {pick.get('odds_fraction')}"
-        )
+        c.drawString(x + INNER_PADDING, text_y,
+                     f"Odds: {pick.get('odds_fraction')}")
 
         text_y -= 14
         c.setFillColor(rc)
-        c.drawString(
-            x + INNER_PADDING,
-            text_y,
-            f"Result: {result}"
-        )
+        c.drawString(x + INNER_PADDING, text_y, f"Result: {result}")
 
-    # ------------------------------------------------------------
     # START PAGE
-    # ------------------------------------------------------------
     header("ACCA Report")
-    y = height - PAGE_MARGIN_TOP - 20*mm  # header space
+    y = height - PAGE_MARGIN_TOP - 20*mm
 
-    # ------------------------------------------------------------
     # SUMMARY TILES
-    # ------------------------------------------------------------
     TILE_W = (width - 60) / 3
     TILE_H = 30
     TILE_RADIUS = 6
@@ -777,18 +771,16 @@ def export_acca_pdf(db: Session = Depends(get_db)):
     for i, (label, value) in enumerate(summary_items):
         col = i % 3
         row = i // 3
-
         x = x_start + col * (TILE_W + ROW_GAP)
         y_tile = y - row * (TILE_H + ROW_GAP)
 
-        # Tile
         c.setFillColor(CREAM)
         c.setStrokeColor(GOLD)
         c.roundRect(x, y_tile, TILE_W, TILE_H, TILE_RADIUS, stroke=1, fill=1)
 
-        # Title bar
         c.setFillColor(RACING_GREEN)
-        c.roundRect(x, y_tile + TILE_H - TITLE_BAR_HEIGHT, TILE_W, TITLE_BAR_HEIGHT, TILE_RADIUS, stroke=0, fill=1)
+        c.roundRect(x, y_tile + TILE_H - TITLE_BAR_HEIGHT, TILE_W, TITLE_BAR_HEIGHT,
+                    TILE_RADIUS, stroke=0, fill=1)
 
         c.setFillColor(GOLD)
         c.setFont("Helvetica-Bold", 9)
@@ -800,9 +792,7 @@ def export_acca_pdf(db: Session = Depends(get_db)):
 
     y = y_tile - SECTION_GAP
 
-    # ------------------------------------------------------------
     # ACCA BREAKDOWN
-    # ------------------------------------------------------------
     PARENT_W = width * 0.80
     PARENT_X = (width - PARENT_W) / 2
     MINI_W = (PARENT_W - 30) / 2
@@ -813,7 +803,6 @@ def export_acca_pdf(db: Session = Depends(get_db)):
         rows = (len(picks) + 1) // 2
         parent_h = 120 + rows * (MINI_H + ROW_GAP)
 
-        # Page break
         if y - parent_h < PAGE_MARGIN_BOTTOM:
             c.showPage()
             header("ACCA Report")
@@ -821,7 +810,6 @@ def export_acca_pdf(db: Session = Depends(get_db)):
 
         parent_y = y - parent_h
 
-        # Parent tile
         parent_tile(
             PARENT_X,
             parent_y,
@@ -830,33 +818,29 @@ def export_acca_pdf(db: Session = Depends(get_db)):
             f"ACCA #{acca.id} — {acca.created_at.strftime('%Y-%m-%d') if acca.created_at else '-'} — {acca.status.upper()}"
         )
 
-        # Parent tile text
         ty = parent_y + parent_h - TITLE_BAR_HEIGHT - INNER_PADDING - 12
 
         c.setFillColor(colors.black)
         c.setFont("Helvetica", 10)
-        c.drawString(PARENT_X + INNER_PADDING, ty, f"Combined Odds: {acca.combined_decimal_odds:g}")
+        c.drawString(PARENT_X + INNER_PADDING, ty,
+                     f"Combined Odds: {acca.combined_decimal_odds:g}")
         ty -= 14
-        c.drawString(PARENT_X + INNER_PADDING, ty, f"Stake: £{(acca.stake or 0):g}")
+        c.drawString(PARENT_X + INNER_PADDING, ty,
+                     f"Stake: £{(acca.stake or 0):g}")
         ty -= 14
-        c.drawString(PARENT_X + INNER_PADDING, ty, f"Return: £{(acca.total_return or 0):g}")
+        c.drawString(PARENT_X + INNER_PADDING, ty,
+                     f"Return: £{(acca.total_return or 0):g}")
         ty -= 20
 
-        # Mini tiles
         for i, pick in enumerate(picks):
             col = i % 2
             row = i // 2
-
             mx = PARENT_X + INNER_PADDING + col * (MINI_W + ROW_GAP)
             my = ty - row * (MINI_H + ROW_GAP)
-
             mini_tile(mx, my, MINI_W, MINI_H, pick)
 
         y = parent_y - SECTION_GAP
 
-    # ------------------------------------------------------------
-    # FINALISE
-    # ------------------------------------------------------------
     c.showPage()
     c.save()
     stream.seek(0)
@@ -867,7 +851,7 @@ def export_acca_pdf(db: Session = Depends(get_db)):
         headers={"Content-Disposition": "attachment; filename=acca_report.pdf"}
     )
 
-    )
+
 # ============================================================
 # ACCA EXPORT — EXCEL (PREMIUM BOOKMAKER STYLE)
 # ============================================================
@@ -884,9 +868,7 @@ def export_acca_excel(db: Session = Depends(get_db)):
     output = BytesIO()
     workbook = xlsxwriter.Workbook(output, {"in_memory": True})
 
-    # ------------------------------------------------------------
     # SHEET 1 — ACCA SUMMARY
-    # ------------------------------------------------------------
     ws = workbook.add_worksheet("Acca Summary")
     headers = [
         "ID", "Created At", "Status",
@@ -909,11 +891,9 @@ def export_acca_excel(db: Session = Depends(get_db)):
         "bg_color": CREAM
     })
 
-    # Write headers
     for col, h in enumerate(headers):
         ws.write(0, col, h, header_fmt)
 
-    # Write rows
     for r, a in enumerate(accas, start=1):
         profit = (a.total_return or 0) - (a.stake or 0)
 
@@ -925,15 +905,12 @@ def export_acca_excel(db: Session = Depends(get_db)):
         ws.write(r, 5, float(profit), body_fmt)
         ws.write(r, 6, float(a.combined_decimal_odds or 0), body_fmt)
 
-    # Auto-fit columns
     for col in range(len(headers)):
         ws.set_column(col, col, max(14, len(headers[col]) + 2))
 
     ws.autofilter(0, 0, len(accas), len(headers) - 1)
 
-    # ------------------------------------------------------------
     # SHEET 2 — PLAYER PERFORMANCE
-    # ------------------------------------------------------------
     ws2 = workbook.add_worksheet("Player Performance")
     headers2 = ["Player", "Wins", "Places", "Loses", "NR"]
 
@@ -952,9 +929,6 @@ def export_acca_excel(db: Session = Depends(get_db)):
 
     ws2.autofilter(0, 0, len(player_stats), len(headers2) - 1)
 
-    # ------------------------------------------------------------
-    # FINALISE
-    # ------------------------------------------------------------
     workbook.close()
     output.seek(0)
 
@@ -963,8 +937,6 @@ def export_acca_excel(db: Session = Depends(get_db)):
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         headers={"Content-Disposition": "attachment; filename=acca_summary.xlsx"}
     )
-
-
 # ============================================================
 # SUMMARY EXPORT — EXCEL (PREMIUM BOOKMAKER STYLE)
 # ============================================================
@@ -1041,9 +1013,7 @@ def export_summary_pdf(db: Session = Depends(get_db)):
     c = canvas.Canvas(stream, pagesize=A4)
     width, height = A4
 
-    # ------------------------------------------------------------
     # GLOBAL SPACING CONSTANTS (T2 — Tight Premium)
-    # ------------------------------------------------------------
     ROW_GAP = 6 * mm
     SECTION_GAP = 10 * mm
     PAGE_MARGIN_TOP = 20 * mm
@@ -1053,16 +1023,12 @@ def export_summary_pdf(db: Session = Depends(get_db)):
     INNER_PADDING = 4 * mm
     TITLE_BAR_HEIGHT = 12 * mm
 
-    # ------------------------------------------------------------
     # COLOURS
-    # ------------------------------------------------------------
     RACING_GREEN = colors.HexColor("#004225")
     GOLD = colors.HexColor("#D4AF37")
     CREAM = colors.HexColor("#FAF7F0")
 
-    # ------------------------------------------------------------
     # HEADER BAR
-    # ------------------------------------------------------------
     def header(title):
         c.setFillColor(RACING_GREEN)
         c.rect(0, height - 20*mm, width, 20*mm, fill=1, stroke=0)
@@ -1070,20 +1036,17 @@ def export_summary_pdf(db: Session = Depends(get_db)):
         c.setFont("Helvetica-Bold", 16)
         c.drawCentredString(width / 2, height - 8*mm, title)
 
-    # ------------------------------------------------------------
     # TILE DRAWING FUNCTION
-    # ------------------------------------------------------------
     def draw_tile(x, y, w, h, title_text):
         radius = 6
 
-        # Tile background
         c.setFillColor(CREAM)
         c.setStrokeColor(GOLD)
         c.roundRect(x, y, w, h, radius, stroke=1, fill=1)
 
-        # Title bar
         c.setFillColor(RACING_GREEN)
-        c.roundRect(x, y + h - TITLE_BAR_HEIGHT, w, TITLE_BAR_HEIGHT, radius, stroke=0, fill=1)
+        c.roundRect(x, y + h - TITLE_BAR_HEIGHT, w, TITLE_BAR_HEIGHT,
+                    radius, stroke=0, fill=1)
 
         c.setFillColor(GOLD)
         c.setFont("Helvetica-Bold", 11)
@@ -1093,11 +1056,9 @@ def export_summary_pdf(db: Session = Depends(get_db)):
             title_text
         )
 
-    # ------------------------------------------------------------
     # START PAGE
-    # ------------------------------------------------------------
     header("Overall Summary Report")
-    y = height - PAGE_MARGIN_TOP - 20*mm  # header space
+    y = height - PAGE_MARGIN_TOP - 20*mm
 
     tile_w = (width - 40*mm) / 2
     tile_h = 24 * mm
@@ -1114,9 +1075,7 @@ def export_summary_pdf(db: Session = Depends(get_db)):
         for name, stats in player_stats.items()
     ]
 
-    # ------------------------------------------------------------
     # PLAYER TILES (2‑COLUMN GRID)
-    # ------------------------------------------------------------
     for i, p in enumerate(players_list):
         col = i % 2
         row = i // 2
@@ -1124,7 +1083,6 @@ def export_summary_pdf(db: Session = Depends(get_db)):
         x = x_start + col * (tile_w + ROW_GAP)
         y_tile = y - row * (tile_h + ROW_GAP)
 
-        # Page break
         if y_tile < PAGE_MARGIN_BOTTOM:
             c.showPage()
             header("Overall Summary Report")
@@ -1132,12 +1090,11 @@ def export_summary_pdf(db: Session = Depends(get_db)):
             row = 0
             y_tile = y
 
-        # Draw tile
         draw_tile(x, y_tile, tile_w, tile_h, p["name"])
 
-        # Stats text
         c.setFillColor(colors.black)
         c.setFont("Helvetica", 10)
+
         body_y = y_tile + tile_h - TITLE_BAR_HEIGHT - INNER_PADDING - 2
 
         c.drawString(
@@ -1146,13 +1103,9 @@ def export_summary_pdf(db: Session = Depends(get_db)):
             f"W {p['wins']} | P {p['places']} | L {p['loses']} | NR {p['nr']}"
         )
 
-        # After completing a full row, update base y
         if col == 1:
             y = y_tile - ROW_GAP
 
-    # ------------------------------------------------------------
-    # FINALISE
-    # ------------------------------------------------------------
     c.showPage()
     c.save()
     stream.seek(0)
