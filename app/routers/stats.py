@@ -582,7 +582,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
     y = last_y_tile - SECTION_GAP
 
     # ============================================================
-    # PLAYER TILES (2‑column grid, robust vertical flow)
+    # PLAYER TILES (bulletproof 2‑column layout)
     # ============================================================
     tile_w_p = (width - 40*mm) / 2
     tile_h_p = 26 * mm
@@ -599,45 +599,53 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         for name, stats in player_stats.items()
     ]
 
-    # Start the player grid just below the summary section
     current_y = y
+    row_buffer = []
 
-    for i, p in enumerate(players_list):
-        col = i % 2
+    def flush_row():
+        nonlocal current_y, row_buffer
 
-        # Move to next row when starting a new left‑hand tile (col == 0),
-        # except for the very first tile.
-        if col == 0 and i != 0:
-            current_y -= (tile_h_p + ROW_GAP)
+        if not row_buffer:
+            return
 
-            # Page break check for the new row
-            if current_y < PAGE_MARGIN_BOTTOM:
-                c.showPage()
-                header("Race Day Report")
-                current_y = height - PAGE_MARGIN_TOP
+        # Page break BEFORE drawing the row
+        if current_y - tile_h_p < PAGE_MARGIN_BOTTOM:
+            c.showPage()
+            header("Race Day Report")
+            current_y = height - PAGE_MARGIN_TOP
 
-        x = x_start + col * (tile_w_p + ROW_GAP)
-        y_tile = current_y
+        for col, p in enumerate(row_buffer):
+            x = x_start + col * (tile_w_p + ROW_GAP)
+            y_tile = current_y
 
-        draw_tile(x, y_tile, tile_w_p, tile_h_p, p["name"])
+            draw_tile(x, y_tile, tile_w_p, tile_h_p, p["name"])
 
-        c.setFillColor(colors.black)
-        c.setFont("Helvetica", 10)
+            c.setFillColor(colors.black)
+            c.setFont("Helvetica", 10)
 
-        body_y = y_tile + tile_h_p - TITLE_BAR_HEIGHT - INNER_PADDING - 2
+            body_y = y_tile + tile_h_p - TITLE_BAR_HEIGHT - INNER_PADDING - 2
 
-        c.drawString(
-            x + INNER_PADDING,
-            body_y,
-            f"W {p['wins']} | P {p['places']} | L {p['loses']} | NR {p['nr']}"
-        )
+            c.drawString(
+                x + INNER_PADDING,
+                body_y,
+                f"W {p['wins']} | P {p['places']} | L {p['loses']} | NR {p['nr']}"
+            )
 
-        c.drawString(
-            x + INNER_PADDING,
-            body_y - 12,
-            f"Profit £{p['profit']:.2f}"
-        )
+            c.drawString(
+                x + INNER_PADDING,
+                body_y - 12,
+                f"Profit £{p['profit']:.2f}"
+            )
 
+        current_y -= (tile_h_p + ROW_GAP)
+        row_buffer = []
+
+    for p in players_list:
+        row_buffer.append(p)
+        if len(row_buffer) == 2:
+            flush_row()
+
+    flush_row()
 
     # Finalise
     c.showPage()
@@ -649,6 +657,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
         media_type="application/pdf",
         headers={"Content-Disposition": "attachment; filename=raceday_report.pdf"}
     )
+
 
 # ============================================================
 # ACCA EXPORT — PDF (PREMIUM BOOKMAKER STYLE, T2 SPACING)
