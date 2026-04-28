@@ -508,7 +508,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
 
     # TILE INTERNAL PADDING (Option B — Medium)
     INNER_PADDING = 4 * mm
-    TITLE_BAR_HEIGHT = 12 * mm
+    TITLE_BAR_HEIGHT = 10 * mm
 
     RACING_GREEN = colors.HexColor("#004225")
     GOLD = colors.HexColor("#D4AF37")
@@ -547,7 +547,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
     # SUMMARY TILES (3‑column grid, safe vertical flow)
     # ============================================================
     tile_w = (width - 40*mm) / 3
-    tile_h = 22 * mm
+    tile_h = 20 * mm
     x_start = 15 * mm
 
     total_stake = sum(float(rd.total_stake) for rd in racedays)
@@ -585,7 +585,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
     # PLAYER TILES (bulletproof 2‑column layout)
     # ============================================================
     tile_w_p = (width - 40*mm) / 2
-    tile_h_p = 26 * mm
+    tile_h_p = 20 * mm
 
     players_list = [
         {
@@ -633,7 +633,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
 
             c.drawString(
                 x + INNER_PADDING,
-                body_y - 12,
+                body_y - 18,
                 f"Profit £{p['profit']:.2f}"
             )
 
