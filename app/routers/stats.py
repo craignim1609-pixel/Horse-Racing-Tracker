@@ -503,11 +503,11 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
     # GLOBAL SPACING CONSTANTS (T2 — Tight Premium)
     ROW_GAP = 6 * mm
     SECTION_GAP = 10 * mm
-    PAGE_MARGIN_TOP = 20 * mm
-    PAGE_MARGIN_BOTTOM = 20 * mm
+    PAGE_MARGIN_TOP = 15 * mm
+    PAGE_MARGIN_BOTTOM = 15 * mm
 
     # TILE INTERNAL PADDING (Option B — Medium)
-    INNER_PADDING = 4 * mm
+    INNER_PADDING = 2 * mm
     TITLE_BAR_HEIGHT = 10 * mm
 
     RACING_GREEN = colors.HexColor("#004225")
@@ -541,7 +541,7 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
 
     # Start page
     header("Race Day Report")
-    y = height - PAGE_MARGIN_TOP - 20*mm
+    y = height - PAGE_MARGIN_TOP - 15*mm
 
     # ============================================================
     # SUMMARY TILES (3‑column grid, safe vertical flow)
@@ -584,8 +584,8 @@ def export_raceday_pdf(db: Session = Depends(get_db)):
     # ============================================================
     # PLAYER TILES (bulletproof 2‑column layout)
     # ============================================================
-    tile_w_p = (width - 40*mm) / 2
-    tile_h_p = 20 * mm
+    tile_w_p = (width - 25*mm) / 2
+    tile_h_p = 25 * mm
 
     players_list = [
         {
